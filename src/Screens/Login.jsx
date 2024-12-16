@@ -2,7 +2,7 @@ import videoBg from "../assets/videoBg.mp4";
 
 const Login = () => {
   return (
-    <section className="w-full h-screen relative">
+    <section className="w-full h-screen lappy:h-auto relative ">
       <div className="h-full flex flex-col lg:flex-row w-full">
         <div className="relative h-1/2 lg:h-full w-full lg:w-1/2">
           <video
@@ -26,7 +26,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center  lappy:bg-black">
+        <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center  lappy:bg-black lappy:p-3">
           <div className="flex items-center justify-center h-fit mx-auto w-full phone:w-4/5 sm:w-3/4 md:w-2/3 lg:w-1/2 bg-white relative shadow-lg rounded-lg p-4 2xl:w-4/6">
             <form className="w-full flex flex-col gap-6 p-5">
               <div className="mb-4">
@@ -34,7 +34,7 @@ const Login = () => {
                   htmlFor="email"
                   className="block mb-2 text-xs sm:text-sm md:text-base font-bold text-black uppercase"
                 >
-                  Your email*
+                  Your email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
@@ -50,7 +50,10 @@ const Login = () => {
                   htmlFor="password"
                   className="block mb-2 text-xs sm:text-sm md:text-base font-bold text-black uppercase"
                 >
-                  Your password*
+                  Your password
+                  <span>
+                    <span className="text-red-500">*</span>
+                  </span>
                 </label>
                 <input
                   type="password"
@@ -76,12 +79,20 @@ const Login = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4">
-                <a
-                  href="#"
-                  className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
-                >
-                  Forgotten password?
-                </a>
+                <div className=" flex flex-col justify-center items-start w-full lappy:flex-row lappy:justify-between lappy:items-center">
+                  <a
+                    href="#"
+                    className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
+                  >
+                    Forgotten password?
+                  </a>
+                  <a
+                    href="#"
+                    className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
+                  >
+                    Don&apos;t have an account?
+                  </a>
+                </div>
                 <button
                   type="submit"
                   className="w-full sm:w-auto px-5 py-2 text-xs sm:text-sm md:text-base font-bold text-white bg-gradient-to-r from-sky-800 via-sky-300 to-sky-600 hover:bg-gradient-to-br rounded focus:ring-4 focus:ring-sky-300"
