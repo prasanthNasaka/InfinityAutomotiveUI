@@ -1,5 +1,6 @@
+import Dashboard from "./Screens/Dashboard";
 import Login from "./Screens/Login";
-import Footer from "./Components/Footer";
+import Signup from "./Screens/Signup";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const App = () => {
@@ -8,8 +9,9 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+          <Route path="dashboard" element={<Dashboard />} />
         </Routes>
-        <Footer />
       </BrowserRouter>
     </section>
   );

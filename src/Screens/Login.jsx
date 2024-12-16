@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import videoBg from "../assets/videoBg.mp4";
+import Footer from "../Components/Footer";
 
 const Login = () => {
   return (
@@ -34,7 +36,7 @@ const Login = () => {
                   htmlFor="email"
                   className="block mb-2 text-xs sm:text-sm md:text-base font-bold text-black uppercase"
                 >
-                  Your email <span className="text-red-500">*</span>
+                  Your email <span className="text-red-500 text-sm">*</span>
                 </label>
                 <input
                   type="email"
@@ -50,10 +52,7 @@ const Login = () => {
                   htmlFor="password"
                   className="block mb-2 text-xs sm:text-sm md:text-base font-bold text-black uppercase"
                 >
-                  Your password
-                  <span>
-                    <span className="text-red-500">*</span>
-                  </span>
+                  Your password <span className="text-red-500 text-sm">*</span>
                 </label>
                 <input
                   type="password"
@@ -84,25 +83,25 @@ const Login = () => {
                     href="#"
                     className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
                   >
-                    Forgotten password?
+                    Forgot password?
                   </a>
-                  <a
-                    href="#"
-                    className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
-                  >
-                    Don&apos;t have an account?
+                  <a className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900">
+                    <Link to={"signup"}> Don&apos;t have an account?</Link>
                   </a>
                 </div>
                 <button
                   type="submit"
                   className="w-full sm:w-auto px-5 py-2 text-xs sm:text-sm md:text-base font-bold text-white bg-gradient-to-r from-sky-800 via-sky-300 to-sky-600 hover:bg-gradient-to-br rounded focus:ring-4 focus:ring-sky-300"
                 >
-                  Login
+                  <Link to={"dashboard"}>Login</Link>
                 </button>
               </div>
             </form>
           </div>
         </div>
+      </div>
+      <div className="w-full h-fit">
+        <Footer />
       </div>
     </section>
   );
