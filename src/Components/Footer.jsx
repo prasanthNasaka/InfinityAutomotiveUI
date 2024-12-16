@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
     <section className="w-full h-full">
-      <div className="w-full sphone:w-full h-auto bg-cyan-700/70 p-4 flex flex-wrap  items-center gap-3">
+      <div className="w-full sphone:w-full h-auto p-4 flex flex-wrap  items-center gap-3">
         <p className="text-base iphone:text-lg tab:text-xl lappy:text-xl text-black font-bold mb-4  2xl:text-2xl flex   ">
           Type Of Users:
         </p>
@@ -62,7 +62,7 @@ const Footer = () => {
         <div className="flex w-full h-fit items-center justify-center gap-5 mt-base iphone:mt-0 tab:mt-3 lappy:mt-2 ">
           <div className="flex justify-center w-fit h-auto p-3 text-base iphone:text-md tab:text-lg lappy:text-xl">
             <svg
-            className="cursor-pointer"
+              className="cursor-pointer"
               xmlns="http://www.w3.org/2000/svg"
               x="0px"
               y="0px"
@@ -76,7 +76,7 @@ const Footer = () => {
           </div>
           <div className="flex justify-center w-fit p-3 text-base iphone:text-md tab:text-lg lappy:text-xl">
             <svg
-             className="cursor-pointer"
+              className="cursor-pointer"
               xmlns="http://www.w3.org/2000/svg"
               x="0px"
               y="0px"
@@ -90,7 +90,7 @@ const Footer = () => {
           </div>
           <div className="flex justify-center w-fit p-3 text-base iphone:text-md tab:text-lg lappy:text-xl">
             <svg
-             className="cursor-pointer"
+              className="cursor-pointer"
               xmlns="http://www.w3.org/2000/svg"
               x="0px"
               y="0px"
@@ -104,7 +104,7 @@ const Footer = () => {
           </div>
           <div className="flex justify-center w-fit p-3 text-base iphone:text-md tab:text-lg lappy:text-xl">
             <svg
-             className="cursor-pointer"
+              className="cursor-pointer"
               xmlns="http://www.w3.org/2000/svg"
               x="0px"
               y="0px"

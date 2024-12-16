@@ -83,10 +83,10 @@ const Login = () => {
                     href="#"
                     className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
                   >
-                    Forgot password?
+                    <Link to={"forgotpassword"}>Forgot password ?</Link>
                   </a>
                   <a className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900">
-                    <Link to={"signup"}> Don&apos;t have an account?</Link>
+                    <Link to={"signup"}> Don&apos;t have an account ?</Link>
                   </a>
                 </div>
                 <button
@@ -100,7 +100,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-fit">
+      <div className="w-full h-fit bg-cyan-700/50">
         <Footer />
       </div>
     </section>

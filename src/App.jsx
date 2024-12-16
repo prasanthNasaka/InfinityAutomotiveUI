@@ -1,4 +1,5 @@
 import Dashboard from "./Screens/Dashboard";
+import Forgotpassword from "./Screens/Forgotpassword";
 import Login from "./Screens/Login";
 import Signup from "./Screens/Signup";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -11,6 +12,7 @@ const App = () => {
           <Route path="/" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="forgotpassword" element={<Forgotpassword />} />
         </Routes>
       </BrowserRouter>
     </section>
