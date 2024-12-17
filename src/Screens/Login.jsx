@@ -16,16 +16,17 @@ const Login = () => {
             playsInline
             preload="auto"
           ></video>
-          <div className="absolute inset-0 flex  justify-center  lg:flex mt-5 w-full tab:text-4xl">
-            <h1 className=" sm:text-5xl md:text-6xl lg:text-6xl font-bold uppercase text-white/80 text-center  desk:text-5xl phone:text-3xl">
-              AMON Racing Club
-              <div className="flex  justify-end w-10/6 underline text-center tab:text-xs ">
-                <span className=" text-white/60 sm:text-xs md:text-sm lg:text-l ">
-                  Every second counts..Every corner matters..
-                </span>
-              </div>
-            </h1>
-          </div>
+        </div>
+
+        <div className="absolute inset-0 flex justify-center lg:flex mt-5 w-full tab:text-4xl">
+          <h1 className="sm:text-5xl md:text-6xl lg:text-6xl font-bold uppercase bg-gradient-to-l from-gray-800 to-white bg-clip-text text-transparent text-center desk:text-5xl phone:text-3xl">
+            AMON Racing Club
+            <div className="flex justify-end w-10/6 underline text-center tab:text-xs">
+              <span className="sm:text-xs md:text-sm lg:text-l bg-gradient-to-l from-gray-800 to-white  bg-clip-text text-transparent">
+                Every second counts..Every corner matters..
+              </span>
+            </div>
+          </h1>
         </div>
 
         <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center  lappy:bg-black lappy:p-3">
