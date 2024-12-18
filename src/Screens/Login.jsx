@@ -92,7 +92,7 @@ const Login = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-5 py-2 text-xs sm:text-sm md:text-base font-bold text-white bg-gradient-to-r from-sky-800 via-sky-300 to-sky-600 hover:bg-gradient-to-br rounded focus:ring-4 focus:ring-sky-300"
+                  className="w-full sm:w-auto px-5 py-2 text-xs sm:text-sm md:text-base bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
                 >
                   <Link to={"dashboard"}>Login</Link>
                 </button>
