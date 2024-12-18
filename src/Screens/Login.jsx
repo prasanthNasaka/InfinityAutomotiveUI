@@ -101,7 +101,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-fit bg-cyan-700/50">
+      <div className="w-full h-fit bg-cyan-700/60">
         <Footer />
       </div>
     </section>

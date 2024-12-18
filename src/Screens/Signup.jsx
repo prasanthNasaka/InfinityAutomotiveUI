@@ -5,12 +5,12 @@ import myImg from "../assets/Sport.png";
 const Signup = () => {
   return (
     <section className="w-full h-screen ">
-      <div className=" z-10 bg-cyan-100/80 h-20 w-full text-white fixed ">
+      <div className=" z-10  w-full text-white fixed ">
         <Header />
       </div>
-      <div className=" w-full h-screen flex flex-col 2xl:flex-row  lappy:flex-col lappy:bg-gradient-to-t to-gray-100 from-black absolute inset-0">
-        <div className="w-1/2 desk:w-full lappy:h-1/2  desk:h-full ">
-          <div className="h-screen lappy:h-full desk:h-full tab:h-full phone:h-full iphone:h-full">
+      <div className=" w-full h-full flex flex-col 2xl:flex-row  lappy:flex-col lappy:h-fit tab:h-full  lappy:bg-gradient-to-t to-gray-100 from-black absolute inset-0  phone:h-full iphone:h-fit ">
+        <div className="w-1/2 desk:w-full lappy:h-full  desk:h-full ">
+          <div className="  h-screen lappy:h-full desk:h-full tab:h-full phone:h-full iphone:h-full">
             <img
               src={myImg}
               alt="Moto Racing Background"
@@ -19,7 +19,7 @@ const Signup = () => {
           </div>
         </div>
         <div className=" w-1/2 flex justify-center flex-col  h-full items-center bg-black/20 desk:p-3 desk:w-full   ">
-          <div className="  w-full max-w-md p-6  rounded-lg shadow-lg bg-white lappy:relative  ">
+          <div className="  w-full max-w-md p-6  rounded-lg shadow-lg bg-white  ">
             <h1 className="text-3xl font-bold text-black text-center mb-6 ">
               Create an account{" "}
             </h1>
