@@ -9,13 +9,13 @@ const Footer = () => {
           <div className="w-full h-auto px-4 flex-1   text-black ">
             <ul className="space-y-2  list-inside  text-base tab:text-lg 2xl:text-xl  iphone:text-sm desk:text-xl px-3   lappy:text-lg ">
               <li className="w-fit hover:cursor-pointer hover:underline hover:text-white">
+                Admin
+              </li>
+              <li className="w-fit hover:cursor-pointer hover:underline hover:text-white">
                 Register
               </li>
               <li className="w-fit hover:cursor-pointer hover:underline hover:text-white">
-                TimeKeeper
-              </li>
-              <li className="w-fit hover:cursor-pointer hover:underline hover:text-white">
-                Admin
+                Accounts
               </li>
               <li className=" w-fit hover:cursor-pointer hover:underline hover:text-white">
                 Scrutiny
