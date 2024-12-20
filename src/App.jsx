@@ -1,3 +1,6 @@
+import Done from "./Components/Done";
+import Live from "./Components/Live";
+import Upcoming from "./Components/Upcoming";
 import Dashboard from "./Screens/Dashboard";
 import Forgotpassword from "./Screens/Forgotpassword";
 import Login from "./Screens/Login";
@@ -17,6 +20,9 @@ const App = () => {
           <Route path="forgotpassword" element={<Forgotpassword />} />
           <Route path="pagenotfound" element={<PageNotFound />} />
           <Route path="servernotfound" element={<ServerNotFound />} />
+          <Route path="dashboard/link" element={<Live />} />
+          <Route path="dashboard/upcoming" element={<Upcoming />} />
+          <Route path="dashboard/done" element={<Done />} />
         </Routes>
       </BrowserRouter>
     </section>

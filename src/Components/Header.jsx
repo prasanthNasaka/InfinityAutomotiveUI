@@ -5,7 +5,7 @@ import { FaAngleDown } from "react-icons/fa";
 
 const Header = () => {
   return (
-    <section className="w-full h-20 flex justify-between items-center shadow-md   text-center font-thin bg-white">
+    <section className="w-full h-full flex justify-between items-center shadow-md   text-center font-thin bg-white">
       <div className="h-full w-1/5 flex items-center phone:w-full iphone:w-full ">
         <div className="w-full h-full flex items-center  phone:justify-between iphone:justify-between lappy:justify-start  tab:justify-start  desk:justify-start ">
           <IoIosMenu className="w-16 h-9 cursor-pointer text-black hover:text-blue-500 hidden phone:block iphone:block tab:block " />
