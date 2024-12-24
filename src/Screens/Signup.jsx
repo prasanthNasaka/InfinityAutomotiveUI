@@ -19,16 +19,16 @@ const Signup = () => {
           </div>
         </div>
         <div className=" w-1/2 flex justify-center flex-col  h-full items-center bg-black/20 desk:p-3 desk:w-full   ">
-          <div className="  w-full max-w-md p-6  rounded-lg shadow-lg bg-white  ">
+          <div className=" w-full max-w-md p-6  rounded-lg shadow-lg bg-white h-fit ">
             <h1 className="text-3xl font-bold text-black text-center mb-6 ">
               Create an account{" "}
             </h1>
-            <form className="flex flex-col space-y-4  ">
+            <form className="flex flex-col gap-1  ">
               <div className="flex gap-4">
                 <div className="w-1/2">
                   <label
                     htmlFor="firstName"
-                    className="block text-sm font-medium text-black"
+                    className="block text-md font-medium text-black"
                   >
                     First Name
                   </label>
@@ -36,13 +36,14 @@ const Signup = () => {
                     type="text"
                     id="firstName"
                     placeholder="Enter your first name"
-                    className="mt-1 w-full p-3  text-black rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border"
+                    className="w-full p-2 text-xs sm:text-sm md:text-base bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
                 <div className="w-1/2">
                   <label
                     htmlFor="lastName"
-                    className="block text-sm font-medium text-black"
+                    className="block text-md font-medium text-black"
                   >
                     Last Name
                   </label>
@@ -50,14 +51,15 @@ const Signup = () => {
                     type="text"
                     id="lastName"
                     placeholder="Enter your last name"
-                    className="mt-1 w-full p-3  text-black rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border"
+                    className="w-full p-2 text-xs sm:text-sm md:text-base bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
               </div>
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-black"
+                  className="block text-md font-medium text-black"
                 >
                   Email Address
                 </label>
@@ -65,13 +67,14 @@ const Signup = () => {
                   type="email"
                   id="email"
                   placeholder="Enter your email"
-                  className="mt-1 w-full p-3  text-black rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border"
+                  className="w-full p-2 text-xs sm:text-sm md:text-base bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                  required
                 />
               </div>
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-black"
+                  className="block text-md font-medium text-black"
                 >
                   Password
                 </label>
@@ -79,13 +82,14 @@ const Signup = () => {
                   type="password"
                   id="password"
                   placeholder="Create a password"
-                  className="mt-1 w-full p-3 border text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 text-xs sm:text-sm md:text-base bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                  required
                 />
               </div>
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-black"
+                  className="block text-md font-medium text-black"
                 >
                   Confirm Password
                 </label>
@@ -94,24 +98,43 @@ const Signup = () => {
                   id="confirmPassword"
                   name="confirmPassword"
                   placeholder="Confirm your password"
-                  className="mt-1 w-full p-3 border text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 text-xs sm:text-sm md:text-base bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+                  required
                 />
               </div>
-
+              <div className="flex items-center p-2">
+                <input
+                  id="link-checkbox"
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  htmlFor="link-checkbox"
+                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 "
+                >
+                  I agree with the{" "}
+                  <a
+                    href=""
+                    className="text-blue-600 dark:text-blue-500 hover:underline "
+                  >
+                    terms and condition
+                  </a>
+                  .
+                </label>
+              </div>
               <button
                 type="submit"
                 className="w-full py-3 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
               >
                 Create
               </button>
+              <p className="mt-6 text-sm text-black text-center">
+                Already have an account?{" "}
+                <a className="text-cyan-500 hover:underline">
+                  <Link to={"/"}> Login</Link>
+                </a>
+              </p>
             </form>
-
-            <p className="mt-6 text-sm text-black text-center">
-              Already have an account?{" "}
-              <a className="text-cyan-500 hover:underline">
-                <Link to={"/"}> Login</Link>
-              </a>
-            </p>
           </div>
         </div>
       </div>
