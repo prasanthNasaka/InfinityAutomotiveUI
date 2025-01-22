@@ -1,10 +1,69 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import videoBg from "../assets/videoBg.mp4";
 import Footer from "../Components/Footer";
 
-const Login = () => {
+// eslint-disable-next-line react/prop-types
+const Login = ({ setAuth }) => {
+  const [message, setMessage] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5105/api/Auth/login",
+        { username: email, password }
+      );
+      if (response.status === 200) {
+        setMessage("User registered successfully!");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+        localStorage.setItem("authToken", response.data.token);
+        setAuth(true);
+      } else {
+        setMessage(response.data || "Something went wrong");
+      }
+    } catch (error) {
+      if (error.response) {
+        if (
+          error.response.status === 400 &&
+          error.response.data === "User already exists"
+        ) {
+          setMessage("User already exists");
+        } else {
+          setMessage(error.response.data || "An error occurred");
+        }
+      } else {
+        setMessage("Network error, please try again");
+      }
+      const errorMsg =
+        error.response?.data?.message || "Please enter vaild email or password";
+      setError(errorMsg);
+    }
+  };
+
   return (
-    <section className="w-full h-screen lappy:h-auto relative ">
+    <section className="w-full h-screen lappy:h-auto relative">
       <div className="h-full flex flex-col lg:flex-row w-full">
         <div className="relative h-1/2 lg:h-full w-full lg:w-1/2">
           <video
@@ -22,16 +81,19 @@ const Login = () => {
           <h1 className="sm:text-5xl md:text-6xl lg:text-6xl font-bold uppercase bg-gradient-to-l from-gray-800 to-white bg-clip-text text-transparent text-center desk:text-5xl phone:text-3xl">
             AMON Racing Club
             <div className="flex justify-end w-10/6 underline text-center tab:text-xs">
-              <span className="sm:text-xs md:text-sm lg:text-l bg-gradient-to-l from-gray-800 to-white  bg-clip-text text-transparent">
+              <span className="sm:text-xs md:text-sm lg:text-l bg-gradient-to-l from-gray-800 to-white bg-clip-text text-transparent">
                 Every second counts..Every corner matters..
               </span>
             </div>
           </h1>
         </div>
 
-        <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center  lappy:bg-black lappy:p-3">
+        <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center lappy:bg-black lappy:p-3">
           <div className="flex items-center justify-center h-fit mx-auto w-full phone:w-4/5 sm:w-3/4 md:w-2/3 lg:w-1/2 bg-white relative shadow-lg rounded-lg p-4 2xl:w-4/6">
-            <form className="w-full flex flex-col gap-6 p-5">
+            <form
+              className="w-full flex flex-col gap-6 p-5"
+              onSubmit={handleSubmit}
+            >
               <div className="mb-4">
                 <label
                   htmlFor="email"
@@ -40,8 +102,10 @@ const Login = () => {
                   Your email <span className="text-red-500 text-sm">*</span>
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full p-2 text-xs sm:text-sm md:text-base bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your email"
                   required
@@ -58,17 +122,22 @@ const Login = () => {
                 <input
                   type="password"
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full p-2 text-xs sm:text-sm md:text-base bg-gray-50 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your password"
                   required
                 />
               </div>
 
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+
               <div className="flex items-center mb-4">
                 <input
                   id="remember"
                   type="checkbox"
                   className="w-4 h-4 text-black border-gray-300 rounded focus:ring-blue-500 hover:cursor-pointer"
+                  required
                 />
                 <label
                   htmlFor="remember"
@@ -79,28 +148,38 @@ const Login = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4">
-                <div className=" flex flex-col justify-center items-start w-full lappy:flex-row lappy:justify-between lappy:items-center">
-                  <a
-                    href="#"
+                <div className="flex flex-col justify-center items-start w-full lappy:flex-row lappy:justify-between lappy:items-center">
+                  <Link
+                    to={"forgotpassword"}
                     className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
                   >
-                    <Link to={"forgotpassword"}>Forgot password ?</Link>
-                  </a>
-                  <a className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900">
-                    <Link to={"signup"}> Don&apos;t have an account ?</Link>
-                  </a>
+                    Forgot password?
+                  </Link>
+                  <Link
+                    to={"/signup"}
+                    className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
+                  >
+                    Don&apos;t have an account?
+                  </Link>
                 </div>
                 <button
                   type="submit"
                   className="w-full sm:w-auto px-5 py-2 text-xs sm:text-sm md:text-base bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
                 >
-                  <Link to={"dashboard"}>Login</Link>
+                  Login
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
+      {message && isVisible && (
+        <div className="mt-4 text-center text-sm font-bold h-60 w-full text-gray-300 animate-pulse absolute bottom-0 flex justify-center items-center">
+          <div className="w-fit py-3 px-12 bg-gray-800 rounded-lg">
+            <span className="text-2xl">{message}</span>
+          </div>
+        </div>
+      )}
       <div className="w-full h-fit bg-cyan-700/60">
         <Footer />
       </div>

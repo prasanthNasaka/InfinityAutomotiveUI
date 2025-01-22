@@ -131,7 +131,7 @@ const Signup = () => {
               <p className="mt-6 text-sm text-black text-center">
                 Already have an account?{" "}
                 <a className="text-cyan-500 hover:underline">
-                  <Link to={"/"}> Login</Link>
+                  <Link to={"login"}> Login</Link>
                 </a>
               </p>
             </form>
