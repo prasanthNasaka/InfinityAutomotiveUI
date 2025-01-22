@@ -24,7 +24,7 @@ const Registration = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5105/api/Auth/register",
+        "https://c4pfntkn-5105.inc1.devtunnels.ms/api/Auth/register",
         {
           username,
           password,

@@ -3,6 +3,26 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      animation: {
+        leftToRight: "leftToRight 2s ease-in-out infinite",
+        rightToLeft: "rightToLeft 2s ease-in-out infinite",
+        spin: "spin 3s linear infinite",
+      },
+      keyframes: {
+        leftToRight: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(200px)" },
+        },
+        rightToLeft: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(-200px)" },
+        },
+        spin: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
+
       screens: {
         "2xl": { max: "2095px" },
         // => @media (max-width: 1535px) { ... }
