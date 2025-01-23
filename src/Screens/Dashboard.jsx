@@ -10,7 +10,7 @@ const Dashboard = () => {
           <Header />
         </div>
         <div className="flex h-[calc(100vh-6rem)]">
-        <div className="w-2/12 h-full iphone:hidden phone:hidden desk:block lappy:block tab:hidden ">
+          <div className="w-2/12 h-full iphone:hidden phone:hidden desk:block lappy:block tab:hidden ">
             <Sidebar />
           </div>
           <div className="w-10/12 h-full overflow-y-auto flex-grow p-2 tab:w-full iphone:w-full phone:w-full">

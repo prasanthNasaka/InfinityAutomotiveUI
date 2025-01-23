@@ -11,15 +11,15 @@ const Sidebar = () => {
 
       <div className="flex-grow">
         <ul className="p-2 flex flex-col font-serif">
-          <li className="p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg">
-            <Link to="link">Live</Link>
-          </li>
-          <li className="p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg">
-            <Link to="upcoming">Upcoming</Link>
-          </li>
-          <li className="p-2 text-lg flex text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg">
-            <Link to="done">Done & Dusted</Link>
-          </li>
+          <Link to="/live"className="p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg">
+            Live
+          </Link>
+          <Link to="/upcoming" className="p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg">
+            Upcoming
+          </Link>
+          <Link to="/done" className="p-2 text-lg flex text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg">
+            Done & Dusted
+          </Link>
         </ul>
       </div>
 

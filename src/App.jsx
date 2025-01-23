@@ -13,22 +13,38 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Loader from "./Components/Loader";
 
 const App = () => {
-  const [auth,setAuth] = useState(false)
+  const [auth, setAuth] = useState(false);
 
-
-
-  useEffect(()=>{
-    if(localStorage.getItem("authToken")){
-      setAuth(true)
-    }else{
-      setAuth(false)
+  useEffect(() => {
+    if (localStorage.getItem("authToken")) {
+      setAuth(true);
+    } else {
+      setAuth(false);
     }
-  },[])
+  }, []);
 
   return (
     <section className="w-full h-auto gap-2">
       <BrowserRouter>
         <Routes>
+          <Route
+            path="/"
+            element={auth ? <Navigate to="/dashboard" /> : <Registration />}
+          />
+          <Route
+            path="/login"
+            element={
+              auth ? <Navigate to="/dashboard" /> : <Login setAuth={setAuth} />
+            }
+          />
+          <Route
+            path="/signup"
+            element={auth ? <Signup /> : <Navigate to="/dashboard" />}
+          />
+          <Route
+            path="/dashboard"
+            element={auth ? <Dashboard /> : <Navigate to="/" />}
+          />
           <Route path="/register" element={<Registration />}  />
           <Route path="/" element={auth ? <Navigate to="/dashboard"/>: <Login setAuth={setAuth} />} />
           <Route path="/signup" element={auth ? <Signup />: <Navigate to="/dashboard"/>} />
