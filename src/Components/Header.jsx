@@ -12,7 +12,7 @@ const Header = () => {
   const logOutHandler = () => {
     localStorage.removeItem("authToken");
     setIsLoggedOut(true);
-    window.location.href = "/login";
+    window.location.href = "/";
     setIsLoggedOut();
     navigate("/login");
   };

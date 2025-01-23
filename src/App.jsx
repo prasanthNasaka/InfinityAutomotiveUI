@@ -45,6 +45,10 @@ const App = () => {
             path="/dashboard"
             element={auth ? <Dashboard /> : <Navigate to="/" />}
           />
+          <Route path="/register" element={<Registration />}  />
+          <Route path="/" element={auth ? <Navigate to="/dashboard"/>: <Login setAuth={setAuth} />} />
+          <Route path="/signup" element={auth ? <Signup />: <Navigate to="/dashboard"/>} />
+          <Route path="/dashboard" element={auth ? <Dashboard /> : <Navigate to="/"/>} />
           <Route path="/forgotpassword" element={<Forgotpassword />} />
           <Route path="/pagenotfound" element={<PageNotFound />} />
           <Route path="/servernotfound" element={<ServerNotFound />} />

@@ -9,8 +9,8 @@ const Login = ({ setAuth }) => {
   const [message, setMessage] = useState("");
   const [isVisible, setIsVisible] = useState(true);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin");
+  const [password, setPassword] = useState("moto@123");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -33,6 +33,7 @@ const Login = ({ setAuth }) => {
         "https://c4pfntkn-5105.inc1.devtunnels.ms/api/Auth/login",
         { username: email, password }
       );
+
       if (response.status === 200) {
         setMessage("User registered successfully!");
         setTimeout(() => {
