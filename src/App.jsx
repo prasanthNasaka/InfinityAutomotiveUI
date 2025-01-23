@@ -16,11 +16,8 @@ const App = () => {
   const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("authToken")) {
-      setAuth(true);
-    } else {
-      setAuth(false);
-    }
+    const token = localStorage.getItem("authToken");
+    setAuth(!!token);
   }, []);
 
   return (
@@ -29,33 +26,34 @@ const App = () => {
         <Routes>
           <Route
             path="/"
-            element={auth ? <Navigate to="/dashboard" /> : <Registration />}
-          />
-          <Route
-            path="/login"
             element={
               auth ? <Navigate to="/dashboard" /> : <Login setAuth={setAuth} />
             }
           />
           <Route
-            path="/signup"
-            element={auth ? <Signup /> : <Navigate to="/dashboard" />}
+            path="/register"
+            element={auth ? <Navigate to="/dashboard" /> : <Registration />}
           />
+          <Route
+            path="/signup"
+            element={auth ? <Navigate to="/dashboard" /> : <Signup />}
+          />
+          <Route path="/forgotpassword" element={<Forgotpassword />} />
+          <Route path="/loader" element={<Loader />} />
+
           <Route
             path="/dashboard"
             element={auth ? <Dashboard /> : <Navigate to="/" />}
-          />
-          <Route path="/register" element={<Registration />}  />
-          <Route path="/" element={auth ? <Navigate to="/dashboard"/>: <Login setAuth={setAuth} />} />
-          <Route path="/signup" element={auth ? <Signup />: <Navigate to="/dashboard"/>} />
-          <Route path="/dashboard" element={auth ? <Dashboard /> : <Navigate to="/"/>} />
-          <Route path="/forgotpassword" element={<Forgotpassword />} />
+          >
+            <Route path="live" element={<Live />} />
+            <Route path="upcoming" element={<Upcoming />} />
+            <Route path="done" element={<Done />} />
+          </Route>
+
           <Route path="/pagenotfound" element={<PageNotFound />} />
           <Route path="/servernotfound" element={<ServerNotFound />} />
-          <Route path="/dashboard/link" element={<Live />} />
-          <Route path="/dashboard/upcoming" element={<Upcoming />} />
-          <Route path="/dashboard/done" element={<Done />} />
-          <Route path="/loader" element={<Loader />} />
+
+          <Route path="*" element={<Navigate to="/pagenotfound" />} />
         </Routes>
       </BrowserRouter>
     </section>

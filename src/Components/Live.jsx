@@ -10,8 +10,8 @@ const Live = () => {
       </div>
 
       <div className="flex h-[calc(100vh-6rem)]">
-      <div className="w-2/12 h-full iphone:hidden phone:hidden desk:block lappy:block tab:hidden ">
-      <Sidebar />
+        <div className="w-2/12 h-full iphone:hidden phone:hidden desk:block lappy:block tab:hidden ">
+          <Sidebar />
         </div>
         <div className="w-10/12 p-2 flex flex-wrap h-full overflow-y-scroll">
           <Card />

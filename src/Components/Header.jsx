@@ -53,7 +53,7 @@ const Header = () => {
                   id="underline_select"
                   className=" font-serif block py-2.5 px-4 w-full text-black bg-transparent appearance-none focus:outline-none focus:ring-0 text-xl cursor-pointer"
                 >
-                  <option selected>Login</option>
+                  <option defaultValue>Login</option>
                   <option value="Register">Register</option>
                   <option value="Scrutiny">Scrutiny</option>
                   <option value="Accounts">Accounts</option>
