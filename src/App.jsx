@@ -29,8 +29,8 @@ const App = () => {
     <section className="w-full h-auto gap-2">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={ auth ? <Navigate to="/dashboard"/> : <Registration />} />
-          <Route path="/login" element={auth ? <Navigate to="/dashboard"/>: <Login setAuth={setAuth} />} />
+          <Route path="/register" element={<Registration />}  />
+          <Route path="/" element={auth ? <Navigate to="/dashboard"/>: <Login setAuth={setAuth} />} />
           <Route path="/signup" element={auth ? <Signup />: <Navigate to="/dashboard"/>} />
           <Route path="/dashboard" element={auth ? <Dashboard /> : <Navigate to="/"/>} />
           <Route path="/forgotpassword" element={<Forgotpassword />} />
