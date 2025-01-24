@@ -1,21 +1,24 @@
-import Body from "../Components/Body";
-import Header from "../Components/Header";
-import Sidebar from "../Components/Sidebar";
+import Card from "../Components/Card";
+import MainSideBar from "../Components/MainSideBar";
+import Newheader from "../Components/Newheader";
 
 const Dashboard = () => {
   return (
-    <section className="w-full h-screen flex-grow">
-      <div className="h-full flex flex-col">
-        <div className="h-24 w-full">
-          <Header />
+    <section>
+      <div className="h-24 w-full">
+        <Newheader />
+      </div>
+      <div className="flex  h-[calc(100vh-6rem)]">
+        <div className="flex h-full">
+          <MainSideBar />
         </div>
-        <div className="flex h-[calc(100vh-6rem)]">
-          <div className="w-2/12 h-full iphone:hidden phone:hidden desk:block lappy:block tab:hidden ">
-            <Sidebar />
-          </div>
-          <div className="w-10/12 h-full overflow-y-auto flex-grow p-2 tab:w-full iphone:w-full phone:w-full">
-            <Body />
-          </div>
+        <div className="flex flex-wrap h-full w-full overflow-y-auto gap-4">
+        <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
         </div>
       </div>
     </section>

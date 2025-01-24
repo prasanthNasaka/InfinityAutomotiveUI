@@ -5,15 +5,14 @@ import videoBg from "../assets/videoBg.mp4";
 import Footer from "../Components/Footer";
 
 // eslint-disable-next-line react/prop-types
-const Login = ({ setAuth }) => {
+const Login = () => {
   const [message, setMessage] = useState("");
   const [isVisible, setIsVisible] = useState(true);
-
   const [email, setEmail] = useState("admin");
   const [password, setPassword] = useState("moto@123");
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (message) {
@@ -28,7 +27,7 @@ const Login = ({ setAuth }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
+    setMessage("");
     try {
       const response = await axios.post(
         "https://c4pfntkn-5105.inc1.devtunnels.ms/api/Auth/login",
@@ -36,31 +35,30 @@ const Login = ({ setAuth }) => {
       );
 
       if (response.status === 200) {
-        setMessage("User registered successfully!");
+        setMessage("Login successful! Redirecting...");
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
         localStorage.setItem("authToken", response.data.token);
-        setAuth(true);
       } else {
         setMessage(response.data || "Something went wrong");
       }
     } catch (error) {
       if (error.response) {
-        if (
-          error.response.status === 400 &&
-          error.response.data === "User already exists"
-        ) {
-          setMessage("User already exists");
-        } else {
-          setMessage(error.response.data || "An error occurred");
-        }
+        const errorMsg =
+          error.response.status === 400
+            ? "Invalid credentials. Please try again."
+            : error.response.data.message ||
+              "An error occurred. Please try again.";
+        setMessage(errorMsg);
+      } else if (error.request) {
+        setMessage(
+          "Network error. Please check your connection and try again."
+        );
       } else {
-        setMessage("Network error, please try again");
+        setMessage("An unexpected error occurred. Please try again later.");
       }
-      const errorMsg =
-        error.response?.data?.message || "Please enter vaild email or password";
-      setError(errorMsg);
+      setError("Please enter a valid email or password");
     }
   };
 
