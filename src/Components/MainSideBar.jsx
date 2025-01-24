@@ -5,94 +5,65 @@ const MainSideBar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <section className="w-48 bg-blue-500 h-screen">
+    <section className="w-52 bg-blue-500 h-full">
       <div className="flex-grow">
-        <ul className="p-2 flex flex-col font-serif">
+        <ul className="p-2 flex flex-col font-serif gap-5">
           <Link
-            to="/dashboard/live"
+            to="/registration"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/live") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            Tmr - Login
-          </Link>
-          <Link
-            to="/dashboard/upcoming"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/upcoming") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/dashboard/done"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/done") ? "bg-cyan-600 rounded-lg" : ""
+              isActive("/registration") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
             Registration
           </Link>
           <Link
-            to="/dashboard/events"
+            to="/events"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/events") ? "bg-cyan-600 rounded-lg" : ""
+              isActive("/events") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
             Events
           </Link>
           <Link
-            to="/dashboard/link race & drv"
+            to="/driverracelink"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/link race & drv")
-                ? "bg-cyan-600 rounded-lg"
-                : ""
+              isActive("/driverracelink") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
-            Link race and drv
+            Link race and driver
           </Link>
           <Link
-            to="/dashboard/timekeeper"
+            to="/timekeeper"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/timekeeper") ? "bg-cyan-600 rounded-lg" : ""
+              isActive("/timekeeper") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
-            TimeKeeper scrn
+            TimeKeeper
           </Link>
           <Link
-            to="/dashboard/bigscreen_display"
+            to="/bigscreen_display"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/bigscreen_display")
-                ? "bg-cyan-600 rounded-lg"
-                : ""
+              isActive("/bigscreen_display") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
             BigScr Display
           </Link>
           <Link
-            to="/dashboard/current_categ"
+            to="/current_categ"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/current_categ")
-                ? "bg-cyan-600 rounded-lg"
-                : ""
+              isActive("/current_categ") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
-            Current categ result
+            Results
           </Link>
+
           <Link
-            to="/dashboard/tmr"
+            to="/scrutiny"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/tmr") ? "bg-cyan-600 rounded-lg" : ""
+              isActive("/scrutiny") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
-            Tmr - App lic
-          </Link>
-          <Link
-            to="/dashboard/scrutiny"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
-              isActive("/dashboard/scrutiny") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            scrutiny
+            Scrutiny
           </Link>
         </ul>
       </div>
