@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import flag from "../assets/amon.png";
 import photo from "../assets/flag.jpeg";
 import { IoIosMenu } from "react-icons/io";
 import { FaAngleDown } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const Header = () => {
@@ -49,15 +50,26 @@ const Header = () => {
                 Underline select
               </label>
               <div className="relative group flex justify-center items-center w-32     ">
+              <button>
+                  <Link  className="text-black" to={"/login"}>
+                      Login
+                    </Link>
+
+                  </button>
                 <select
                   id="underline_select"
-                  className=" font-serif block py-2.5 px-4 w-full text-black bg-transparent appearance-none focus:outline-none focus:ring-0 text-xl cursor-pointer"
+                  className="mt-8 font-serif block py-2.5 px-4 w-full text-black bg-transparent appearance-none focus:outline-none focus:ring-0 text-xl cursor-pointer"
                 >
-                  <option defaultValue>Login</option>
-                  <option value="Register">Register</option>
-                  <option value="Scrutiny">Scrutiny</option>
-                  <option value="Accounts">Accounts</option>
-                  <option value="Accounts">Settings</option>
+                  
+                  <option>
+                    <a  href="/login">
+                      Login
+                    </a>
+                  </option>
+                  <li value="Register">Register</li>
+                  <li value="Scrutiny">Scrutiny</li>
+                  <li value="Accounts">Accounts</li>
+                  <li value="Accounts">Settings</li>
                 </select>
                 <FaAngleDown className="absolute right-2 pointer-events-none text-black " />
 

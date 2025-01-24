@@ -11,6 +11,7 @@ import ServerNotFound from "./Screens/ServerNotFound";
 import Signup from "./Screens/Signup";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Loader from "./Components/Loader";
+import Main_Dashboard from "./Screens/Main_Dashboard";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -24,11 +25,13 @@ const App = () => {
     <section className="w-full h-auto gap-2">
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/loader" element={<Loader />} />
+          <Route path="/dashboard" element={<Main_Dashboard />} />
           <Route
-            path="/"
-            element={
-              auth ? <Navigate to="/dashboard" /> : <Login setAuth={setAuth} />
-            }
+            path="/dashboard"
+            element={auth ? <Navigate to="/dashboard" /> : <Login />}
           />
           <Route
             path="/register"
@@ -39,7 +42,6 @@ const App = () => {
             element={auth ? <Navigate to="/dashboard" /> : <Signup />}
           />
           <Route path="/forgotpassword" element={<Forgotpassword />} />
-          <Route path="/loader" element={<Loader />} />
 
           <Route
             path="/dashboard"
