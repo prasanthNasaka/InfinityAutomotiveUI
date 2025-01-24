@@ -83,20 +83,7 @@ const Header = () => {
               type="button"
               className="focus:outline-none text-white bg-red-700 hover:bg-red-800 :ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9"
-                />
-              </svg>
+              Logout
             </button>
           </div>
 
