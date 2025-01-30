@@ -5,7 +5,7 @@ const MainSideBar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <section className="w-52 bg-blue-500 h-full">
+    <section className="w-52 bg-black h-full">
       <div className="flex-grow">
         <ul className="p-2 flex flex-col font-serif gap-5">
           <Link

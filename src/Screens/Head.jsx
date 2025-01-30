@@ -1,23 +1,7 @@
-/* eslint-disable no-unused-vars */
+import { Link } from "react-router-dom";
 import flag from "../assets/amon.png";
-import photo from "../assets/flag.jpeg";
-import { IoIosMenu } from "react-icons/io";
-import { FaAngleDown } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
-const Header = () => {
-  const navigate = useNavigate();
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
-
-  const logOutHandler = () => {
-    localStorage.removeItem("authToken");
-    setIsLoggedOut(true);
-    window.location.href = "/";
-    setIsLoggedOut();
-    navigate("/login");
-  };
-
+const Head = () => {
   return (
     <section className="w-full h-full flex justify-between items-center shadow-md text-center font-thin bg-white">
       <div className="h-full w-full flex items-center phone:w-full iphone:w-full ">
@@ -34,26 +18,16 @@ const Header = () => {
           <div className="   flex items-center phone:hidden iphone:hidden tab:hidden lappy:w-36 desk:w-36 2xl:w-32 tab:w-26 ">
             <div className="relative group flex justify-center items-center w-32     ">
               <button>
-                <Link className="text-black" to={"/login"}>
+                <Link className="text-black" to={"/"}>
                   <button
                     type="button"
                     className="focus:outline-none text-white bg-cyan-600 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2  phone:justify-end iphone:justify-end lappy:justify-end  tab:justify-end  desk:justify-end"
                   >
-                    Login
+                    Dashboard
                   </button>
                 </Link>
               </button>
             </div>
-            <button>
-                <Link className="text-black" to={"/register"}>
-                  <button
-                    type="button"
-                    className="focus:outline-none text-white bg-cyan-600 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2  phone:justify-end iphone:justify-end lappy:justify-end  tab:justify-end  desk:justify-end"
-                  >
-                    Register
-                  </button>
-                </Link>
-              </button>
           </div>
         </div>
       </div>
@@ -61,4 +35,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Head;
