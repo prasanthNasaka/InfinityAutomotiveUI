@@ -13,6 +13,7 @@ import Dashboard from "./Screens/Dashboard";
 import Main_DriverRaceLink from "./Screens/Main_DriverRaceLink";
 
 import DriverRegistration from "./Screens/DriverRegistration";
+import Events from "./Components/Events";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -29,21 +30,22 @@ const App = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/registration" element={<Registration/>}/>
-          <Route path="/driverracelink" element={<Main_DriverRaceLink/>}/>
-          
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/driverracelink" element={<Main_DriverRaceLink />} />
+
           <Route
             path="/driverracelink"
             element={auth ? <Navigate to="/dashboard" /> : <Login />}
           />
-          <Route path="/register" element={<DriverRegistration/>}/>
-          
-          
+          <Route path="/register" element={<DriverRegistration />} />
+
+          <Route path="/events" element={<Events />} />
+
           <Route
             path="/dashboard"
             element={auth ? <Navigate to="/dashboard" /> : <Login />}
           />
-          
+
           <Route
             path="/register"
             element={auth ? <Navigate to="/" /> : <Registration />}
@@ -53,14 +55,11 @@ const App = () => {
             element={auth ? <Navigate to="/" /> : <Signup />}
           />
 
-
-
           <Route path="/forgotpassword" element={<Forgotpassword />} />
           <Route path="/pagenotfound" element={<PageNotFound />} />
           <Route path="/servernotfound" element={<ServerNotFound />} />
           <Route path="*" element={<Navigate to="/pagenotfound" />} />
           <Route path="/loader" element={<Loader />} />
-
         </Routes>
       </BrowserRouter>
     </section>
