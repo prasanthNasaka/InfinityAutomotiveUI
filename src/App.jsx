@@ -10,6 +10,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Loader from "./Components/Loader";
 import LandingPage from "./Screens/LandingPage";
 import Dashboard from "./Screens/Dashboard";
+import Main_DriverRaceLink from "./Screens/Main_DriverRaceLink";
+
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -27,6 +29,12 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/registration" element={<Registration/>}/>
+          <Route path="/driverracelink" element={<Main_DriverRaceLink/>}/>
+          
+          <Route
+            path="/driverracelink"
+            element={auth ? <Navigate to="/dashboard" /> : <Login />}
+          />
           
           <Route
             path="/dashboard"
