@@ -12,6 +12,7 @@ import LandingPage from "./Screens/LandingPage";
 import Dashboard from "./Screens/Dashboard";
 import Main_DriverRaceLink from "./Screens/Main_DriverRaceLink";
 
+import DriverRegistration from "./Screens/DriverRegistration";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -35,6 +36,8 @@ const App = () => {
             path="/driverracelink"
             element={auth ? <Navigate to="/dashboard" /> : <Login />}
           />
+          <Route path="/register" element={<DriverRegistration/>}/>
+          
           
           <Route
             path="/dashboard"

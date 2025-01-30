@@ -30,7 +30,7 @@ const Login = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        "https://c4pfntkn-5105.inc1.devtunnels.ms/api/Auth/login",
+        "https://localhost:7206/api/Auth/login",
         { username: email, password }
       );
 
