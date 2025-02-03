@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import Head from "../Screens/Head";
 import Vehicledetails from "./Vehicledetails";
 
@@ -20,6 +19,7 @@ const DriverRegistration = () => {
   const [tillDate, setTillDate] = useState("");
   const [fmsciLicNumber, setFmsciLicNumber] = useState("");
 
+  const [showVehicleDetails, setShowVehicleDetails] = useState(false);
 
   const handleSave = () => {
     if (
@@ -61,7 +61,8 @@ const DriverRegistration = () => {
       file: file ? URL.createObjectURL(file) : null,
       upload: upload ? URL.createObjectURL(upload) : null,
     });
-    handleCancel();
+
+    setShowVehicleDetails(true);
   };
 
   const handleCancel = () => {
@@ -77,6 +78,7 @@ const DriverRegistration = () => {
     setFile(null);
     setUpload(null);
     setError("");
+    setShowVehicleDetails(false);
   };
 
   return (
@@ -155,7 +157,7 @@ const DriverRegistration = () => {
                   />
                 </div>
 
-                <div className="flex w-full  gap-2">
+                <div className="flex w-full gap-2">
                   <div className="mb-4 w-1/2 ">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       DOB
@@ -190,17 +192,17 @@ const DriverRegistration = () => {
                     </select>
                   </div>
                 </div>
-                <div className="flex w-full  gap-2">
+                <div className="flex w-full gap-2">
                   <div className="mb-4 w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
-                      phone Number
+                      Phone Number
                     </label>
                     <input
                       type="tel"
                       className="w-full p-3 border border-gray-300 rounded "
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your phone Number"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Enter your phone number"
                       required
                       maxLength={10}
                     />
@@ -212,15 +214,16 @@ const DriverRegistration = () => {
                     <input
                       type="email"
                       className="w-full p-3 border border-gray-300 rounded "
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your Email Address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email address"
                       required
                     />
                   </div>
                 </div>
               </div>
             </div>
+
             <div className="flex w-full gap-2">
               <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-1/2">
                 <div className="flex gap-6 items-center">
@@ -256,7 +259,7 @@ const DriverRegistration = () => {
                           />
                         </svg>
                         <p className="text-sm text-gray-500">
-                          <span className="font-semibold">Click to upload</span>
+                          <span className="font-semibold">Click to upload</span>{" "}
                           or drag & drop
                         </p>
                         <p className="text-xs text-gray-500">JPG, PNG, PDF</p>
@@ -276,7 +279,7 @@ const DriverRegistration = () => {
                       </label>
                       <input
                         type="text"
-                        className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                         value={drivingLicNumber}
                         onChange={(e) => setDrivingLicNumber(e.target.value)}
                         placeholder="Enter your license number"
@@ -290,7 +293,7 @@ const DriverRegistration = () => {
                       </label>
                       <input
                         type="date"
-                        className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                         value={tillDate}
                         onChange={(e) => setTillDate(e.target.value)}
                         required
@@ -310,11 +313,11 @@ const DriverRegistration = () => {
                         type="file"
                         accept="image/*,application/pdf"
                         className="hidden"
-                        id="license-file-upload"
+                        id="fmsci-file-upload"
                         onChange={(e) => setUpload(e.target.files[0])}
                       />
                       <label
-                        htmlFor="license-file-upload"
+                        htmlFor="fmsci-file-upload"
                         className="flex flex-col items-center justify-center w-full h-full"
                       >
                         <svg
@@ -392,12 +395,24 @@ const DriverRegistration = () => {
                 Save
               </button>
             </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowVehicleDetails(true)}
+                className="px-6 py-3 bg-cyan-600 text-white rounded mt-5"
+              >
+                Add Vehicle Details
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center">
-        <Vehicledetails />
-      </div>
+
+      {showVehicleDetails && (
+        <div className="flex items-center justify-center">
+          <Vehicledetails />
+        </div>
+      )}
     </>
   );
 };

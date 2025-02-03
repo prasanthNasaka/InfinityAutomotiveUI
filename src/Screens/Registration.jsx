@@ -17,6 +17,7 @@ const Registration = () => {
   const [error, setError] = useState("");
   const [drivingLicNumber, setDrivingLicNumber] = useState("");
   const [tillDate, setTillDate] = useState("");
+  const [fmsciLicNumber, setFmsciLicNumber] = useState("");
 
   const handleSave = () => {
     if (
@@ -235,7 +236,7 @@ const Registration = () => {
                       type="tel"
                       className="w-full p-3 border border-gray-300 rounded "
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => setPhone(e.target.value)}
                       placeholder="Enter your phone Number"
                       required
                       maxLength={10}
@@ -249,7 +250,7 @@ const Registration = () => {
                       type="email"
                       className="w-full p-3 border border-gray-300 rounded "
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your Email Address"
                       required
                     />
@@ -259,104 +260,157 @@ const Registration = () => {
             </div>
             <div className="flex w-full gap-2">
               <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-1/2">
-                {/* Driving License Number */}
-                <div className="mb-4">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">
-                    Driving License Number
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={drivingLicNumber}
-                    onChange={(e) => setDrivingLicNumber(e.target.value)}
-                    placeholder="Enter your license number"
-                    required
-                  />
-                </div>
+                <div className="flex gap-6 items-center">
+                  <div className="w-1/2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Upload License
+                    </label>
+                    <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        id="license-file-upload"
+                        onChange={(e) => setFile(e.target.files[0])}
+                      />
+                      <label
+                        htmlFor="license-file-upload"
+                        className="flex flex-col items-center justify-center w-full h-full"
+                      >
+                        <svg
+                          className="w-6 h-6 mb-2 text-gray-500"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                          />
+                        </svg>
+                        <p className="text-sm text-gray-500">
+                          <span className="font-semibold">Click to upload</span>
+                          or drag & drop
+                        </p>
+                        <p className="text-xs text-gray-500">JPG, PNG, PDF</p>
+                      </label>
+                    </div>
+                    {file && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        File: {file.name}
+                      </p>
+                    )}
+                  </div>
 
-                {/* Till Date */}
-                <div className="mb-4">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">
-                    Till Date
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={tillDate}
-                    onChange={(e) => setTillDate(e.target.value)}
-                    required
-                  />
-                </div>
+                  <div className="w-2/3">
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Driving License Number
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={drivingLicNumber}
+                        onChange={(e) => setDrivingLicNumber(e.target.value)}
+                        placeholder="Enter your license number"
+                        required
+                      />
+                    </div>
 
-                {/* Browse File Button */}
-                <div className="mt-4">
-                  <input
-                    type="file"
-                    accept="image/*,application/pdf"
-                    className="hidden"
-                    id="license-file-upload"
-                    onChange={(e) => setFile(e.target.files[0])}
-                  />
-                  <label
-                    htmlFor="license-file-upload"
-                    className="w-full p-3 bg-cyan-600 text-white text-center rounded cursor-pointer hover:bg-cyan-700 transition"
-                  >
-                    Browse File
-                  </label>
-                  {file && (
-                    <p className="text-sm text-gray-600 mt-2">
-                      File: {file.name}
-                    </p>
-                  )}
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Till Date
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={tillDate}
+                        onChange={(e) => setTillDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-1/2">
-                <div className="mb-4 ">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">
-                    FMSCI License Number
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={drivingLicNumber}
-                    onChange={(e) => setDrivingLicNumber(e.target.value)}
-                    placeholder="Enter your license number"
-                    required
-                  />
-                </div>
+                <div className="flex gap-6 items-center">
+                  <div className="w-1/2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Upload FMSCI License
+                    </label>
+                    <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        id="license-file-upload"
+                        onChange={(e) => setUpload(e.target.files[0])}
+                      />
+                      <label
+                        htmlFor="license-file-upload"
+                        className="flex flex-col items-center justify-center w-full h-full"
+                      >
+                        <svg
+                          className="w-6 h-6 mb-2 text-gray-500"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                          />
+                        </svg>
+                        <p className="text-sm text-gray-500">
+                          <span className="font-semibold">Click to upload</span>{" "}
+                          or drag & drop
+                        </p>
+                        <p className="text-xs text-gray-500">JPG, PNG, PDF</p>
+                      </label>
+                    </div>
+                    {upload && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        File: {upload.name}
+                      </p>
+                    )}
+                  </div>
 
-                <div className="mb-4">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">
-                    Till Date
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={tillDate}
-                    onChange={(e) => setTillDate(e.target.value)}
-                    required
-                  />
-                </div>
+                  <div className="w-2/3">
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        FMSCI License Number
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                        value={fmsciLicNumber}
+                        onChange={(e) => setFmsciLicNumber(e.target.value)}
+                        placeholder="Enter your license number"
+                        required
+                      />
+                    </div>
 
-                <div className="mt-4">
-                  <input
-                    type="file"
-                    accept="image/*,application/pdf"
-                    className="hidden"
-                    id="license-file-upload"
-                    onChange={(e) => setUpload(e.target.files[0])}
-                  />
-                  <label
-                    htmlFor="license-file-upload"
-                    className="w-full p-3 bg-cyan-600 text-white text-center rounded cursor-pointer hover:bg-cyan-700 transition"
-                  >
-                    Browse File
-                  </label>
-                  {upload && (
-                    <p className="text-sm text-gray-600 mt-2">
-                      File: {upload.name}
-                    </p>
-                  )}
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Till Date
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                        value={tillDate}
+                        onChange={(e) => setTillDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

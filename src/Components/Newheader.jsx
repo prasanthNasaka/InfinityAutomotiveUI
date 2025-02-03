@@ -7,7 +7,6 @@ import { AiOutlineClose } from "react-icons/ai";
 
 const Header = () => {
   const navigate = useNavigate();
-  
   // eslint-disable-next-line no-unused-vars
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
