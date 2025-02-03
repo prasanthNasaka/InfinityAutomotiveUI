@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import videoBg from "../assets/videoBg.mp4";
 import Footer from "../Components/Footer";
+import {  BASE_URL } from "../constants/global-const";
 
 // eslint-disable-next-line react/prop-types
 const Login = () => {
@@ -29,10 +30,10 @@ const Login = () => {
     setError(null);
     setMessage("");
     try {
-      const response = await axios.post(
-        "https://localhost:7206/api/Auth/login",
-        { username: email, password }
-      );
+      const response = await axios.post(`${BASE_URL}/api/Auth/login`, {
+        username: email,
+        password,
+      });
 
       if (response.status === 200) {
         setMessage("Login successful! Redirecting...");
