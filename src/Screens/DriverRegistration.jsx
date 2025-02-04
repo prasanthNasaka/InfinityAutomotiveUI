@@ -62,8 +62,9 @@ const DriverRegistration = () => {
 
     if (file) formData.append("driverPhoto", file);
     if (upload) formData.append("dlPhoto", upload);
-
-    try {
+ console.log("Data ", formData)
+    try
+     {
       const response = await axios.post(`${BASE_URL}/Drivers`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",

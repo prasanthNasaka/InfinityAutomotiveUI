@@ -1,32 +1,33 @@
 import { useState } from "react";
 import MainSideBar from "../Components/MainSideBar";
 import Newheader from "../Components/Newheader";
+import axios from "axios";
+import { BASE_URL } from "../constants/global-const";
 
 const Registration = () => {
-  const [name, setName] = useState("");
-  const [dob, setDob] = useState("");
-  const [bloodGroup, setBloodGroup] = useState("");
-  const [drivingLicStart, setDrivingLicStart] = useState("");
-  const [drivingLicEnd, setDrivingLicEnd] = useState("");
-  const [fmsciLicStart, setFmsciLicStart] = useState("");
-  const [fmsciLicEnd, setFmsciLicEnd] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("shafi");
+  const [dob, setDob] = useState("2025-02-03");
+  const [bloodGroup, setBloodGroup] = useState("O-");
+  const [drivingLicEnd, setDrivingLicEnd] = useState("2025-02-03");
+  const [fmsciLicEnd, setFmsciLicEnd] = useState("2025-02-03");
+  const [phone, setPhone] = useState("0123456789");
+  const [email, setEmail] = useState("shafi@gmail.com");
   const [file, setFile] = useState(null);
   const [upload, setUpload] = useState(null);
+  const [image, setImage] = useState(null);
   const [error, setError] = useState("");
-  const [drivingLicNumber, setDrivingLicNumber] = useState("");
-  const [tillDate, setTillDate] = useState("");
-  const [fmsciLicNumber, setFmsciLicNumber] = useState("");
+  const [drivingLicNumber, setDrivingLicNumber] = useState("DL123456");
+  const [fmsciLicNumber, setFmsciLicNumber] = useState("FMSCI123");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (
       !name ||
       !dob ||
       !bloodGroup ||
-      !drivingLicStart ||
+      !drivingLicNumber ||
       !drivingLicEnd ||
-      !fmsciLicStart ||
+      !fmsciLicNumber ||
       !fmsciLicEnd ||
       !phone ||
       !email
@@ -46,57 +47,77 @@ const Registration = () => {
     }
 
     setError("");
-    console.log("Saved successfully", {
-      name,
-      dob,
-      bloodGroup,
-      drivingLicStart,
-      drivingLicEnd,
-      fmsciLicStart,
-      fmsciLicEnd,
-      phone,
-      email,
-      file: file ? URL.createObjectURL(file) : null,
-      upload: upload ? URL.createObjectURL(upload) : null,
-    });
-    handleCancel();
+
+    const formData = new FormData();
+    formData.append("drivername", name);
+    formData.append("phone", phone);
+    formData.append("email", email);
+    formData.append("fmsciNumb", fmsciLicNumber);
+    formData.append("fmsciValidTill", fmsciLicEnd);
+    formData.append("dlNumb", drivingLicNumber);
+    formData.append("dlValidTill", drivingLicEnd);
+    formData.append("dob", dob);
+    formData.append("bloodgroup", bloodGroup);
+    formData.append("status", true);
+    formData.append("vehicles", []);
+
+    if (file) formData.append("driverPhoto", file);
+    if (upload) formData.append("dlPhoto", upload);
+
+    try {
+      const response = await axios.post(`${BASE_URL}/Drivers`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Driver registered successfully:", response.data);
+      handleCancel();
+    } catch (error) {
+      console.error("Error registering driver:", error);
+      setError(
+        "An error occurred while registering the driver. Please try again."
+      );
+    }
   };
 
   const handleCancel = () => {
-    setName("");
-    setDob("");
-    setBloodGroup("");
-    setDrivingLicStart("");
-    setDrivingLicEnd("");
-    setFmsciLicStart("");
-    setFmsciLicEnd("");
-    setPhone("");
-    setEmail("");
+    setName("shafi");
+    setDob("2025-02-03");
+    setBloodGroup("O-");
+    setDrivingLicEnd("2025-02-03");
+    setFmsciLicEnd("2025-02-03");
+    setPhone("0123456789");
+    setEmail("shafi@gmail.com");
     setFile(null);
     setUpload(null);
+    setImage(null);
     setError("");
+    setDrivingLicNumber("DL123456");
+    setFmsciLicNumber("FMSCI123");
   };
 
   return (
     <>
-      <div className="h-24 w-full shadow-md p-1 ">
+      <div className="h-24 w-full shadow-md p-1">
         <Newheader />
       </div>
       <div className="flex h-[calc(100vh-6rem)]">
         <div className="bg-gray-100">
           <MainSideBar />
         </div>
-        <div className="flex-1 p-8 bg-white justify-end">
-          <form className="flex items-center w-1/2 mx-auto mb-6 p-2  ">
+        <div className="flex-1 p-8 bg-white ">
+          <form className="flex items-center mb-6  justify-center">
             <label htmlFor="simple-search" className="sr-only">
               Search
             </label>
-            <div className="relative w-full">
+            <div className="relative w-1/2 ">
               <input
                 type="text"
                 id="simple-search"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm  w-full pl-5 p-2.5"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md w-full pl-6 p-3"
                 placeholder="Search Your Details.."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 required
               />
             </div>
@@ -105,7 +126,7 @@ const Registration = () => {
               className="p-2.5 ms-2 text-sm font-medium text-white bg-cyan-600 rounded-lg"
             >
               <svg
-                className="w-4 h-4"
+                className="w-6 h-6"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -122,8 +143,7 @@ const Registration = () => {
               <span className="sr-only">Search</span>
             </button>
           </form>
-
-          <div className="w-3/4 mx-auto p-3 rounded-sm shadow-lg">
+          <div className="w-full mx-auto p-3 rounded-md shadow-lg">
             <h2 className="text-3xl font-bold mb-6 text-center">
               Racer Details
             </h2>
@@ -137,14 +157,16 @@ const Registration = () => {
             <div className="flex gap-8">
               <div className="w-1/3">
                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Upload File
+                  Upload Photo
                 </label>
                 <div className="flex items-center justify-center w-full h-56 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                   <input
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={(e) => {
+                      setFile(e.target.files[0]);
+                    }}
                     id="file-upload"
                   />
                   <label
@@ -152,7 +174,7 @@ const Registration = () => {
                     className="flex flex-col items-center justify-center w-full h-full"
                   >
                     <svg
-                      className="w-6 h-6 mb-2 text-gray-500"
+                      className="w-6 h-6 text-gray-500"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -166,15 +188,21 @@ const Registration = () => {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-1 text-sm text-gray-500">
-                      <span className="font-semibold">Click to upload</span> or
-                      drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      SVG, PNG, JPG or GIF
-                    </p>
+
+                    {file && (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </label>
                 </div>
+                {file && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    File: {file.name}
+                  </p>
+                )}
               </div>
 
               <div className="w-2/3">
@@ -184,7 +212,7 @@ const Registration = () => {
                   </label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded "
+                    className="w-full p-3 border border-gray-300 rounded"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your name"
@@ -192,14 +220,14 @@ const Registration = () => {
                   />
                 </div>
 
-                <div className="flex w-full  gap-2">
-                  <div className="mb-4 w-1/2 ">
+                <div className="flex w-full gap-2">
+                  <div className="mb-4 w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       DOB
                     </label>
                     <input
                       type="date"
-                      className="w-full p-3 border border-gray-300 rounded "
+                      className="w-full p-3 border border-gray-300 rounded"
                       value={dob}
                       onChange={(e) => setDob(e.target.value)}
                       required
@@ -210,7 +238,7 @@ const Registration = () => {
                       Blood Group
                     </label>
                     <select
-                      className="w-full p-3.5 border border-gray-300 rounded  "
+                      className="w-full p-3.5 border border-gray-300 rounded"
                       value={bloodGroup}
                       onChange={(e) => setBloodGroup(e.target.value)}
                       required
@@ -227,39 +255,40 @@ const Registration = () => {
                     </select>
                   </div>
                 </div>
-                <div className="flex w-full  gap-2">
+                <div className="flex w-full gap-2">
                   <div className="mb-4 w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
-                      phone Number
+                      Phone Number
                     </label>
                     <input
                       type="tel"
-                      className="w-full p-3 border border-gray-300 rounded "
-                      value={name}
+                      className="w-full p-3 border border-gray-300 rounded"
+                      value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="Enter your phone Number"
+                      placeholder="Enter your phone number"
                       required
                       maxLength={10}
                     />
                   </div>
                   <div className="mb-4 w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
-                      Email Address{" "}
+                      Email Address
                     </label>
                     <input
                       type="email"
-                      className="w-full p-3 border border-gray-300 rounded "
-                      value={name}
+                      className="w-full p-3 border border-gray-300 rounded"
+                      value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your Email Address"
+                      placeholder="Enter your email address"
                       required
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex w-full gap-2">
-              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-1/2">
+
+            <div className="flex flex-col lg:flex-row gap-2">
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
                 <div className="flex gap-6 items-center">
                   <div className="w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -271,14 +300,16 @@ const Registration = () => {
                         accept="image/*,application/pdf"
                         className="hidden"
                         id="license-file-upload"
-                        onChange={(e) => setFile(e.target.files[0])}
+                        onChange={(e) => {
+                          setImage(e.target.files[0]);
+                        }}
                       />
                       <label
                         htmlFor="license-file-upload"
                         className="flex flex-col items-center justify-center w-full h-full"
                       >
                         <svg
-                          className="w-6 h-6 mb-2 text-gray-500"
+                          className="w-6 h-6 text-gray-500"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -292,28 +323,30 @@ const Registration = () => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        <p className="text-sm text-gray-500">
-                          <span className="font-semibold">Click to upload</span>
-                          or drag & drop
-                        </p>
-                        <p className="text-xs text-gray-500">JPG, PNG, PDF</p>
+                        {image && (
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt="FMSCI License Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        )}
                       </label>
                     </div>
-                    {file && (
+                    {image && (
                       <p className="text-sm text-gray-600 mt-2">
-                        File: {file.name}
+                        File: {image.name}
                       </p>
                     )}
                   </div>
 
-                  <div className="w-2/3">
+                  <div className="w-1/2">
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         Driving License Number
                       </label>
                       <input
                         type="text"
-                        className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                         value={drivingLicNumber}
                         onChange={(e) => setDrivingLicNumber(e.target.value)}
                         placeholder="Enter your license number"
@@ -327,16 +360,17 @@ const Registration = () => {
                       </label>
                       <input
                         type="date"
-                        className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={tillDate}
-                        onChange={(e) => setTillDate(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                        value={drivingLicEnd}
+                        onChange={(e) => setDrivingLicEnd(e.target.value)}
                         required
                       />
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-1/2">
+
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
                 <div className="flex gap-6 items-center">
                   <div className="w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -347,15 +381,17 @@ const Registration = () => {
                         type="file"
                         accept="image/*,application/pdf"
                         className="hidden"
-                        id="license-file-upload"
-                        onChange={(e) => setUpload(e.target.files[0])}
+                        id="fmsci-file-upload"
+                        onChange={(e) => {
+                          setUpload(e.target.files[0]);
+                        }}
                       />
                       <label
-                        htmlFor="license-file-upload"
+                        htmlFor="fmsci-file-upload"
                         className="flex flex-col items-center justify-center w-full h-full"
                       >
                         <svg
-                          className="w-6 h-6 mb-2 text-gray-500"
+                          className="w-6 h-6 text-gray-500"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -369,11 +405,13 @@ const Registration = () => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        <p className="text-sm text-gray-500">
-                          <span className="font-semibold">Click to upload</span>{" "}
-                          or drag & drop
-                        </p>
-                        <p className="text-xs text-gray-500">JPG, PNG, PDF</p>
+                        {upload && (
+                          <img
+                            src={URL.createObjectURL(upload)}
+                            alt="FMSCI License Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        )}
                       </label>
                     </div>
                     {upload && (
@@ -383,7 +421,7 @@ const Registration = () => {
                     )}
                   </div>
 
-                  <div className="w-2/3">
+                  <div className="w-1/2">
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         FMSCI License Number
@@ -405,8 +443,8 @@ const Registration = () => {
                       <input
                         type="date"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={tillDate}
-                        onChange={(e) => setTillDate(e.target.value)}
+                        value={fmsciLicEnd}
+                        onChange={(e) => setFmsciLicEnd(e.target.value)}
                         required
                       />
                     </div>
@@ -418,13 +456,13 @@ const Registration = () => {
             <div className="flex justify-end mt-6 gap-5">
               <button
                 onClick={handleCancel}
-                className="px-6 py-3 bg-gray-300 text-black rounded "
+                className="px-6 py-3 bg-gray-300 text-black rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-3 bg-cyan-600 text-white rounded "
+                className="px-6 py-3 bg-cyan-600 text-white rounded"
               >
                 Save
               </button>

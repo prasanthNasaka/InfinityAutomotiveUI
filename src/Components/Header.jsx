@@ -44,16 +44,7 @@ const Header = () => {
                 </Link>
               </button>
             </div>
-            <button>
-                <Link className="text-black" to={"/register"}>
-                  <button
-                    type="button"
-                    className="focus:outline-none text-white bg-cyan-600 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2  phone:justify-end iphone:justify-end lappy:justify-end  tab:justify-end  desk:justify-end"
-                  >
-                    Register
-                  </button>
-                </Link>
-              </button>
+          
           </div>
         </div>
       </div>

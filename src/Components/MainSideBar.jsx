@@ -14,7 +14,7 @@ const MainSideBar = () => {
               isActive("/registration") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
-            Registration
+            Racer details{" "}
           </Link>
           <Link
             to="/vehicle_registration"
