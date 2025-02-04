@@ -33,6 +33,9 @@ export default {
         lappy: { max: "1023px" },
         // => @media (max-width: 1023px) { ... }
 
+        lappydesk: {max: "980px"},
+        // =>@media (max-width: 980px) { ... }
+
         tab: { max: "767px" },
         // => @media (max-width: 767px) { ... }
 

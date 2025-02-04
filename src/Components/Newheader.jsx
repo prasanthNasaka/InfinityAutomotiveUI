@@ -54,13 +54,13 @@ const Header = () => {
       </div>
 
       <div className="h-full w-1/5 flex justify-center items-center">
-        <div className="w-full h-full flex justify-around items-center  p-2 ">
-          <div className="flex items-center  2xl:block tab:hidden  w-1/2">
+        <div className="w-full h-full flex justify-around items-center  p-1 ">
+          <div className="flex items-center  2xl:block tab:hidden   w-1/2">
             <form className="relative w-full">
               <label className="sr-only" htmlFor="underline_select">
                 Underline select
               </label>
-              <div className="relative group flex justify-center items-center  w-24">
+              <div className="relative group flex justify-center items-center lappydesk:w-32  w-36">
                 <select
                   id="underline_select"
                   className="font-serif tab:block lappy:block py-2.5 px-4 w-full text-black bg-transparent appearance-none focus:outline-none focus:ring-0 text-xl cursor-pointer"
@@ -77,6 +77,7 @@ const Header = () => {
             </form>
           </div>
 
+<<<<<<< Updated upstream
           <div className="2xl:w-1/2  tab:hidden h-full flex 2xl:justify-end 2xl:items-center">
             <button
               onClick={logOutHandler}
@@ -84,12 +85,21 @@ const Header = () => {
               className=" text-white font-bold bg-red-700 hover:bg-red-800 border rounded-md text-sm p-2 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 "
             >
               {/* <svg
+=======
+          <div className="2xl:w-1/2 lappydesk: tab:hidden h-full flex 2xl:justify-end 2xl:items-center ">
+          <button
+            onClick={logOutHandler}
+            type="button"
+            className=" text-white bg-red-700 hover:bg-red-800   rounded-md text-sm px-1 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 "
+          >
+            <svg
+>>>>>>> Stashed changes
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="2"
               stroke="currentColor"
-              className="size-6 "
+              className="size-6 lappydesk:size-4"
             >
               <path
                 strokeLinecap="round"
