@@ -32,7 +32,7 @@ const Header = () => {
 
   return (
     <section className="w-full h-full flex justify-between items-center shadow-md text-center font-thin bg-white">
-      <div className="h-full w-1/5 flex items-center phone:w-full iphone:w-full">
+      <div className="h-full w-1/5 flex items-center phone:w-full iphone:w-full ">
         <div className="w-full h-full flex items-center phone:justify-between iphone:justify-between lappy:justify-start tab:justify-start desk:justify-start">
           <img
             className="h-16 w-60 iphone:w-28 object-fit phone:w-36"
