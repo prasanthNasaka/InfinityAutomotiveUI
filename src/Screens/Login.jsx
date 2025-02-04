@@ -7,7 +7,8 @@ import { BASE_URL } from "../constants/global-const";
 
 const Login = () => {
   const [message, setMessage] = useState("");
-  const [isVisible, setIsVisible] = useState(true);
+  const [toastType, setToastType] = useState("success"); // success, error, warning
+  const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState("admin");
   const [password, setPassword] = useState("moto@123");
   const [error, setError] = useState(null);
@@ -16,6 +17,7 @@ const Login = () => {
 
   useEffect(() => {
     if (message) {
+      setIsVisible(true);
       const timer = setTimeout(() => {
         setIsVisible(false);
       }, 3000);
@@ -36,12 +38,14 @@ const Login = () => {
 
       if (response.status === 200) {
         setMessage("Login successful! Redirecting...");
+        setToastType("success");
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
         localStorage.setItem("authToken", response.data.token);
       } else {
         setMessage(response.data || "Something went wrong");
+        setToastType("warning");
       }
     } catch (error) {
       if (error.response) {
@@ -49,14 +53,15 @@ const Login = () => {
           error.response.status === 400
             ? "Invalid credentials. Please try again."
             : error.response.data.message ||
-              "An error occurred. Please try again.";
+              "Please enter a valid email or password";
         setMessage(errorMsg);
+        setToastType("error");
       } else if (error.request) {
-        setMessage(
-          "Network error. Please check your connection and try again."
-        );
+        setMessage("Network error. Please check your connection.");
+        setToastType("error");
       } else {
-        setMessage("An unexpected error occurred. Please try again later.");
+        setMessage("Unexpected error. Please try again later.");
+        setToastType("error");
       }
       setError("Please enter a valid email or password");
     }
@@ -64,6 +69,53 @@ const Login = () => {
 
   return (
     <section className="w-full h-screen lappy:h-auto relative">
+      {isVisible && (
+        <div
+          className={`absolute bottom-5 z-50 left-1/2 -translate-x-1/2 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-sm ${
+            toastType === "success"
+              ? "text-green-500 bg-green-100 dark:bg-green-800"
+              : toastType === "error"
+              ? "text-red-500 bg-red-100 dark:bg-red-800"
+              : "text-orange-500 bg-orange-100 dark:bg-orange-700"
+          }`}
+          role="alert"
+        >
+          <div className="inline-flex items-center justify-center shrink-0 w-8 h-8 rounded-lg">
+            {toastType === "success" && (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+              </svg>
+            )}
+            {toastType === "error" && (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
+              </svg>
+            )}
+            {toastType === "warning" && (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z" />
+              </svg>
+            )}
+          </div>
+          <div className="ms-3 text-sm font-normal">{message}</div>
+          <button
+            type="button"
+            className="ms-auto bg-transparent text-gray-500 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center"
+            onClick={() => setIsVisible(false)}
+          >
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 14 14">
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
+
       <div className="h-full flex flex-col lg:flex-row w-full">
         <div className="relative h-1/2 lg:h-full w-full lg:w-1/2">
           <video
@@ -217,13 +269,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-      {message && isVisible && (
-        <div className="mt-4 text-center text-sm font-bold h-60 w-full text-gray-300 animate-pulse absolute bottom-0 flex justify-center items-center">
-          <div className="w-fit py-3 px-12 bg-gray-800 rounded-lg">
-            <span className="text-2xl">{message}</span>
-          </div>
-        </div>
-      )}
       <div className="w-full h-fit bg-cyan-700/60">
         <Footer />
       </div>
