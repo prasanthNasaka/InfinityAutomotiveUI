@@ -79,7 +79,7 @@ const Registration = () => {
 
   return (
     <>
-      <div className="h-24 w-full">
+      <div className="h-24 w-full shadow-md p-1 ">
         <Newheader />
       </div>
       <div className="flex h-[calc(100vh-6rem)]">
@@ -87,7 +87,7 @@ const Registration = () => {
           <MainSideBar />
         </div>
         <div className="flex-1 p-8 bg-white justify-end">
-          <form className="flex items-center w-1/2 mx-auto mb-6   ">
+          <form className="flex items-center w-1/2 mx-auto mb-6 p-2  ">
             <label htmlFor="simple-search" className="sr-only">
               Search
             </label>

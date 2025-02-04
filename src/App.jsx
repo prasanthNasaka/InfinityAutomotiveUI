@@ -15,6 +15,7 @@ import Main_DriverRaceLink from "./Screens/Main_DriverRaceLink";
 import DriverRegistration from "./Screens/DriverRegistration";
 import Events from "./Components/Events";
 import Scrutinys from "./Screens/Scrutinys";
+import Vehicledetails from "./Screens/Vehicledetails";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="/registration" element={<Registration />} />
           <Route path="/driverracelink" element={<Main_DriverRaceLink />} />
           <Route path="/scrutiny" element={<Scrutinys />} />
+          <Route path="/vehicle_registration" element={<Vehicledetails />} />
 
           <Route
             path="/driverracelink"

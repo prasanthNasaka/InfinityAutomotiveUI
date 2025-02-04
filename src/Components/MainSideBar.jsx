@@ -17,6 +17,15 @@ const MainSideBar = () => {
             Registration
           </Link>
           <Link
+            to="/vehicle_registration"
+            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
+              isActive("/vehicle_registration") ? "bg-cyan-600 rounded-lg" : ""
+            }`}
+          >
+            Vehicle Registration{" "}
+          </Link>
+
+          <Link
             to="/events"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 hover:rounded-lg ${
               isActive("/events") ? "bg-cyan-600 rounded-lg" : ""

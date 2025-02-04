@@ -1,34 +1,31 @@
 import { useState } from "react";
 import Head from "../Screens/Head";
-import Vehicledetails from "./Vehicledetails";
+import { BASE_URL } from "../constants/global-const";
+import axios from "axios";
 
 const DriverRegistration = () => {
-  const [name, setName] = useState("");
-  const [dob, setDob] = useState("");
-  const [bloodGroup, setBloodGroup] = useState("");
-  const [drivingLicStart, setDrivingLicStart] = useState("");
-  const [drivingLicEnd, setDrivingLicEnd] = useState("");
-  const [fmsciLicStart, setFmsciLicStart] = useState("");
-  const [fmsciLicEnd, setFmsciLicEnd] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("shafi");
+  const [dob, setDob] = useState("2025-02-03");
+  const [bloodGroup, setBloodGroup] = useState("O-");
+  const [drivingLicEnd, setDrivingLicEnd] = useState("2025-02-03");
+  const [fmsciLicEnd, setFmsciLicEnd] = useState("2025-02-03");
+  const [phone, setPhone] = useState("0123456789");
+  const [email, setEmail] = useState("shafi@gmail.com");
   const [file, setFile] = useState(null);
   const [upload, setUpload] = useState(null);
+  const [image, setImage] = useState(null);
   const [error, setError] = useState("");
-  const [drivingLicNumber, setDrivingLicNumber] = useState("");
-  const [tillDate, setTillDate] = useState("");
-  const [fmsciLicNumber, setFmsciLicNumber] = useState("");
+  const [drivingLicNumber, setDrivingLicNumber] = useState("DL123456");
+  const [fmsciLicNumber, setFmsciLicNumber] = useState("FMSCI123");
 
-  const [showVehicleDetails, setShowVehicleDetails] = useState(false);
-
-  const handleSave = () => {
+  const handleSave = async () => {
     if (
       !name ||
       !dob ||
       !bloodGroup ||
-      !drivingLicStart ||
+      !drivingLicNumber ||
       !drivingLicEnd ||
-      !fmsciLicStart ||
+      !fmsciLicNumber ||
       !fmsciLicEnd ||
       !phone ||
       !email
@@ -48,37 +45,53 @@ const DriverRegistration = () => {
     }
 
     setError("");
-    console.log("Saved successfully", {
-      name,
-      dob,
-      bloodGroup,
-      drivingLicStart,
-      drivingLicEnd,
-      fmsciLicStart,
-      fmsciLicEnd,
-      phone,
-      email,
-      file: file ? URL.createObjectURL(file) : null,
-      upload: upload ? URL.createObjectURL(upload) : null,
-    });
 
-    setShowVehicleDetails(true);
+    // Prepare FormData to send to the API
+    const formData = new FormData();
+    formData.append("drivername", name);
+    formData.append("phone", phone);
+    formData.append("email", email);
+    formData.append("fmsciNumb", fmsciLicNumber);
+    formData.append("fmsciValidTill", fmsciLicEnd);
+    formData.append("dlNumb", drivingLicNumber);
+    formData.append("dlValidTill", drivingLicEnd);
+    formData.append("dob", dob);
+    formData.append("bloodgroup", bloodGroup);
+    formData.append("status", true);
+    formData.append("vehicles", []);
+
+    if (file) formData.append("driverPhoto", file);
+    if (upload) formData.append("dlPhoto", upload);
+
+    try {
+      const response = await axios.post(`${BASE_URL}/Drivers`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Driver registered successfully:", response.data);
+    } catch (error) {
+      console.error("Error registering driver:", error);
+      setError(
+        "An error occurred while registering the driver. Please try again."
+      );
+    }
+    console.log("Form Data:", formData);
   };
 
   const handleCancel = () => {
-    setName("");
-    setDob("");
-    setBloodGroup("");
-    setDrivingLicStart("");
-    setDrivingLicEnd("");
-    setFmsciLicStart("");
-    setFmsciLicEnd("");
-    setPhone("");
-    setEmail("");
+    setName("shafi");
+    setDob("2025-02-03");
+    setBloodGroup("O-");
+    setDrivingLicEnd("2025-02-03");
+    setFmsciLicEnd("2025-02-03");
+    setPhone("0123456789");
+    setEmail("shafi@gmail.com");
     setFile(null);
     setUpload(null);
     setError("");
-    setShowVehicleDetails(false);
+    setDrivingLicNumber("DL123456");
+    setFmsciLicNumber("FMSCI123");
   };
 
   return (
@@ -86,9 +99,9 @@ const DriverRegistration = () => {
       <div className="h-24 w-full">
         <Head />
       </div>
-      <div className="flex h-auto">
-        <div className="flex-1 p-8 bg-white justify-end">
-          <div className="w-3/4 mx-auto p-3 rounded-sm shadow-lg">
+      <div className="flex h-auto  ">
+        <div className="flex-1 p-8 bg-white ">
+          <div className="w-3/4  mx-auto p-3 rounded-sm shadow-lg ">
             <h2 className="text-3xl font-bold mb-6 text-center">
               Racer Details
             </h2>
@@ -99,8 +112,8 @@ const DriverRegistration = () => {
               </div>
             )}
 
-            <div className="flex gap-8">
-              <div className="w-1/3">
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="w-full lg:w-1/3">
                 <label className="block text-sm font-bold text-gray-700 mb-2">
                   Upload Photo
                 </label>
@@ -109,7 +122,10 @@ const DriverRegistration = () => {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={(e) => {
+                      setImage(URL.createObjectURL(e.target.files[0]));
+                      setFile(e.target.files[0]);
+                    }}
                     id="file-upload"
                   />
                   <label
@@ -117,7 +133,7 @@ const DriverRegistration = () => {
                     className="flex flex-col items-center justify-center w-full h-full"
                   >
                     <svg
-                      className="w-6 h-6 mb-2 text-gray-500"
+                      className="w-6 h-6 text-gray-500"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -131,25 +147,26 @@ const DriverRegistration = () => {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-1 text-sm text-gray-500">
-                      <span className="font-semibold">Click to upload</span> or
-                      drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      SVG, PNG, JPG or GIF
-                    </p>
+
+                    {image && (
+                      <img
+                        src={image}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </label>
                 </div>
               </div>
 
-              <div className="w-2/3">
+              <div className="w-full lg:w-2/3">
                 <div className="mb-4">
                   <label className="block text-sm font-bold text-gray-700 mb-1">
                     Name
                   </label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded "
+                    className="w-full p-3 border border-gray-300 rounded"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your name"
@@ -158,13 +175,13 @@ const DriverRegistration = () => {
                 </div>
 
                 <div className="flex w-full gap-2">
-                  <div className="mb-4 w-1/2 ">
+                  <div className="mb-4 w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       DOB
                     </label>
                     <input
                       type="date"
-                      className="w-full p-3 border border-gray-300 rounded "
+                      className="w-full p-3 border border-gray-300 rounded"
                       value={dob}
                       onChange={(e) => setDob(e.target.value)}
                       required
@@ -175,7 +192,7 @@ const DriverRegistration = () => {
                       Blood Group
                     </label>
                     <select
-                      className="w-full p-3.5 border border-gray-300 rounded  "
+                      className="w-full p-3.5 border border-gray-300 rounded"
                       value={bloodGroup}
                       onChange={(e) => setBloodGroup(e.target.value)}
                       required
@@ -199,7 +216,7 @@ const DriverRegistration = () => {
                     </label>
                     <input
                       type="tel"
-                      className="w-full p-3 border border-gray-300 rounded "
+                      className="w-full p-3 border border-gray-300 rounded"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Enter your phone number"
@@ -213,7 +230,7 @@ const DriverRegistration = () => {
                     </label>
                     <input
                       type="email"
-                      className="w-full p-3 border border-gray-300 rounded "
+                      className="w-full p-3 border border-gray-300 rounded"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email address"
@@ -224,10 +241,10 @@ const DriverRegistration = () => {
               </div>
             </div>
 
-            <div className="flex w-full gap-2">
-              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-1/2">
+            <div className="flex flex-col lg:flex-row gap-2">
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
                 <div className="flex gap-6 items-center">
-                  <div className="w-1/2">
+                  <div className="w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload License
                     </label>
@@ -237,14 +254,16 @@ const DriverRegistration = () => {
                         accept="image/*,application/pdf"
                         className="hidden"
                         id="license-file-upload"
-                        onChange={(e) => setFile(e.target.files[0])}
+                        onChange={(e) => {
+                          setFile(URL.createObjectURL(e.target.files[0]));
+                        }}
                       />
                       <label
                         htmlFor="license-file-upload"
                         className="flex flex-col items-center justify-center w-full h-full"
                       >
                         <svg
-                          className="w-6 h-6 mb-2 text-gray-500"
+                          className="w-6 h-6 text-gray-500"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -258,20 +277,16 @@ const DriverRegistration = () => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        <p className="text-sm text-gray-500">
-                          <span className="font-semibold">Click to upload</span>{" "}
-                          or drag & drop
-                        </p>
-                        <p className="text-xs text-gray-500">JPG, PNG, PDF</p>
+                        {file && (
+                          <img
+                            src={file}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        )}
                       </label>
                     </div>
-                    {file && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        File: {file.name}
-                      </p>
-                    )}
                   </div>
-
                   <div className="w-2/3">
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
@@ -286,7 +301,6 @@ const DriverRegistration = () => {
                         required
                       />
                     </div>
-
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         Till Date
@@ -294,17 +308,18 @@ const DriverRegistration = () => {
                       <input
                         type="date"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={tillDate}
-                        onChange={(e) => setTillDate(e.target.value)}
+                        value={drivingLicEnd}
+                        onChange={(e) => setDrivingLicEnd(e.target.value)}
                         required
                       />
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-1/2">
+
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
                 <div className="flex gap-6 items-center">
-                  <div className="w-1/2">
+                  <div className="w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload FMSCI License
                     </label>
@@ -314,14 +329,16 @@ const DriverRegistration = () => {
                         accept="image/*,application/pdf"
                         className="hidden"
                         id="fmsci-file-upload"
-                        onChange={(e) => setUpload(e.target.files[0])}
+                        onChange={(e) => {
+                          setUpload(URL.createObjectURL(e.target.files[0]));
+                        }}
                       />
                       <label
                         htmlFor="fmsci-file-upload"
                         className="flex flex-col items-center justify-center w-full h-full"
                       >
                         <svg
-                          className="w-6 h-6 mb-2 text-gray-500"
+                          className="w-6 h-6 text-gray-500"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -335,20 +352,16 @@ const DriverRegistration = () => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        <p className="text-sm text-gray-500">
-                          <span className="font-semibold">Click to upload</span>{" "}
-                          or drag & drop
-                        </p>
-                        <p className="text-xs text-gray-500">JPG, PNG, PDF</p>
+                        {upload && (
+                          <img
+                            src={upload}
+                            alt="FMSCI License Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        )}
                       </label>
                     </div>
-                    {upload && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        File: {upload.name}
-                      </p>
-                    )}
                   </div>
-
                   <div className="w-2/3">
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
@@ -363,7 +376,6 @@ const DriverRegistration = () => {
                         required
                       />
                     </div>
-
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         Till Date
@@ -371,8 +383,8 @@ const DriverRegistration = () => {
                       <input
                         type="date"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={tillDate}
-                        onChange={(e) => setTillDate(e.target.value)}
+                        value={fmsciLicEnd}
+                        onChange={(e) => setFmsciLicEnd(e.target.value)}
                         required
                       />
                     </div>
@@ -384,35 +396,20 @@ const DriverRegistration = () => {
             <div className="flex justify-end mt-6 gap-5">
               <button
                 onClick={handleCancel}
-                className="px-6 py-3 bg-gray-300 text-black rounded "
+                className="px-6 py-3 bg-gray-300 text-black rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-3 bg-cyan-600 text-white rounded "
+                className="px-6 py-3 bg-cyan-600 text-white rounded"
               >
                 Save
-              </button>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowVehicleDetails(true)}
-                className="px-6 py-3 bg-cyan-600 text-white rounded mt-5"
-              >
-                Add Vehicle Details
               </button>
             </div>
           </div>
         </div>
       </div>
-
-      {showVehicleDetails && (
-        <div className="flex items-center justify-center">
-          <Vehicledetails />
-        </div>
-      )}
     </>
   );
 };
