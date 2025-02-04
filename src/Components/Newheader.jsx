@@ -10,14 +10,14 @@ const Header = () => {
   // eslint-disable-next-line no-unused-vars
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isMenuOpen, setIsMenuOpen] = useState(false); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, []);
 
   const logOutHandler = () => {
@@ -53,7 +53,6 @@ const Header = () => {
         </div>
       </div>
 
-  
       <div className="h-full w-1/5 flex justify-center items-center">
         <div className="w-full h-full flex justify-around items-center  p-2 ">
           <div className="flex items-center  2xl:block tab:hidden  w-1/2">
@@ -79,12 +78,12 @@ const Header = () => {
           </div>
 
           <div className="2xl:w-1/2  tab:hidden h-full flex 2xl:justify-end 2xl:items-center">
-          <button
-            onClick={logOutHandler}
-            type="button"
-            className=" text-white bg-red-700 hover:bg-red-800 border  rounded-md text-sm px-1 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 "
-          >
-            <svg
+            <button
+              onClick={logOutHandler}
+              type="button"
+              className=" text-white font-bold bg-red-700 hover:bg-red-800 border rounded-md text-sm p-2 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 "
+            >
+              {/* <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -97,30 +96,29 @@ const Header = () => {
                 strokeLinejoin="round"
                 d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9"
               />
-            </svg>
-          </button>
+            </svg> */}
+              Logout
+            </button>
           </div>
-
- 
-          
-
 
           <div className="tab:w-full  tab:h-full flex tab:justify-end tab:items-center">
-          <IoIosMenu
-            className="size-8 cursor-pointer text-black hover:text-blue-500  2xl:hidden tab:block "
-            onClick={toggleMenu}
-          />
+            <IoIosMenu
+              className="size-8 cursor-pointer text-black hover:text-blue-500  2xl:hidden tab:block "
+              onClick={toggleMenu}
+            />
           </div>
-          
         </div>
       </div>
 
-
       {isMenuOpen && (
-        <div className={`absolute top-0 tab:block right-0 h-fit w-1/5 tab:right-0 tab:w-1/3 tab:rounded-xl bg-white shadow-lg flex-col items-center gap-6 p-3 
+        <div
+          className={`absolute top-0 tab:block right-0 h-fit w-1/5 tab:right-0 tab:w-1/3 tab:rounded-xl bg-white shadow-lg flex-col items-center gap-6 p-3 
           transition-all duration-1000 ease-in-out transform lappy:hidden ${
-            isMenuOpen ? "translate-x-0 opacity-100 flex" : "translate-x-full opacity-0 hidden"
-          }`}>
+            isMenuOpen
+              ? "translate-x-0 opacity-100 flex"
+              : "translate-x-full opacity-0 hidden"
+          }`}
+        >
           <div className="flex justify-end">
             <AiOutlineClose
               className="text-black cursor-pointer self-end"

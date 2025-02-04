@@ -3,9 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import videoBg from "../assets/videoBg.mp4";
 import Footer from "../Components/Footer";
-import {  BASE_URL } from "../constants/global-const";
+import { BASE_URL } from "../constants/global-const";
 
-// eslint-disable-next-line react/prop-types
 const Login = () => {
   const [message, setMessage] = useState("");
   const [isVisible, setIsVisible] = useState(true);
