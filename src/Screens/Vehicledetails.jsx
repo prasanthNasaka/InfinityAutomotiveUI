@@ -228,7 +228,173 @@ const Vehicledetails = () => {
                     </p>
                   )}
                 </div>
+              </div> 
+              <div className="flex flex-col lg:flex-row gap-2">
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
+                <div className="flex gap-6 items-center overflow-scroll">
+                  <div className="w-1/2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Upload RC Book
+                    </label>
+                    <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        id="license-file-upload"
+                        // onChange={(e) => {
+                        //   setImage(e.target.files[0]);
+                        // }}
+                      />
+                      <label
+                        htmlFor="license-file-upload"
+                        className="flex flex-col items-center justify-center w-full h-full"
+                      >
+                        <svg
+                          className="w-6 h-6 text-gray-500"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                          />
+                        </svg>
+                        {/* {image && (
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt="FMSCI License Preview"
+                            className="w-full h-full object-fill"
+                          />
+                        )} */}
+                      </label>
+                    </div>
+                    {/* {image && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        File: {image.name}
+                      </p>
+                    )} */}
+                  </div>
+
+                  <div className="w-1/2">
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        RC Number
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                        // value={dlNumb}
+                        // onChange={(e) => setDlNumb(e.target.value)}
+                        placeholder="Enter your license number"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Till Date
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                        // value={dlValidTill}
+                        // onChange={(e) => setDlValidTill(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
+                <div className="flex gap-6 items-center">
+                  <div className="w-1/2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Upload Insurance
+                    </label>
+                    <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        id="fmsci-file-upload"
+                        // onChange={(e) => {
+                        //   setUpload(e.target.files[0]);
+                        // }}
+                      />
+                      <label
+                        htmlFor="fmsci-file-upload"
+                        className="flex flex-col items-center justify-center w-full h-full"
+                      >
+                        <svg
+                          className="w-6 h-6 text-gray-500"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                          />
+                        </svg>
+                        {/* {upload && (
+                          <img
+                            src={URL.createObjectURL(upload)}
+                            alt="FMSCI License Preview"
+                            className="w-full h-full object-fill"
+                          />
+                        )} */}
+                      </label>
+                    </div>
+                    {/* {upload && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        File: {upload.name}
+                      </p>
+                    )} */}
+                  </div>
+
+                  <div className="w-1/2">
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Insurance Number
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                        // value={fmsciNumb}
+                        // onChange={(e) => setFmsciNumb(e.target.value)}
+                        placeholder="Enter your license number"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-bold text-gray-700 mb-1">
+                        Till Date
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                        // value={fmsciValidTill}
+                        // onChange={(e) => setFmsciValidTill(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
 
               <div className="flex justify-end mt-6 gap-5">
                 <button
