@@ -1,55 +1,58 @@
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import { useState } from "react";
+import { BASE_URL } from "../constants/global-const";
+import axios from "axios";
 
 const Vehicledetails = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
   const [vehicleMake, setVehicleMake] = useState("");
   const [model, setModel] = useState("");
   const [cc, setCc] = useState("");
   const [regNo, setRegNo] = useState("");
   const [engineNo, setEngineNo] = useState("");
   const [chasisNo, setChasisNo] = useState("");
-  const [tillDate, setTillDate] = useState("");
   const [file, setFile] = useState(null);
-  const [vehicles, setVehicles] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
 
-  const handleSave = () => {
-    if (
-      !vehicleMake ||
-      !model ||
-      !cc ||
-      !regNo ||
-      !engineNo ||
-      !chasisNo ||
-      !tillDate
-    ) {
-      alert("Please fill all fields.");
-      return;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const newVehicle = {
-      vehicleMake,
-      model,
-      cc,
-      regNo,
-      engineNo,
-      chasisNo,
-      tillDate,
-      file,
+    const formData = new FormData();
+    formData.append("vehicleMake", vehicleMake);
+    formData.append("model", model);
+    formData.append("cc", cc);
+    formData.append("regNo", regNo);
+    formData.append("engineNo", engineNo);
+    formData.append("chasisNo", chasisNo);
+    formData.append("vehiclePhoto", file);
+
+    const data = {
+      vehicleId: 0,
+      regNumb: regNo,
+      chasisNumb: chasisNo,
+      fcUpto: new Date().toISOString(),
+      engNumber: engineNo,
+      make: vehicleMake,
+      model: model,
+      cc: cc,
+      vehicleOf: 0,
+      vehiclePhoto: file ? URL.createObjectURL(file) : "",
+      status: true,
     };
 
-    if (editIndex !== null) {
-      const updatedVehicles = [...vehicles];
-      updatedVehicles[editIndex] = newVehicle;
-      setVehicles(updatedVehicles);
-      setEditIndex(null);
-    } else {
-      setVehicles([...vehicles, newVehicle]);
-    }
+    try {
+      const response = await axios.post(`${BASE_URL}/api/Vehicle`, data);
+      if (response.status === 201) {
+        handleCancel();
+      }
 
-    handleCancel();
+      console.log("response", response);
+
+      console.log("Vehicle added:", data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const handleCancel = () => {
@@ -59,15 +62,15 @@ const Vehicledetails = () => {
     setRegNo("");
     setEngineNo("");
     setChasisNo("");
-    setTillDate("");
+    // setTillDate("");
     setFile(null);
-    setEditIndex(null);
+    // setEditIndex(null);
   };
 
   return (
     <>
       <section className="w-full min-h-screen">
-        <div className="h-24 w-full shadow-md">
+        <div className="h-24 w-full shadow-md p-1">
           <Newheader />
         </div>
 
@@ -91,6 +94,7 @@ const Vehicledetails = () => {
                   required
                 />
               </div>
+
               <button
                 type="submit"
                 className="p-2.5 ms-2 text-sm font-medium text-white bg-cyan-600 rounded-lg"
@@ -218,8 +222,14 @@ const Vehicledetails = () => {
                       </p>
                     )}
                   </label>
+                  {file && (
+                    <p className="text-sm text-gray-600 mt-2">
+                      File: {file.name}
+                    </p>
+                  )}
                 </div>
               </div>
+
               <div className="flex justify-end mt-6 gap-5">
                 <button
                   onClick={handleCancel}
@@ -228,8 +238,8 @@ const Vehicledetails = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleSave}
                   className="px-6 py-3 bg-cyan-600 text-white rounded "
+                  onClick={handleSubmit}
                 >
                   Save
                 </button>

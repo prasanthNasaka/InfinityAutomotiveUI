@@ -77,7 +77,6 @@ const Header = () => {
             </form>
           </div>
 
-<<<<<<< Updated upstream
           <div className="2xl:w-1/2  tab:hidden h-full flex 2xl:justify-end 2xl:items-center">
             <button
               onClick={logOutHandler}
@@ -85,15 +84,6 @@ const Header = () => {
               className=" text-white font-bold bg-red-700 hover:bg-red-800 border rounded-md text-sm p-2 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 "
             >
               {/* <svg
-=======
-          <div className="2xl:w-1/2 lappydesk: tab:hidden h-full flex 2xl:justify-end 2xl:items-center ">
-          <button
-            onClick={logOutHandler}
-            type="button"
-            className=" text-white bg-red-700 hover:bg-red-800   rounded-md text-sm px-1 py-1 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 "
-          >
-            <svg
->>>>>>> Stashed changes
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
