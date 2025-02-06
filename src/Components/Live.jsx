@@ -9,11 +9,11 @@ const Live = () => {
   const swiperRef = useRef(null);
 
   return (
-    <section className="p-2 shadow-md rounded-lg h-fit">
-      <div className="w-full font-semibold text-3xl">
-        <span>Live Now</span>
+    <section className="p-3 shadow-md rounded-lg bg-black h-fit">
+      <div className="w-full text-white mb-2  font-semibold text-3xl">
+        <span>Live </span>
       </div>
-      <div className="container mx-auto relative ">
+      <div className="container mx-auto relative bg-black">
         <Swiper
           modules={[Navigation, Autoplay]}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
