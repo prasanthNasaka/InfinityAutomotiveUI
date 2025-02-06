@@ -1,17 +1,10 @@
-import Card from "./Card";
+
+import Live from "./Live";
 
 const Body = () => {
   return (
-    <div className="flex flex-wrap h-full w-full">
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      
+    <div className="flex h-screen w-full">
+      <Live />
     </div>
   );
 };
