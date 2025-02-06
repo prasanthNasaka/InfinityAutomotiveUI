@@ -8,31 +8,31 @@ const Registration = () => {
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
-  const [drivingLicEnd, setDrivingLicEnd] = useState("");
-  const [fmsciLicEnd, setFmsciLicEnd] = useState("");
+  const [dlValidTill, setDlValidTill] = useState("");
+  const [fmsciValidTill, setFmsciValidTill] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [file, setFile] = useState("");
   const [upload, setUpload] = useState("");
   const [image, setImage] = useState("");
   const [error, setError] = useState("");
-  const [drivingLicNumber, setDrivingLicNumber] = useState("");
-  const [fmsciLicNumber, setFmsciLicNumber] = useState("");
+  const [dlNumb, setDlNumb] = useState("");
+  const [fmsciNumb, setFmsciNumb] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSave = async (e) => {
     e.preventDefault();
 
     if (
-      !name ||
+      !name.trim() ||
       !dob ||
-      !bloodGroup ||
-      !drivingLicNumber ||
-      !drivingLicEnd ||
-      !fmsciLicNumber ||
-      !fmsciLicEnd ||
-      !phone ||
-      !email
+      !bloodGroup.trim() ||
+      !dlNumb.trim() ||
+      !dlValidTill ||
+      !fmsciNumb.trim() ||
+      !fmsciValidTill ||
+      !phone.trim() ||
+      !email.trim()
     ) {
       setError("All fields are mandatory.");
       return;
@@ -50,63 +50,50 @@ const Registration = () => {
 
     setError("");
 
-    const formdata = {
-      driverId: 0,
-      driverName: name,
-      phone: Number(phone),
-      email: email,
-      fmsciNumb: Number(fmsciLicNumber),
-      fmsciValidTill: new Date(fmsciLicEnd).toISOString(),
-      dlNumb: Number(drivingLicNumber),
-      dlValidTill: new Date(drivingLicEnd).toISOString(),
-      dob: new Date(dob).toISOString(),
-      bloodGroup: bloodGroup,
-      teamMemberOf: 0,
-      driverPhoto: "",
-      dlPhoto: "",
-      fmsciLicPhoto: "",
-      status: true,
-      teamName: "",
+    const data = {
+      drivername: name, 
+      phone: parseInt(phone, 10), 
+      email: email, 
+      fmsciNumb: parseInt(fmsciNumb, 10), 
+      fmsciValidTill: fmsciValidTill, 
+      dlNumb: parseInt(dlNumb, 10), 
+      dlValidTill: dlValidTill, 
+      dob: dob, 
+      bloodgroup: bloodGroup, 
+      teammemberof: 1, 
     };
-
-    console.log("Submitting payload:", formdata);
+    console.log("Data being sent:", JSON.stringify(data, null, 2));
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/drivers`, formdata, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await axios.post(
+        `${BASE_URL}/api/drivers`,
+        data
+      );
       console.log("Driver registered successfully:", response.data);
-      handleCancel();
     } catch (error) {
       console.error("Error registering driver:", error);
-      if (error.response) {
+      if (error.response && error.response.data) {
         console.error("Server response:", error.response.data);
-        setError(
-          `Error: ${error.response.data.message || "Something went wrong"}`
-        );
-      } else {
-        setError("Network error. Please check your connection.");
+        if (error.response.data.errors) {
+          console.error("Validation errors:", error.response.data.errors);
+        }
       }
     }
   };
-
   const handleCancel = () => {
     setName("");
     setDob("");
     setBloodGroup("");
-    setDrivingLicEnd("");
-    setFmsciLicEnd("");
+    setDlValidTill("");
+    setFmsciValidTill("");
     setPhone("");
     setEmail("");
     setFile("");
     setUpload("");
     setImage("");
     setError("");
-    setDrivingLicNumber("");
-    setFmsciLicNumber("");
+    setDlNumb("");
+    setFmsciNumb("");
   };
 
   return (
@@ -361,8 +348,8 @@ const Registration = () => {
                       <input
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={drivingLicNumber}
-                        onChange={(e) => setDrivingLicNumber(e.target.value)}
+                        value={dlNumb}
+                        onChange={(e) => setDlNumb(e.target.value)}
                         placeholder="Enter your license number"
                         required
                       />
@@ -375,8 +362,8 @@ const Registration = () => {
                       <input
                         type="date"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={drivingLicEnd}
-                        onChange={(e) => setDrivingLicEnd(e.target.value)}
+                        value={dlValidTill}
+                        onChange={(e) => setDlValidTill(e.target.value)}
                         required
                       />
                     </div>
@@ -443,8 +430,8 @@ const Registration = () => {
                       <input
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={fmsciLicNumber}
-                        onChange={(e) => setFmsciLicNumber(e.target.value)}
+                        value={fmsciNumb}
+                        onChange={(e) => setFmsciNumb(e.target.value)}
                         placeholder="Enter your license number"
                         required
                       />
@@ -457,8 +444,8 @@ const Registration = () => {
                       <input
                         type="date"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={fmsciLicEnd}
-                        onChange={(e) => setFmsciLicEnd(e.target.value)}
+                        value={fmsciValidTill}
+                        onChange={(e) => setFmsciValidTill(e.target.value)}
                         required
                       />
                     </div>
