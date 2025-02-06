@@ -5,22 +5,24 @@ import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 
 const Registration = () => {
-  const [name, setName] = useState("shafi");
-  const [dob, setDob] = useState("2025-02-03");
-  const [bloodGroup, setBloodGroup] = useState("O-");
-  const [drivingLicEnd, setDrivingLicEnd] = useState("2025-02-03");
-  const [fmsciLicEnd, setFmsciLicEnd] = useState("2025-02-03");
-  const [phone, setPhone] = useState("0123456789");
-  const [email, setEmail] = useState("shafi@gmail.com");
-  const [file, setFile] = useState(null);
-  const [upload, setUpload] = useState(null);
-  const [image, setImage] = useState(null);
+  const [name, setName] = useState("");
+  const [dob, setDob] = useState("");
+  const [bloodGroup, setBloodGroup] = useState("");
+  const [drivingLicEnd, setDrivingLicEnd] = useState("");
+  const [fmsciLicEnd, setFmsciLicEnd] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [file, setFile] = useState("");
+  const [upload, setUpload] = useState("");
+  const [image, setImage] = useState("");
   const [error, setError] = useState("");
-  const [drivingLicNumber, setDrivingLicNumber] = useState("DL123456");
-  const [fmsciLicNumber, setFmsciLicNumber] = useState("FMSCI123");
+  const [drivingLicNumber, setDrivingLicNumber] = useState("");
+  const [fmsciLicNumber, setFmsciLicNumber] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
+
     if (
       !name ||
       !dob ||
@@ -48,52 +50,63 @@ const Registration = () => {
 
     setError("");
 
-    const formData = new FormData();
-    formData.append("drivername", name);
-    formData.append("phone", phone);
-    formData.append("email", email);
-    formData.append("fmsciNumb", fmsciLicNumber);
-    formData.append("fmsciValidTill", fmsciLicEnd);
-    formData.append("dlNumb", drivingLicNumber);
-    formData.append("dlValidTill", drivingLicEnd);
-    formData.append("dob", dob);
-    formData.append("bloodgroup", bloodGroup);
-    formData.append("status", true);
-    formData.append("vehicles", []);
+    const formdata = {
+      driverId: 0,
+      driverName: name,
+      phone: Number(phone),
+      email: email,
+      fmsciNumb: Number(fmsciLicNumber),
+      fmsciValidTill: new Date(fmsciLicEnd).toISOString(),
+      dlNumb: Number(drivingLicNumber),
+      dlValidTill: new Date(drivingLicEnd).toISOString(),
+      dob: new Date(dob).toISOString(),
+      bloodGroup: bloodGroup,
+      teamMemberOf: 0,
+      driverPhoto: "",
+      dlPhoto: "",
+      fmsciLicPhoto: "",
+      status: true,
+      teamName: "",
+    };
 
-    if (file) formData.append("driverPhoto", file);
-    if (upload) formData.append("dlPhoto", upload);
+    console.log("Submitting payload:", formdata);
 
     try {
-      const response = await axios.post(`${BASE_URL}/Drivers`, formData, {
+      const response = await axios.post(`${BASE_URL}/api/drivers`, formdata, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       });
+
       console.log("Driver registered successfully:", response.data);
       handleCancel();
     } catch (error) {
       console.error("Error registering driver:", error);
-      setError(
-        "An error occurred while registering the driver. Please try again."
-      );
+      if (error.response) {
+        console.error("Server response:", error.response.data);
+        setError(
+          `Error: ${error.response.data.message || "Something went wrong"}`
+        );
+      } else {
+        setError("Network error. Please check your connection.");
+      }
     }
   };
 
   const handleCancel = () => {
-    setName("shafi");
-    setDob("2025-02-03");
-    setBloodGroup("O-");
-    setDrivingLicEnd("2025-02-03");
-    setFmsciLicEnd("2025-02-03");
-    setPhone("0123456789");
-    setEmail("shafi@gmail.com");
-    setFile(null);
-    setUpload(null);
-    setImage(null);
+    setName("");
+    setDob("");
+    setBloodGroup("");
+    setDrivingLicEnd("");
+    setFmsciLicEnd("");
+    setPhone("");
+    setEmail("");
+    setFile("");
+    setUpload("");
+    setImage("");
     setError("");
-    setDrivingLicNumber("DL123456");
-    setFmsciLicNumber("FMSCI123");
+    setDrivingLicNumber("");
+    setFmsciLicNumber("");
   };
 
   return (
@@ -193,7 +206,7 @@ const Registration = () => {
                       <img
                         src={URL.createObjectURL(file)}
                         alt="Preview"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-fill"
                       />
                     )}
                   </label>
@@ -286,10 +299,11 @@ const Registration = () => {
                 </div>
               </div>
             </div>
+            <div></div>
 
             <div className="flex flex-col lg:flex-row gap-2">
               <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
-                <div className="flex gap-6 items-center">
+                <div className="flex gap-6 items-center overflow-scroll">
                   <div className="w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload License
@@ -327,7 +341,7 @@ const Registration = () => {
                           <img
                             src={URL.createObjectURL(image)}
                             alt="FMSCI License Preview"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-fill"
                           />
                         )}
                       </label>
@@ -409,7 +423,7 @@ const Registration = () => {
                           <img
                             src={URL.createObjectURL(upload)}
                             alt="FMSCI License Preview"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-fill"
                           />
                         )}
                       </label>
