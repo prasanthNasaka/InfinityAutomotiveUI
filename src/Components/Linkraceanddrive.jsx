@@ -3,6 +3,7 @@ import { MdOutlineDelete } from "react-icons/md";
 
 import Newheader from "./Newheader";
 import MainSideBar from "./MainSideBar";
+import AutoCompleteSearch from "./CustomAutoComplete";
 
 
 function App() {
@@ -126,7 +127,8 @@ function App() {
                         <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
                           Search
                         </label>
-                        <div className="relative">
+                        <AutoCompleteSearch />
+                        {/* <div className="relative">
                           <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                             <svg
                               className="w-4 h-4 text-gray-500"
@@ -156,7 +158,7 @@ function App() {
                           >
                             Search
                           </button>
-                        </div>
+                        </div> */}
                       </form>
                     </div>
                     <div className="w-full h-full tab:w-full">
