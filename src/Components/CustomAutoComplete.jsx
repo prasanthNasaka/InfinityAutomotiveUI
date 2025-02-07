@@ -77,7 +77,7 @@ const AutoCompleteSearch = () => {
     <div>
       <Autocomplete
         freeSolo
-        options={options.map((option) => `${option.make} ${option.model}`)} 
+        options={options.map((option) => `${option.make} `)} 
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
