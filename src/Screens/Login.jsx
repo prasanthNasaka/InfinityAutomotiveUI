@@ -246,7 +246,7 @@ const Login = () => {
               <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4">
                 <div className="flex flex-col justify-center items-start w-full lappy:flex-row lappy:justify-between lappy:items-center">
                   <Link
-                    to={"forgotpassword"}
+                    to={"/forgotpassword"}
                     className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
                   >
                     Forgot password?
