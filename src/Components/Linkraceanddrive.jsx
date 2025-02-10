@@ -1,11 +1,57 @@
+/* eslint-disable no-unused-vars */
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
+import { useState } from "react";
 
 import Newheader from "./Newheader";
 import MainSideBar from "./MainSideBar";
 import AutoCompleteSearch from "./CustomAutoComplete";
 
+const formatDate = (dateString) => {
+  if (!dateString || dateString === "0001-01-01T00:00:00") {
+    return "N/A";
+  }
+
+  const date = new Date(dateString);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
+
 const Linkraceanddrive = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [driverData, setDriverData] = useState([]);
+  const [vehicleData, setVehicleData] = useState([]);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+
+  const openVisible = () => {
+    if (isVisible === true) {
+      setIsVisible(false);
+    } else setIsVisible(true);
+  };
+
+  const handleDriverDataReceived = (data) => {
+    setDriverData(data);
+  };
+
+  const handleVehicleDataReceived = (data) => {
+    setVehicleData(data);
+  };
+
+  const handleDriverSelect = (driver) => {
+    setSelectedDriver(driver);
+    console.log("driver", driver);
+  };
+
+  const handleVehicleSelect = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    console.log("vehicle", vehicle);
+  };
+
   return (
     <section className="w-full h-screen flex flex-col">
       <div className="w-full h-24 overflow-y-hidden shadow-lg">
@@ -15,10 +61,8 @@ const Linkraceanddrive = () => {
       <div className="flex h-[calc(100vh-6rem)] overflow-hidden">
         <div className=" h-full">
           <div className="h-full ">
-          <MainSideBar  />
+            <MainSideBar />
           </div>
-          
-         
         </div>
 
         <div className="flex-1 p-3 overflow-y-auto">
@@ -64,38 +108,11 @@ const Linkraceanddrive = () => {
                         <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
                           Search
                         </label>
-                        <AutoCompleteSearch searchType=""/>
-                        {/* <div className="relative">
-                          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg
-                              className="w-4 h-4 text-gray-500"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                              />
-                            </svg>
-                          </div>
-                          <input
-                            type="search"
-                            className="block w-full p-4 ps-10 text-sm border border-gray-300 rounded-lg bg-gray-50 "
-                            placeholder="Search by name"
-                            required
-                          />
-                          <button
-                            type="submit"
-                            className="text-white absolute end-2.5 bottom-2.5 bg-cyan-600 hover:bg-cyan-500  font-medium rounded-lg text-sm px-4 py-2"
-                          >
-                            Search
-                          </button>
-                        </div> */}
+                        <AutoCompleteSearch
+                          searchType="Driver"
+                          onDataReceived={handleDriverDataReceived}
+                          onSelect={handleDriverSelect}
+                        />
                       </form>
                     </div>
                     <div className="w-full h-full ">
@@ -107,14 +124,31 @@ const Linkraceanddrive = () => {
                             alt=""
                           />
                         </div>
-                        <div className="w-1/2 flex flex-col gap-4 justify-center">
-                          <span>Name: Farshad</span>
-
-                          <span>DOB: 23-06-2002</span>
-
-                          <span>Lic.No: AP20023062</span>
-
-                          <span>Phone number: +91 9705337895</span>
+                        <div className="w-1/2 flex flex-col gap-4 justify-center ">
+                          <span>
+                            Name:{" "}
+                            {selectedDriver
+                              ? selectedDriver.driverName
+                              : "Not Selected Yet"}
+                          </span>
+                          <span>
+                            DOB:{" "}
+                            {selectedDriver
+                              ? formatDate(selectedDriver.dob)
+                              : "Not Selected Yet"}
+                          </span>
+                          <span>
+                            Lic.No:{" "}
+                            {selectedDriver
+                              ? selectedDriver.dlNumb || "N/A"
+                              : "Not Selected Yet"}
+                          </span>
+                          <span>
+                            Phone number:{" "}
+                            {selectedDriver
+                              ? selectedDriver.phone || "N/A"
+                              : "Not Selected Yet"}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -126,38 +160,11 @@ const Linkraceanddrive = () => {
                         <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
                           Search
                         </label>
-                        <AutoCompleteSearch searchType="vehicle"/>
-                        {/* <div className="relative">
-                          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg
-                              className="w-4 h-4 text-gray-500"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                              />
-                            </svg>
-                          </div>
-                          <input
-                            type="search"
-                            className="block w-full p-4 ps-10 text-sm border border-gray-300 rounded-lg bg-gray-50 "
-                            placeholder="Search for vehicle"
-                            required
-                          />
-                          <button
-                            type="submit"
-                            className="text-white absolute end-2.5 bottom-2.5 bg-cyan-600 hover:bg-cyan-500  font-medium rounded-lg text-sm px-4 py-2"
-                          >
-                            Search
-                          </button>
-                        </div> */}
+                        <AutoCompleteSearch
+                          searchType="vehicle"
+                          onDataReceived={handleVehicleDataReceived}
+                          onSelect={handleVehicleSelect}
+                        />
                       </form>
                     </div>
                     <div className="w-full h-full tab:w-full">
@@ -170,13 +177,30 @@ const Linkraceanddrive = () => {
                           />
                         </div>
                         <div className="w-1/2 flex flex-col gap-4 justify-center">
-                          <span>Brand: Lamborghini</span>
-
-                          <span>Model: Huracan RWD Spyder</span>
-
-                          <span>Engine CC:5,204 with V10</span>
-
-                          <span>Color:Blue</span>
+                          <span>
+                            Brand:{" "}
+                            {selectedVehicle
+                              ? selectedVehicle.make
+                              : "Not Selected Yet"}
+                          </span>
+                          <span>
+                            Model:{" "}
+                            {selectedVehicle
+                              ? selectedVehicle.model
+                              : "Not Selected Yet"}
+                          </span>
+                          <span>
+                            Engine:{" "}
+                            {selectedVehicle
+                              ? selectedVehicle.engNumber || "N/A"
+                              : "Not Selected Yet"}
+                          </span>
+                          <span>
+                            Reg No:{" "}
+                            {selectedVehicle
+                              ? selectedVehicle.regNumb
+                              : "Not Selected Yet"}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -196,8 +220,9 @@ const Linkraceanddrive = () => {
                       />
                     </div>
 
-                    <div className="flex w-1/2 justify-end items-end gap-1   ">
+                    <div className="flex w-1/2 justify-end items-center gap-1   ">
                       <input
+                        onClick={openVisible}
                         id="remember"
                         type="checkbox"
                         className="accent-cyan-600 w-4 h-4 text-black  border border-gray-100 rounded  hover:cursor-pointer"
@@ -214,17 +239,18 @@ const Linkraceanddrive = () => {
 
                   <div className="w-1/2 tab:w-full flex items-end justify-between ">
                     <div className="w-1/2 flex items-end justify-between  gap-2">
-                      <div className="flex flex-col justify-center  gap-1">
-                        <label className="text-md" htmlFor="Payment number">
-                          
-                          Number:
-                        </label>
-                        <input
-                          placeholder="Enter Ref number"
-                          className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
-                          type="text"
-                        />
-                      </div>
+                      {isVisible && (
+                        <div className="flex flex-col justify-center  gap-1">
+                          <label className="text-md" htmlFor="Payment number">
+                            Number:
+                          </label>
+                          <input
+                            placeholder="Enter Ref number"
+                            className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
+                            type="text"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="w-1/2 flex justify-end ">
@@ -330,8 +356,6 @@ const Linkraceanddrive = () => {
       </div>
     </section>
   );
-}
+};
 
-export default Linkraceanddrive
-
-
+export default Linkraceanddrive;
