@@ -12,9 +12,9 @@ const Registration = () => {
   const [fmsciValidTill, setFmsciValidTill] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [file, setFile] = useState("");
-  const [upload, setUpload] = useState("");
-  const [image, setImage] = useState("");
+  const [file, setFile] = useState(null);
+  const [upload, setUpload] = useState(null);
+  const [image, setImage] = useState(null);
   const [error, setError] = useState("");
   const [dlNumb, setDlNumb] = useState("");
   const [fmsciNumb, setFmsciNumb] = useState("");
@@ -50,25 +50,29 @@ const Registration = () => {
 
     setError("");
 
-    const data = {
-      drivername: name, 
-      phone: parseInt(phone, 10), 
-      email: email, 
-      fmsciNumb: parseInt(fmsciNumb, 10), 
-      fmsciValidTill: fmsciValidTill, 
-      dlNumb: parseInt(dlNumb, 10), 
-      dlValidTill: dlValidTill, 
-      dob: dob, 
-      bloodgroup: bloodGroup, 
-      teammemberof: 1, 
-    };
-    console.log("Data being sent:", JSON.stringify(data, null, 2));
+    const formData = new FormData();
+    formData.append("driverName", name);
+    formData.append("phone", phone);
+    formData.append("email", email);
+    formData.append("fmsciNumb", fmsciNumb);
+    formData.append("fmsciValidTill", fmsciValidTill);
+    formData.append("dlNumb", dlNumb);
+    formData.append("dlValidTill", dlValidTill);
+    formData.append("dob", dob);
+    formData.append("bloodGroup", bloodGroup);
+    formData.append("teamMemberOf", 1); 
+    if (file) formData.append("driverPhoto", file);
+    if (upload) formData.append("fmsciLicPhoto", upload);
+    if (image) formData.append("dlPhoto", image);
+
+    console.log("Data being sent:", formData);
 
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/drivers`,
-        data
-      );
+      const response = await axios.post(`${BASE_URL}/api/drivers`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       console.log("Driver registered successfully:", response.data);
     } catch (error) {
       console.error("Error registering driver:", error);
@@ -80,6 +84,7 @@ const Registration = () => {
       }
     }
   };
+
   const handleCancel = () => {
     setName("");
     setDob("");
@@ -88,9 +93,9 @@ const Registration = () => {
     setFmsciValidTill("");
     setPhone("");
     setEmail("");
-    setFile("");
-    setUpload("");
-    setImage("");
+    setFile(null);
+    setUpload(null);
+    setImage(null);
     setError("");
     setDlNumb("");
     setFmsciNumb("");
@@ -106,7 +111,7 @@ const Registration = () => {
           <MainSideBar />
         </div>
         <div className="flex-1 p-8 bg-white ">
-          <form className="flex items-center mb-6  justify-center">
+          <form className="flex items-center mb-6 justify-center">
             <label htmlFor="simple-search" className="sr-only">
               Search
             </label>
@@ -286,7 +291,6 @@ const Registration = () => {
                 </div>
               </div>
             </div>
-            <div></div>
 
             <div className="flex flex-col lg:flex-row gap-2">
               <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
@@ -327,7 +331,7 @@ const Registration = () => {
                         {image && (
                           <img
                             src={URL.createObjectURL(image)}
-                            alt="FMSCI License Preview"
+                            alt="Driving License Preview"
                             className="w-full h-full object-fill"
                           />
                         )}
@@ -461,6 +465,7 @@ const Registration = () => {
               >
                 Cancel
               </button>
+
               <button
                 onClick={handleSave}
                 className="px-6 py-3 bg-cyan-600 text-white rounded"
