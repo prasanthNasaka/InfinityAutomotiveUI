@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import {
@@ -8,30 +9,18 @@ import {
   TextField,
   Typography,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
 import { BASE_URL } from "../constants/global-const";
+import { X as CloseIcon } from "lucide-react";
 
-const AutoCompleteSearch = ({ searchType }) => {
+const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [open, setOpen] = useState(false);
-
-  const handleOptionClick = (event, value) => {
-    if (value) {
-      const vehicleData = options.find((v) =>
-        searchType === "vehicle"
-          ? `${v.make}, ${v.$id}` === value
-          : `${v.driverName}, ${v.phone}, ${v.email}` === value
-      );
-      if (vehicleData) {
-        setSelectedVehicle(vehicleData);
-        setOpen(true);
-      }
-    }
-  };
 
   useEffect(() => {
     if (!inputValue.trim()) {
@@ -68,9 +57,11 @@ const AutoCompleteSearch = ({ searchType }) => {
         }
 
         const data = await response.json();
-        console.log("API Response Data:", data);
-
-        setOptions(Array.isArray(data) ? data : []);
+        const passingValue = data.$values;
+        
+        onDataReceived(passingValue);
+        
+        setOptions(data.$values || []);
       } catch (error) {
         console.error("API Fetch Error:", error.message);
         setError(error.message);
@@ -84,55 +75,134 @@ const AutoCompleteSearch = ({ searchType }) => {
     }, 300);
 
     return () => clearTimeout(debounce);
-  }, [inputValue, searchType]);
+  }, [inputValue, searchType, onDataReceived]);
 
-  // Log options to see what is being passed to the Autocomplete
-  console.log("Formatted Options for Autocomplete:", options.map((option) =>
-    searchType === "vehicle"
-      ? `${option.make}, ${option.$id}`
-      : `${option.driverName}, ${option.phone}, ${option.email}`
-  ));
+  const getOptionLabel = (option) => {
+    return searchType === "vehicle"
+      ? `${option.make}-${option.model}-${option.regNumb}`
+      : `${option.driverName}-${option.phone}-(${option.email})`;
+  };
+
+  const handleOptionSelect = (event, value) => {
+    if (value) {
+      setSelectedItem(value);
+      onSelect(value); // Pass the selected value to parent
+      setOpen(true);
+    }
+  };
+
+  const handleClear = () => {
+    setInputValue("");
+    setOptions([]);
+    onSelect(null); // Clear the selection in parent
+  };
+
+  const renderVehicleDetails = () => (
+    <>
+      <Typography variant="h6" component="h2" gutterBottom>
+        Vehicle Details
+      </Typography>
+      <Typography>
+        <strong>Make:</strong> {selectedItem.make}
+      </Typography>
+      <Typography>
+        <strong>Model:</strong> {selectedItem.model}
+      </Typography>
+      <Typography>
+        <strong>Registration Number:</strong> {selectedItem.regNumb}
+      </Typography>
+      <Typography>
+        <strong>Chassis Number:</strong> {selectedItem.chasisNumb}
+      </Typography>
+      {selectedItem.engNumber && (
+        <Typography>
+          <strong>Engine Number:</strong> {selectedItem.engNumber}
+        </Typography>
+      )}
+    </>
+  );
+
+  const renderDriverDetails = () => (
+    <>
+      <Typography variant="h6" component="h2" gutterBottom>
+        Driver Details
+      </Typography>
+      <Typography>
+        <strong>Name:</strong> {selectedItem.driverName}
+      </Typography>
+      <Typography>
+        <strong>Phone:</strong> {selectedItem.phone}
+      </Typography>
+      <Typography>
+        <strong>Email:</strong> {selectedItem.email}
+      </Typography>
+      <Typography>
+        <strong>FMSCI Number:</strong> {selectedItem.fmsciNumb}
+      </Typography>
+      <Typography>
+        <strong>DL Number:</strong> {selectedItem.dlNumb}
+      </Typography>
+      {selectedItem.teamName && (
+        <Typography>
+          <strong>Team:</strong> {selectedItem.teamName}
+        </Typography>
+      )}
+    </>
+  );
 
   return (
     <div>
       <Autocomplete
         freeSolo
-        options={options.map((option) =>
-          searchType === "vehicle"
-            ? `${option.make}, ${option.$id}`
-            : `${option.driverName}, ${option.phone}, ${option.email}`
-        )}
+        options={options}
+        getOptionLabel={getOptionLabel}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
-          console.log("Input Value:", newInputValue); // Log input value
         }}
-        onChange={handleOptionClick}
+        onChange={handleOptionSelect}
         loading={loading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label={
-              searchType === "vehicle" ? "Search Vehicles" : "Search Drivers"
-            }
-            variant="outlined"
-            fullWidth
-            error={!!error}
-            helperText={error}
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: loading ? <CircularProgress size={20} /> : null,
-            }}
-          />
-        )}
+        popupIcon={null}
+        clearOnBlur={false}
+        renderInput={(params) => {
+          const { InputProps, ...rest } = params;
+
+          const endAdornment = (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {loading && <CircularProgress size={20} />}
+              {inputValue && (
+                <IconButton
+                  size="small"
+                  onClick={handleClear}
+                  sx={{ padding: "4px" }}
+                >
+                  <CloseIcon size={16} />
+                </IconButton>
+              )}
+            </div>
+          );
+
+          return (
+            <TextField
+              {...rest}
+              label={
+                searchType === "vehicle" ? "Search Vehicles" : "Search Drivers"
+              }
+              variant="outlined"
+              fullWidth
+              InputProps={{
+                ...InputProps,
+                endAdornment: endAdornment,
+              }}
+            />
+          );
+        }}
       />
 
-      {/* Modal */}
-      <Modal
+      {/* <Modal
         open={open}
         onClose={() => setOpen(false)}
-        aria-labelledby="vehicle-details-title"
-        aria-describedby="vehicle-details-description"
+        aria-labelledby="details-modal-title"
       >
         <Box
           sx={{
@@ -145,33 +215,28 @@ const AutoCompleteSearch = ({ searchType }) => {
             boxShadow: 24,
             p: 4,
             borderRadius: 2,
+            maxHeight: "90vh",
+            overflow: "auto",
           }}
         >
-          {selectedVehicle && (
+          {selectedItem && (
             <>
-              <Typography id="vehicle-details-title" variant="h6">
-                Vehicle Details
-              </Typography>
-              <Typography>Make: {selectedVehicle.make}</Typography>
-              <Typography>Model: {selectedVehicle.model}</Typography>
-              <Typography>
-                Registration Number: {selectedVehicle.regNumb}
-              </Typography>
-              <Typography>
-                Chassis Number: {selectedVehicle.chasisNumb}
-              </Typography>
+              {searchType === "vehicle"
+                ? renderVehicleDetails()
+                : renderDriverDetails()}
               <Button
                 variant="contained"
                 color="primary"
                 sx={{ mt: 2 }}
                 onClick={() => setOpen(false)}
+                fullWidth
               >
                 Close
               </Button>
             </>
           )}
         </Box>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };
