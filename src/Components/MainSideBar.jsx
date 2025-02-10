@@ -125,6 +125,15 @@ const MainSideBar = () => {
             <FaClipboardList />
             {!isCollapsed && <span>Scrutiny</span>}
           </Link>
+          <Link
+            to="/addcompany"
+            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              isActive("/addcompany") ? "bg-cyan-600 rounded-lg" : ""
+            }`}
+          >
+            <FaClipboardList />
+            {!isCollapsed && <span>Add Company</span>}
+          </Link>
         </ul>
       </div>
     </section>
