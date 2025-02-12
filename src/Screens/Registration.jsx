@@ -1,10 +1,56 @@
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
 import MainSideBar from "../Components/MainSideBar";
 import Newheader from "../Components/Newheader";
 import axios from "axios";
-import { BASE_URL } from "../constants/global-const";
+import { BASE_URL, IMAGE_URL } from "../constants/global-const";
+import AutoCompleteSearch from "../Components/CustomAutoComplete";
+import imageCompression from "browser-image-compression";
+
+const ConfirmModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-lg font-semibold mb-4">Confirmation</h2>
+        <p className="mb-4">
+          ⚠️ The file is too large! Do you want to compress it?
+        </p>
+        <div className="flex justify-end">
+          <button
+            onClick={onClose}
+            className="mr-2 px-4 py-2 bg-gray-300 rounded"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Compress
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Toast = ({ message, onClose }) => {
+  return (
+    <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
+      {message}
+      <button onClick={onClose} className="ml-4 text-gray-300 hover:text-white">
+        ×
+      </button>
+    </div>
+  );
+};
 
 const Registration = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
@@ -18,7 +64,118 @@ const Registration = () => {
   const [error, setError] = useState("");
   const [dlNumb, setDlNumb] = useState("");
   const [fmsciNumb, setFmsciNumb] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [driverData, setDriverData] = useState([]);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [drivers, setDrivers] = useState(false);
+  const [selecteddetails, setSelectedDetails] = useState(null);
+
+  const handleDriverDataReceived = (data) => {
+    setDriverData(data);
+  };
+
+  const handleDriverSelect = async (driver) => {
+    setSelectedDriver(driver);
+    console.log("Driver", driver);
+    if (driver.driverId) {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/api/drivers/${driver.driverId}`
+        );
+        console.log("response", response);
+        setSelectedDetails(response.data);
+        setDrivers(response.data);
+      } catch (err) {
+        console.error("Error fetching driver details:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (selecteddetails !== null) {
+      console.log("selectedDriver", selecteddetails);
+    }
+    if (selecteddetails) {
+      setName(selecteddetails.drivername || "");
+      setDlNumb(selecteddetails.dlNumb || "");
+      setFmsciNumb(selecteddetails.fmsciNumb || "");
+      setPhone(selecteddetails.phone || "");
+      setBloodGroup(selecteddetails.bloodgroup || "");
+      setDob(selecteddetails.dob || "");
+      setFmsciValidTill(selecteddetails.fmsciValidTill || "");
+      setDlValidTill(selecteddetails.dlValidTill || "");
+      setEmail(selecteddetails.email || "");
+      setFile(
+        selecteddetails.driverPhoto
+          ? `${IMAGE_URL}${selecteddetails.driverPhoto}`
+          : ""
+      );
+      setImage(
+        selecteddetails.dlPhoto
+          ? `${IMAGE_URL}${selecteddetails.dlPhoto}`
+          : null
+      );
+      setUpload(
+        selecteddetails.fmsciLicPhoto
+          ? `${IMAGE_URL}${selecteddetails.fmsciLicPhoto}`
+          : null
+      );
+    }
+  }, [selecteddetails]);
+
+  const showToast = (message) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(""), 1000);
+  };
+  const handleImageChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setImage(selectedFile);
+  };
+  const handleUploadChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setUpload(selectedFile);
+  };
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setFile(selectedFile);
+
+    const validTypes = ["image/png", "image/jpg", "image/jpeg"];
+    if (!validTypes.includes(selectedFile.type)) {
+      showToast("❌ Invalid file type! Only PNG, JPG, and JPEG are allowed.");
+      return;
+    }
+
+    const maxSize = 2 * 1024 * 1024;
+
+    if (selectedFile.size > maxSize) {
+      setIsModalOpen(true);
+      return;
+    }
+
+    setFile(selectedFile);
+    showToast("✅ Image uploaded successfully!");
+  };
+
+  const compressFile = async (selectedFile) => {
+    const options = {
+      maxSizeMB: 2,
+      maxWidthOrHeight: 1024,
+      useWebWorker: true,
+    };
+
+    try {
+      const processedFile = await imageCompression(selectedFile, options);
+      setFile(processedFile);
+      showToast("✅ Image compressed successfully!");
+    } catch (err) {
+      showToast("❌ Image compression failed.");
+    }
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -60,7 +217,7 @@ const Registration = () => {
     formData.append("dlValidTill", dlValidTill);
     formData.append("dob", dob);
     formData.append("bloodGroup", bloodGroup);
-    formData.append("teamMemberOf", 1); 
+    formData.append("teamMemberOf", 1);
     if (file) formData.append("driverPhoto", file);
     if (upload) formData.append("fmsciLicPhoto", upload);
     if (image) formData.append("dlPhoto", image);
@@ -73,7 +230,7 @@ const Registration = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Driver registered successfully:", response.data);
+      showToast("Driver registered successfully:", response.data);
     } catch (error) {
       console.error("Error registering driver:", error);
       if (error.response && error.response.data) {
@@ -83,6 +240,20 @@ const Registration = () => {
         }
       }
     }
+
+    setName("");
+    setDob("");
+    setBloodGroup("");
+    setDlValidTill("");
+    setFmsciValidTill("");
+    setPhone("");
+    setEmail("");
+    setFile(null);
+    setUpload(null);
+    setImage(null);
+    setError("");
+    setDlNumb("");
+    setFmsciNumb("");
   };
 
   const handleCancel = () => {
@@ -103,6 +274,17 @@ const Registration = () => {
 
   return (
     <>
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          compressFile(file);
+          setIsModalOpen(false);
+        }}
+      />
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage("")} />
+      )}
       <div className="h-24 w-full shadow-md p-1">
         <Newheader />
       </div>
@@ -111,44 +293,19 @@ const Registration = () => {
           <MainSideBar />
         </div>
         <div className="flex-1 p-8 bg-white ">
-          <form className="flex items-center mb-6 justify-center">
-            <label htmlFor="simple-search" className="sr-only">
-              Search
-            </label>
-            <div className="relative w-1/2 ">
-              <input
-                type="text"
-                id="simple-search"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md w-full pl-6 p-3"
-                placeholder="Search Your Details.."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                required
+          <div className="w-full flex justify-center  ">
+            <form className="w-1/2  ">
+              <label className="mb-2 text-sm font-medium text-gray-900 sr-only ">
+                Search
+              </label>
+              <AutoCompleteSearch
+                searchType="Driver"
+                onDataReceived={handleDriverDataReceived}
+                onSelect={handleDriverSelect}
               />
-            </div>
-            <button
-              type="submit"
-              className="p-2.5 ms-2 text-sm font-medium text-white bg-cyan-600 rounded-lg"
-            >
-              <svg
-                className="w-6 h-6"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-              <span className="sr-only">Search</span>
-            </button>
-          </form>
-          <div className="w-full mx-auto p-3 rounded-md shadow-lg">
+            </form>
+          </div>
+          <div className="w-full mx-auto p-3 rounded-md shadow-lg overflow-auto">
             <h2 className="text-3xl font-bold mb-6 text-center">
               Racer Details
             </h2>
@@ -167,11 +324,9 @@ const Registration = () => {
                 <div className="flex items-center justify-center w-full h-56 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/png, image/jpg, image/jpeg"
                     className="hidden"
-                    onChange={(e) => {
-                      setFile(e.target.files[0]);
-                    }}
+                    onChange={handleFileChange}
                     id="file-upload"
                   />
                   <label
@@ -194,18 +349,24 @@ const Registration = () => {
                       />
                     </svg>
 
-                    {file && (
+                    {file ? (
                       <img
-                        src={URL.createObjectURL(file)}
-                        alt="Preview"
-                        className="w-full h-full object-fill"
+                        src={
+                          file instanceof File
+                            ? URL.createObjectURL(file)
+                            : file
+                        }
+                        alt="Driver Photo"
+                        className="w-full h-full object-contain"
                       />
+                    ) : (
+                      <p className="text-gray-500 text-sm">Click to upload</p>
                     )}
                   </label>
                 </div>
                 {file && (
                   <p className="text-sm text-gray-600 mt-2">
-                    File: {file.name}
+                    File: {file.name || "Selected from search"}
                   </p>
                 )}
               </div>
@@ -305,9 +466,7 @@ const Registration = () => {
                         accept="image/*,application/pdf"
                         className="hidden"
                         id="license-file-upload"
-                        onChange={(e) => {
-                          setImage(e.target.files[0]);
-                        }}
+                        onChange={handleImageChange}
                       />
                       <label
                         htmlFor="license-file-upload"
@@ -328,18 +487,26 @@ const Registration = () => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        {image && (
+                        {image ? (
                           <img
-                            src={URL.createObjectURL(image)}
+                            src={
+                              image instanceof File
+                                ? URL.createObjectURL(image)
+                                : image
+                            }
                             alt="Driving License Preview"
-                            className="w-full h-full object-fill"
+                            className="w-full h-full object-contain"
                           />
+                        ) : (
+                          <p className="text-gray-500 text-sm">
+                            Click to upload
+                          </p>
                         )}
                       </label>
                     </div>
                     {image && (
                       <p className="text-sm text-gray-600 mt-2">
-                        File: {image.name}
+                        File: {image.name || "Selected from search"}
                       </p>
                     )}
                   </div>
@@ -387,9 +554,7 @@ const Registration = () => {
                         accept="image/*,application/pdf"
                         className="hidden"
                         id="fmsci-file-upload"
-                        onChange={(e) => {
-                          setUpload(e.target.files[0]);
-                        }}
+                        onChange={handleUploadChange}
                       />
                       <label
                         htmlFor="fmsci-file-upload"
@@ -410,18 +575,26 @@ const Registration = () => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        {upload && (
+                        {upload ? (
                           <img
-                            src={URL.createObjectURL(upload)}
+                            src={
+                              upload instanceof File
+                                ? URL.createObjectURL(upload)
+                                : upload
+                            }
                             alt="FMSCI License Preview"
-                            className="w-full h-full object-fill"
+                            className="w-full h-full object-contain"
                           />
+                        ) : (
+                          <p className="text-gray-500 text-sm">
+                            Click to upload
+                          </p>
                         )}
                       </label>
                     </div>
                     {upload && (
                       <p className="text-sm text-gray-600 mt-2">
-                        File: {upload.name}
+                        File: {upload.name || "Selected from search"}
                       </p>
                     )}
                   </div>
