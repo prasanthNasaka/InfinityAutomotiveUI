@@ -44,6 +44,8 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
           searchType === "vehicle"
             ? `${BASE_URL}/api/Search/vehicles?searchWord=${inputValue}`
             : `${BASE_URL}/api/Search/drivers?searchWord=${inputValue}`;
+            console.log("driver",);
+            
 
         const response = await fetch(endpoint, {
           headers: {
@@ -80,7 +82,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const getOptionLabel = (option) => {
     return searchType === "vehicle"
       ? `${option.make}-${option.model}-${option.regNumb}`
-      : `${option.driverName}-${option.phone}-(${option.email})`;
+      : `${option.driverName}-${option.phone}`;
   };
 
   const handleOptionSelect = (event, value) => {
@@ -88,6 +90,8 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
       setSelectedItem(value);
       onSelect(value); // Pass the selected value to parent
       setOpen(true);
+      console.log("value",value);
+      
     }
   };
 

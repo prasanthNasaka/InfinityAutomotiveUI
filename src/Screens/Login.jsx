@@ -53,7 +53,7 @@ const Login = () => {
           error.response.status === 400
             ? "Invalid credentials. Please try again."
             : error.response.data.message ||
-              "Please enter a valid email or password";
+              "Please enter a valid username or password";
         setMessage(errorMsg);
         setToastType("error");
       } else if (error.request) {
@@ -63,7 +63,7 @@ const Login = () => {
         setMessage("Unexpected error. Please try again later.");
         setToastType("error");
       }
-      setError("Please enter a valid email or password");
+      setError("Please enter a valid username or password");
     }
   };
 
@@ -251,12 +251,12 @@ const Login = () => {
                   >
                     Forgot password?
                   </Link>
-                  <Link
+                  {/* <Link
                     to={"/signup"}
                     className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
                   >
                     Don&apos;t have an account?
-                  </Link>
+                  </Link> */}
                 </div>
                 <button
                   type="submit"

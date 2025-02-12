@@ -34,7 +34,7 @@ const Forgotpassword = () => {
             <div className="w-full p-6 md:mt-0 sm:max-w-md bg-white text-black dark:bg-white dark:text-black">
               <button className="flex items-center text-gray-600 hover:text-cyan-600 mb-5 gap-2 transition-colors">
                 <Link
-                  to={"/"}
+                  to={"/login"}
                   className="flex items-center justify-center gap-2"
                 >
                   <svg

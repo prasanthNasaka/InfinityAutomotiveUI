@@ -1,11 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { IoPerson } from "react-icons/io5";
+import { LuBike } from "react-icons/lu";
 
 import Newheader from "./Newheader";
 import MainSideBar from "./MainSideBar";
 import AutoCompleteSearch from "./CustomAutoComplete";
+import { BASE_URL } from "../constants/global-const";
 
 const formatDate = (dateString) => {
   if (!dateString || dateString === "0001-01-01T00:00:00") {
@@ -27,6 +31,60 @@ const Linkraceanddrive = () => {
   const [vehicleData, setVehicleData] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [driverimageUrl, setDriverImageUrl] = useState("");
+  const [vehicleimageUrl, setVehicleImageUrl] = useState("");
+  const [events, setEvents] = useState([]);
+  const [categories, setCategories] = useState({});
+  const [selectedEvent, setSelectedEvent] = useState("");
+  const [value, setValue] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch(`${BASE_URL}/api/EventRegistration`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data.$values)) {
+          setEvents(data.$values);
+        } else {
+          console.error("Expected an array of events, but received:", data);
+          setEvents([]);
+        }
+      })
+      .catch((error) => console.error("Error fetching events:", error));
+  }, []);
+
+  const handleEventChange = (event) => {
+    console.log("event", event);
+
+    const eventId = event.target.value;
+    console.log("eventID", eventId);
+
+    setSelectedEvent(eventId);
+
+    if (eventId) {
+      fetch(`${BASE_URL}/api/eventcategories/${eventId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Fetched Categories:", data); // Debugging line
+
+          if (Array.isArray(data)) {
+            setCategories(data);
+          } else {
+            setCategories([]); // Ensure it's an array to avoid .map error
+            // console.error(
+            //   "Invalid data format: Expected array but received",
+            //   data
+            // );
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching categories:", error);
+          setCategories([]); // Ensure it's an array to prevent .map error
+        });
+    } else {
+      setCategories([]);
+    }
+  };
 
   const openVisible = () => {
     if (isVisible === true) {
@@ -44,14 +102,28 @@ const Linkraceanddrive = () => {
 
   const handleDriverSelect = (driver) => {
     setSelectedDriver(driver);
+    setDriverImageUrl(driver);
     console.log("driver", driver);
   };
 
   const handleVehicleSelect = (vehicle) => {
     setSelectedVehicle(vehicle);
+    setVehicleImageUrl(vehicle);
     console.log("vehicle", vehicle);
   };
 
+  const numberInput = (e) => {
+    const inputValue = e.target.value;
+
+    if (/^\d*$/.test(inputValue) && inputValue.length <= 3) {
+      setValue(inputValue);
+      setError("");
+    } else if (inputValue.length > 3) {
+      setError("Maximum 3 digits");
+    } else {
+      setError("Only numbers are accepted");
+    }
+  };
   return (
     <section className="w-full h-screen flex flex-col">
       <div className="w-full h-24 overflow-y-hidden shadow-lg">
@@ -78,26 +150,39 @@ const Linkraceanddrive = () => {
                 <div className="w-full flex p-2 gap-2 tab:flex-col">
                   <div className="w-1/2 tab:w-full">
                     <label className="text-sm font-medium text-gray-900">
-                      Eventname:
+                      Event Name
                     </label>
-                    <select className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  p-2.5">
+                    <select
+                      value={selectedEvent}
+                      onChange={handleEventChange}
+                      className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                    >
                       <option value="">Choose Event</option>
-                      <option value="Piston Cup">Piston Cup</option>
-                      <option value="Champion Ship">Champion Ship</option>
-                      <option value="Tonso Cup">Tonso Cup</option>
-                      <option value="WRB">WRB</option>
+                      {Array.isArray(events) &&
+                        events.map((event) => (
+                          <option key={event.eventid} value={event.eventid}>
+                            {event.eventname}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
                   <div className="w-1/2 tab:w-full">
                     <label className="text-sm font-medium text-gray-900">
-                      Enter Category
+                      Event Category
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Enter Category"
-                      className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  p-2.5"
-                    />
+                    <select
+                      disabled={!selectedEvent}
+                      className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                    >
+                      <option value="">Choose Category</option>
+                      {Array.isArray(categories) &&
+                        categories.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
 
@@ -118,11 +203,17 @@ const Linkraceanddrive = () => {
                     <div className="w-full h-full ">
                       <div className="w-full border p-2 flex bg-gray-50 tab:w-full lappydesk:w-full  rounded-lg">
                         <div className="w-1/2 flex justify-center items-center p-2">
-                          <img
-                            className="h-28 w-28 rounded-full object-cover flex lappydesk:justify-start"
-                            src="https://images.prismic.io/carwow/519b8011-21c4-4197-9f1a-5db6601e024e_lamborghini-huracan-driving.JPG?auto=format&cs=tinysrgb&fit=clip&ixlib=rb-1.1.0&q=60&w=1125"
-                            alt=""
-                          />
+                          {driverimageUrl &&
+                          typeof driverimageUrl === "string" &&
+                          driverimageUrl.trim() ? (
+                            <img
+                              src={driverimageUrl}
+                              className="h-32 w-48 rounded-lg object-cover flex lappydesk:justify-start"
+                              alt="driver"
+                            />
+                          ) : (
+                            <IoPerson className="text-4xl border text-cyan-600 w-48 bg-white rounded-lg h-32 object-cover" />
+                          )}
                         </div>
                         <div className="w-1/2 flex flex-col gap-4 justify-center ">
                           <span>
@@ -132,13 +223,13 @@ const Linkraceanddrive = () => {
                               : "Not Selected Yet"}
                           </span>
                           <span>
-                            DOB:{" "}
+                            Fmsci number:{" "}
                             {selectedDriver
-                              ? formatDate(selectedDriver.dob)
+                              ? selectedDriver.fmsciNumb || "N/A"
                               : "Not Selected Yet"}
                           </span>
                           <span>
-                            Lic.No:{" "}
+                            Dl.No:{" "}
                             {selectedDriver
                               ? selectedDriver.dlNumb || "N/A"
                               : "Not Selected Yet"}
@@ -170,12 +261,19 @@ const Linkraceanddrive = () => {
                     <div className="w-full h-full tab:w-full">
                       <div className="w-full border p-2 flex bg-gray-50 tab:w-full lappydesk:w-full  rounded-lg">
                         <div className="w-1/2 flex justify-center items-center p-2">
-                          <img
-                            className="h-28 w-28 rounded-full object-cover flex lappydesk:justify-start"
-                            src="https://images.hindustantimes.com/auto/img/2020/05/07/1600x900/lamborghini_huracan_evo_rwd_spyder_3-4_ambient_HT_Auto_1588857850078_1588857850386.jpg"
-                            alt=""
-                          />
+                          {vehicleimageUrl &&
+                          typeof vehicleimageUrl === "string" &&
+                          vehicleimageUrl.trim() ? (
+                            <img
+                              src={vehicleimageUrl}
+                              className="h-32 w-48 rounded-lg object-cover flex lappydesk:justify-start"
+                              alt="Vehicle"
+                            />
+                          ) : (
+                            <LuBike className="text-4xl border text-cyan-600 w-48 bg-white rounded-lg h-32 object-cover" />
+                          )}
                         </div>
+
                         <div className="w-1/2 flex flex-col gap-4 justify-center">
                           <span>
                             Brand:{" "}
@@ -192,7 +290,7 @@ const Linkraceanddrive = () => {
                           <span>
                             Engine:{" "}
                             {selectedVehicle
-                              ? selectedVehicle.engNumber || "N/A"
+                              ? selectedVehicle.cc || "N/A"
                               : "Not Selected Yet"}
                           </span>
                           <span>
@@ -207,20 +305,25 @@ const Linkraceanddrive = () => {
                   </div>
                 </div>
 
-                <div className="w-full flex p-2 gap-2 tab:flex-col ">
-                  <div className="w-1/2 tab:w-full flex justify-between ">
+                <div className="w-full flex p-2 gap-2 tab:flex-col items-center">
+                  <div className="w-1/2 tab:w-full flex justify-between px-2 ">
                     <div className="w-1/2 ">
                       <label className="text-sm font-medium text-gray-900">
                         Enter Contestant number:
                       </label>
                       <input
-                        type="number"
-                        placeholder="Enter your number"
-                        className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  p-2.5"
+                        value={value}
+                        onChange={numberInput}
+                        type="text"
+                        placeholder="Enter  number"
+                        className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
                       />
+                      {error && (
+                        <span className="text-sm text-red-500">{error}</span>
+                      )}
                     </div>
 
-                    <div className="flex w-1/2 justify-end items-center gap-1   ">
+                    <div className="flex w-1/2 justify-end items-center gap-1">
                       <input
                         onClick={openVisible}
                         id="remember"
@@ -237,10 +340,10 @@ const Linkraceanddrive = () => {
                     </div>
                   </div>
 
-                  <div className="w-1/2 tab:w-full flex items-end justify-between ">
-                    <div className="w-1/2 flex items-end justify-between  gap-2">
+                  <div className="w-1/2 tab:w-full flex items-end justify-between px-2">
+                    <div className="w-1/2 flex items-end justify-between gap-2">
                       {isVisible && (
-                        <div className="flex flex-col justify-center  gap-1">
+                        <div className="flex justify-center items-center  gap-2">
                           <label className="text-md" htmlFor="Payment number">
                             Number:
                           </label>
