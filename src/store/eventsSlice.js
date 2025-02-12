@@ -36,7 +36,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   events: [],  // To store all the events
   selectedEvent: null,  // To store the currently selected event for editing
-  eventDetails: [],  // New state for handling event details
+  eventDetails: [],  // State for handling event details
 };
 
 const eventsSlice = createSlice({
@@ -52,6 +52,18 @@ const eventsSlice = createSlice({
     updateEvent: (state, action) => {
       const { index, updatedEvent } = action.payload;
       state.events[index] = updatedEvent;
+      
+      // Update event details if they exist
+      const eventDetailIndex = state.eventDetails.findIndex(
+        detail => detail.eventId === updatedEvent.id
+      );
+      
+      if (eventDetailIndex !== -1) {
+        state.eventDetails[eventDetailIndex] = {
+          ...state.eventDetails[eventDetailIndex],
+          ...updatedEvent.eventDetails
+        };
+      }
     },
     resetSelectedEvent: (state) => {
       state.selectedEvent = null;
@@ -84,6 +96,5 @@ export const {
 } = eventsSlice.actions;
 
 export default eventsSlice.reducer;
-
 
 
