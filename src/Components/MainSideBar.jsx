@@ -52,7 +52,7 @@ const MainSideBar = () => {
 
      
       <div className="flex-grow">
-        <ul className="p-2 flex flex-col font-serif gap-5">
+        <ul className="p-2 flex flex-col font-serif gap-4">
           <Link
             to="/registration"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
