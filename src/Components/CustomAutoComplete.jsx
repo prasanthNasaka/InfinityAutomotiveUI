@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { BASE_URL } from "../constants/global-const";
 import { X as CloseIcon } from "lucide-react";
+import axios from "axios";
 
 const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const [inputValue, setInputValue] = useState("");
@@ -21,6 +22,8 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const [error, setError] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [open, setOpen] = useState(false);
+  const [drivers, setDrivers] = useState(false);
+  console.log("searchType", searchType);
 
   useEffect(() => {
     if (!inputValue.trim()) {
@@ -60,9 +63,9 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
 
         const data = await response.json();
         const passingValue = data.$values;
-        
+
         onDataReceived(passingValue);
-        
+
         setOptions(data.$values || []);
       } catch (error) {
         console.error("API Fetch Error:", error.message);
@@ -80,15 +83,23 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   }, [inputValue, searchType, onDataReceived]);
 
   const getOptionLabel = (option) => {
+    if (!option) return "";
+    const { make, model, regNumb, driverName, phone, dlNumb, fmsciNumb } =
+      option;
+
     return searchType === "vehicle"
-      ? `${option.make}-${option.model}-${option.regNumb}`
-      : `${option.driverName}-${option.phone}`;
+      ? `Make-${make ?? "N/A"}  Model-${model ?? "N/A"}  RegNo-${
+          regNumb ?? "N/A"
+        }`
+      : `${driverName} - Ph:${phone ?? "N/A"} - DL:${
+          dlNumb ?? "N/A"
+        } - FMSCI: ${fmsciNumb ?? "N/A"}`;
   };
 
-  const handleOptionSelect = (event, value) => {
+  const handleOptionSelect = async (event, value) => {
     if (value) {
       setSelectedItem(value);
-      onSelect(value); // Pass the selected value to parent
+      onSelect(value);
       setOpen(true);
       console.log("value",value);
       
@@ -98,7 +109,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const handleClear = () => {
     setInputValue("");
     setOptions([]);
-    onSelect(null); // Clear the selection in parent
+    onSelect(null);
   };
 
   const renderVehicleDetails = () => (
