@@ -292,7 +292,7 @@ const Registration = () => {
         <div className="bg-gray-100">
           <MainSideBar />
         </div>
-        <div className="flex-1 p-8 bg-white ">
+        <div className="flex-1 p-8 bg-white overflow-auto">
           <div className="w-full flex justify-center  ">
             <form className="w-1/2  ">
               <label className="mb-2 text-sm font-medium text-gray-900 sr-only ">

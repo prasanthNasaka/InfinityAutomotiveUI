@@ -122,7 +122,7 @@ const Vehicledetails = () => {
           <div className="bg-gray-100">
             <MainSideBar />
           </div>
-          <div className="w-full bg-white shadow-lg p-6 rounded-lg">
+          <div className="w-full bg-white shadow-lg p-6 rounded-lg overflow-auto">
             <div className="w-full flex justify-center">
               <form className="w-1/2 ">
                 <label className="mb-2 text-sm font-medium text-gray-900 sr-only  ">
