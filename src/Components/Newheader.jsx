@@ -1,6 +1,6 @@
 import flag from "../assets/amon.png";
 import { IoIosMenu } from "react-icons/io";
-import { FaAngleDown } from "react-icons/fa";
+// import { FaAngleDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
@@ -55,7 +55,7 @@ const Header = () => {
 
       <div className="h-full w-1/5 flex justify-center items-center">
         <div className="w-full h-full flex justify-around items-center  p-1 ">
-          <div className="flex items-center  2xl:block tab:hidden   w-1/2">
+          {/* <div className="flex items-center  2xl:block tab:hidden   w-1/2">
             <form className="relative w-full">
               <label className="sr-only" htmlFor="underline_select">
                 Underline select
@@ -75,7 +75,7 @@ const Header = () => {
                 <span className="absolute left-0 bottom-0 h-[4px] bg-blue-500 w-full origin-left scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
               </div>
             </form>
-          </div>
+          </div> */}
 
           <div className="2xl:w-1/2  tab:hidden h-full flex 2xl:justify-end 2xl:items-center">
             <button

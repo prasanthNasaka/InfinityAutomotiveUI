@@ -8,35 +8,6 @@ import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import imageCompression from "browser-image-compression";
 
-const ConfirmModal = ({ isOpen, onClose, onConfirm }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-lg font-semibold mb-4">Confirmation</h2>
-        <p className="mb-4">
-          ⚠️ The file is too large! Do you want to compress it?
-        </p>
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="mr-2 px-4 py-2 bg-gray-300 rounded"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
-          >
-            Compress
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Toast = ({ message, onClose }) => {
   return (
     <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
@@ -130,51 +101,24 @@ const Registration = () => {
 
   const showToast = (message) => {
     setToastMessage(message);
-    setTimeout(() => setToastMessage(""), 1000);
+    setTimeout(() => setToastMessage(""), 3000);
   };
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setImage(selectedFile);
+    showToast("✅ Image uploaded successfully!");
   };
   const handleUploadChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setUpload(selectedFile);
+    showToast("✅ Image uploaded successfully!");
   };
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setFile(selectedFile);
 
-    const validTypes = ["image/png", "image/jpg", "image/jpeg"];
-    if (!validTypes.includes(selectedFile.type)) {
-      showToast("❌ Invalid file type! Only PNG, JPG, and JPEG are allowed.");
-      return;
-    }
-
-    const maxSize = 2 * 1024 * 1024;
-
-    if (selectedFile.size > maxSize) {
-      setIsModalOpen(true);
-      return;
-    }
-
     setFile(selectedFile);
     showToast("✅ Image uploaded successfully!");
-  };
-
-  const compressFile = async (selectedFile) => {
-    const options = {
-      maxSizeMB: 2,
-      maxWidthOrHeight: 1024,
-      useWebWorker: true,
-    };
-
-    try {
-      const processedFile = await imageCompression(selectedFile, options);
-      setFile(processedFile);
-      showToast("✅ Image compressed successfully!");
-    } catch (err) {
-      showToast("❌ Image compression failed.");
-    }
   };
 
   const handleSave = async (e) => {
@@ -274,14 +218,6 @@ const Registration = () => {
 
   return (
     <>
-      <ConfirmModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={() => {
-          compressFile(file);
-          setIsModalOpen(false);
-        }}
-      />
       {toastMessage && (
         <Toast message={toastMessage} onClose={() => setToastMessage("")} />
       )}
@@ -645,6 +581,8 @@ const Registration = () => {
               >
                 Save
               </button>
+
+              
             </div>
           </div>
         </div>

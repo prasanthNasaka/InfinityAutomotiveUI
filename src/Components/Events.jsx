@@ -156,7 +156,7 @@ export default function EventForm() {
         <Newheader />
       </div>
 
-      <div className="flex h-[calc(100vh-6rem)]">
+      <div className="flex w-full h-[calc(100vh-6rem)]">
         <div className="bg-gray-100">
           <MainSideBar />
         </div>
@@ -165,7 +165,7 @@ export default function EventForm() {
           <section className="h-auto w-full flex p-6 justify-center items-center">
             <form
               onSubmit={handleSubmit}
-              className="w-full max-w-4xl flex flex-col gap-6 rounded-lg bg-white shadow-lg p-8"
+              className="w-full  flex flex-col gap-6 rounded-lg bg-white shadow-lg p-8"
             >
               <h2 className="text-2xl font-bold text-center">
                 {editMode ? "Edit Event" : "Event Form"}

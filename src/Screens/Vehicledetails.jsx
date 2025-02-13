@@ -1,10 +1,22 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
-import { useState } from "react";
-import { BASE_URL } from "../constants/global-const";
+import { useState, useEffect } from "react";
+import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import axios from "axios";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
+
+const Toast = ({ message, onClose }) => {
+  return (
+    <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
+      {message}
+      <button onClick={onClose} className="ml-4 text-gray-300 hover:text-white">
+        ×
+      </button>
+    </div>
+  );
+};
 
 const Vehicledetails = () => {
   const [vehicleData, setVehicleData] = useState([]);
@@ -28,20 +40,53 @@ const Vehicledetails = () => {
   const [insuranceValidTill, setInsuranceValidTill] = useState("");
   const [rcNumb, setRcNumb] = useState("");
   const [insuranceNumb, setInsuranceNumb] = useState("");
+  const [status, setStatus] = useState(1);
+
+  const showToast = (message) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(""), 1000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (
+      !regNo.trim() ||
+      !chasisNo.trim() ||
+      !engineNo.trim() ||
+      !vehicleMake.trim() ||
+      !model.trim() ||
+      !cc.trim() ||
+      !rcNumb.trim() ||
+      !RCValidTill ||
+      !insuranceNumb.trim() ||
+      !insuranceValidTill ||
+      !file ||
+      !upload ||
+      !image
+    ) {
+      setError("All fields are mandatory.");
+      return;
+    }
+
+    setError("");
+
     const formData = new FormData();
-    formData.append("vehicleMake", vehicleMake);
-    formData.append("model", model);
-    formData.append("cc", cc);
-    formData.append("regNo", regNo);
-    formData.append("engineNo", engineNo);
-    formData.append("chasisNo", chasisNo);
-    if (file) formData.append("vehiclePhoto", file);
-    if (upload) formData.append("insurancePhoto", upload);
-    if (image) formData.append("rcPhoto", image);
+    formData.append("RegNumb", regNo);
+    formData.append("ChasisNumb", chasisNo);
+    formData.append("EngNumber", engineNo);
+    formData.append("Make", vehicleMake);
+    formData.append("Model", model);
+    formData.append("Cc", cc);
+    formData.append("VehicleOf", 1);
+    formData.append("RcNum", rcNumb);
+    formData.append("RcUpto", RCValidTill);
+    formData.append("IcNum", insuranceNumb);
+    formData.append("IcUpto", insuranceValidTill);
+    formData.append("VehiclePhoto", file);
+    formData.append("RcImage", image);
+    formData.append("InsuranceImage", upload);
+    formData.append("Status", true);
 
     console.log("Data being sent:", Object.fromEntries(formData.entries()));
 
@@ -49,27 +94,36 @@ const Vehicledetails = () => {
       const response = await axios.post(`${BASE_URL}/api/Vehicle`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("Vehicle registered successfully:", response.data);
+      showToast(" ✅ Vehicle registered successfully!", response.data);
     } catch (error) {
       console.error("Error registering vehicle:", error);
+      if (error.response && error.response.data) {
+        console.error("Server response:", error.response.data);
+        if (error.response.data.errors) {
+          console.error("Validation errors:", error.response.data.errors);
+        }
+      }
     }
 
+    setRegNo("");
+    setChasisNo("");
+    setEngineNo("");
     setVehicleMake("");
     setModel("");
     setCc("");
-    setRegNo("");
-    setEngineNo("");
-    setChasisNo("");
-    setFile(null);
-    setUpload(null);
-    setImage(null);
     setRcNumb("");
     setRCValidTill("");
     setInsuranceNumb("");
     setInsuranceValidTill("");
+    setFile(null);
+    setUpload(null);
+    setImage(null);
+    setError("");
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e) => {
+    e.preventDefault();
+
     setVehicleMake("");
     setModel("");
     setCc("");
@@ -89,18 +143,21 @@ const Vehicledetails = () => {
     setVehicleData(data);
   };
 
-  const handleDriverSelect = async (vehicle) => {
-    console.log("vehicle", vehicle);
-
+  const handleVehicleSelect = async (vehicle) => {
     setSelectedVehicle(vehicle);
-    if (vehicle.driverId) {
+    console.log("Vehicle", vehicle);
+    if (vehicle.vehicleId) {
+      console.log(vehicle.vehicleId);
+
       setLoading(true);
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/vehicle/${vehicle.driverId}`
+          `${BASE_URL}/api/Vehicle/${vehicle.vehicleId}`
         );
         console.log("response", response);
         setSelectedDetails(response.data);
+        console.log("dfghgfdf", response.data);
+
         setVehicles(response.data);
       } catch (err) {
         console.error("Error fetching vehicle details:", err);
@@ -111,8 +168,63 @@ const Vehicledetails = () => {
     }
   };
 
+  useEffect(() => {
+    if (selecteddetails) {
+      console.log("selectedVehicle:", selecteddetails);
+
+      setVehicleMake(selecteddetails.make || "");
+      setModel(selecteddetails.model || "");
+      setCc(selecteddetails.cc || "");
+      setRegNo(selecteddetails.regNumb || "");
+      setEngineNo(selecteddetails.engNumber || "");
+      setChasisNo(selecteddetails.chasisNumb || "");
+      setRcNumb(selecteddetails.rcNum || "");
+      setInsuranceNumb(selecteddetails.icNum || "");
+      setRCValidTill(selecteddetails.rcUpto || "");
+      setInsuranceValidTill(selecteddetails.icUpto || "");
+
+      setFile(
+        selecteddetails.vehiclePhoto
+          ? `${IMAGE_URL}${selecteddetails.vehiclePhoto}`
+          : null
+      );
+      setImage(
+        selecteddetails.rcImage
+          ? `${IMAGE_URL}${selecteddetails.rcImage}`
+          : null
+      );
+      setUpload(
+        selecteddetails.insuranceImage
+          ? `${IMAGE_URL}${selecteddetails.insuranceImage}`
+          : null
+      );
+    }
+  }, [selecteddetails]);
+
+  const handleImageChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setImage(selectedFile);
+    showToast("✅ Image uploaded successfully!");
+
+  };
+  const handleUploadChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setUpload(selectedFile);
+    showToast("✅ Image uploaded successfully!");
+
+  };
+
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setFile(selectedFile);
+    showToast("✅ Image uploaded successfully!");
+
+  };
   return (
     <>
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage("")} />
+      )}
       <section className="w-full min-h-screen">
         <div className="h-24 w-full shadow-md p-1">
           <Newheader />
@@ -131,7 +243,7 @@ const Vehicledetails = () => {
                 <AutoCompleteSearch
                   searchType="vehicle"
                   onDataReceived={handleVehicleDataReceived}
-                  onSelect={handleDriverSelect}
+                  onSelect={handleVehicleSelect}
                 />
               </form>
             </div>
@@ -154,6 +266,7 @@ const Vehicledetails = () => {
                       placeholder="Enter vehicle make"
                     />
                   </div>
+
                   <div>
                     <label className="block text-sm font-bold">Model</label>
                     <input
@@ -222,7 +335,7 @@ const Vehicledetails = () => {
                     accept="image/*"
                     className="hidden"
                     id="file-upload"
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={handleFileChange}
                   />
                   <label
                     htmlFor="file-upload"
@@ -230,19 +343,21 @@ const Vehicledetails = () => {
                   >
                     {file ? (
                       <img
-                        src={URL.createObjectURL(file)}
-                        alt="Uploaded"
-                        className="h-full object-cover rounded-lg"
+                        src={
+                          file instanceof File
+                            ? URL.createObjectURL(file)
+                            : file
+                        }
+                        alt="Driver Photo"
+                        className="w-full h-full object-contain"
                       />
                     ) : (
-                      <p className="text-sm text-gray-500">
-                        Click to upload or drag & drop
-                      </p>
+                      <p className="text-gray-500 text-sm">Click to upload</p>
                     )}
                   </label>
                   {file && (
                     <p className="text-sm text-gray-600 mt-2">
-                      File: {file.name}
+                      File: {file.name || "Selected from search"}
                     </p>
                   )}
                 </div>
@@ -260,9 +375,7 @@ const Vehicledetails = () => {
                           accept="image/*,application/pdf"
                           className="hidden"
                           id="license-file-upload"
-                          onChange={(e) => {
-                            setImage(e.target.files[0]);
-                          }}
+                          onChange={handleImageChange}
                         />
                         <label
                           htmlFor="license-file-upload"
@@ -283,18 +396,26 @@ const Vehicledetails = () => {
                               d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                             />
                           </svg>
-                          {image && (
+                          {image ? (
                             <img
-                              src={URL.createObjectURL(image)}
-                              alt="FMSCI License Preview"
-                              className="w-full h-full object-fill"
+                              src={
+                                image instanceof File
+                                  ? URL.createObjectURL(image)
+                                  : image
+                              }
+                              alt="Driving License Preview"
+                              className="w-full h-full object-contain"
                             />
+                          ) : (
+                            <p className="text-gray-500 text-sm">
+                              Click to upload
+                            </p>
                           )}
                         </label>
                       </div>
                       {image && (
                         <p className="text-sm text-gray-600 mt-2">
-                          File: {image.name}
+                          File: {image.name || "Selected from search"}
                         </p>
                       )}
                     </div>
@@ -310,7 +431,6 @@ const Vehicledetails = () => {
                           value={rcNumb}
                           onChange={(e) => setRcNumb(e.target.value)}
                           placeholder="Enter your RC number"
-                          required
                         />
                       </div>
 
@@ -323,7 +443,7 @@ const Vehicledetails = () => {
                           className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                           value={RCValidTill}
                           onChange={(e) => setRCValidTill(e.target.value)}
-                          required
+                          
                         />
                       </div>
                     </div>
@@ -342,9 +462,7 @@ const Vehicledetails = () => {
                           accept="image/*,application/pdf"
                           className="hidden"
                           id="fmsci-file-upload"
-                          onChange={(e) => {
-                            setUpload(e.target.files[0]);
-                          }}
+                          onChange={handleUploadChange}
                         />
                         <label
                           htmlFor="fmsci-file-upload"
@@ -365,18 +483,26 @@ const Vehicledetails = () => {
                               d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                             />
                           </svg>
-                          {upload && (
+                          {upload ? (
                             <img
-                              src={URL.createObjectURL(upload)}
+                              src={
+                                upload instanceof File
+                                  ? URL.createObjectURL(upload)
+                                  : upload
+                              }
                               alt="FMSCI License Preview"
-                              className="w-full h-full object-fill"
+                              className="w-full h-full object-contain"
                             />
+                          ) : (
+                            <p className="text-gray-500 text-sm">
+                              Click to upload
+                            </p>
                           )}
                         </label>
                       </div>
                       {upload && (
                         <p className="text-sm text-gray-600 mt-2">
-                          File: {upload.name}
+                          File: {upload.name || "Selected from search"}
                         </p>
                       )}
                     </div>
@@ -392,7 +518,6 @@ const Vehicledetails = () => {
                           value={insuranceNumb}
                           onChange={(e) => setInsuranceNumb(e.target.value)}
                           placeholder="Enter your Insurance number"
-                          required
                         />
                       </div>
 
@@ -407,7 +532,6 @@ const Vehicledetails = () => {
                           onChange={(e) =>
                             setInsuranceValidTill(e.target.value)
                           }
-                          required
                         />
                       </div>
                     </div>
