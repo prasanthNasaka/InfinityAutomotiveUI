@@ -13,7 +13,7 @@ const Toast = ({ message, onClose }) => {
     <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
       {message}
       <button onClick={onClose} className="ml-4 text-gray-300 hover:text-white">
-        ×
+        X
       </button>
     </div>
   );
@@ -84,7 +84,7 @@ const Registration = () => {
       setFile(
         selecteddetails.driverPhoto
           ? `${IMAGE_URL}${selecteddetails.driverPhoto}`
-          : ""
+          : null
       );
       setImage(
         selecteddetails.dlPhoto

@@ -1,19 +1,17 @@
 /* eslint-disable no-unused-vars */
-
 import { useState } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import DatePicker from "react-datepicker";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
+import axios from "axios";
+import { BASE_URL } from "../constants/global-const";
 
-export default function EventForm() {
+const EventForm = () => {
   const [eventData, setEventData] = useState({
     eventType: "",
     eventName: "",
-    dateRange: {
-      start: null,
-      end: null,
-    },
+    dateRange: { start: null, end: null },
     status: "active",
     bannerImage: "",
     bankDetails: {
@@ -101,58 +99,99 @@ export default function EventForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      eventtype: eventData.eventType,
+      eventname: eventData.eventName,
+      startdate: eventData.dateRange.start.toISOString(),
+      enddate: eventData.dateRange.end.toISOString(),
+      isactive: eventData.status === "active" ? "true" : "false",
+      showdashboard: "true",
+      eventstatus: 0,
+      bankname: eventData.bankDetails.bankName,
+      ifsccode: eventData.bankDetails.ifscCode,
+      accountname: eventData.bankDetails.accountHolderName,
+      accountnum: eventData.bankDetails.accountNumber,
+      companyid: 1,
+      lstcat: eventData.categories.map((cat) => ({
+        evtCatId: 0,
+        evtCategory: cat.category,
+        noOfVeh: cat.participants,
+        status: "active",
+        nooflaps: cat.laps,
+        entryprice: cat.entryPrice,
+        wheelertype: 0,
+        eventId: 0,
+      })),
+    };
 
-    if (editMode && editId) {
-      setSubmittedEvents(
-        submittedEvents.map((event) =>
-          event.eventName === editId ? eventData : event
-        )
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/EventRegistration`,
+        payload
       );
-    } else {
-      setSubmittedEvents([...submittedEvents, eventData]);
+      console.log("Event registered successfully:", response.data);
+      setSubmittedEvents([...submittedEvents, response.data]);
+      setEventData({
+        eventType: "",
+        eventName: "",
+        dateRange: { start: null, end: null },
+        status: "active",
+        bannerImage: "",
+        bankDetails: {
+          bankName: "",
+          accountHolderName: "",
+          accountNumber: "",
+          ifscCode: "",
+          qrCode: "",
+        },
+        categories: [],
+      });
+    } catch (error) {
+      console.error("Failed to register event:", error);
     }
-
-    setEventData({
-      eventType: "",
-      eventName: "",
-      dateRange: {
-        start: null,
-        end: null,
-      },
-      status: "active",
-      bannerImage: "",
-      bankDetails: {
-        bankName: "",
-        accountHolderName: "",
-        accountNumber: "",
-        ifscCode: "",
-        qrCode: "",
-      },
-      categories: [],
-    });
-    setEditMode(false);
-    setEditId(null);
-    setExpandedCategories({});
   };
 
   const handleEdit = (event) => {
-    setEventData(event);
-    setEditMode(true);
-    setEditId(event.eventName);
-    event.categories.forEach((cat) => {
-      setExpandedCategories((prev) => ({ ...prev, [cat.id]: true }));
+    setEventData({
+      eventType: event.eventtype,
+      eventName: event.eventname,
+      dateRange: {
+        start: new Date(event.startdate),
+        end: new Date(event.enddate),
+      },
+      status: event.isactive === "true" ? "active" : "inactive",
+      bannerImage: "",
+      bankDetails: {
+        bankName: event.bankname,
+        accountHolderName: event.accountname,
+        accountNumber: event.accountnum,
+        ifscCode: event.ifsccode,
+        qrCode: "",
+      },
+      categories:
+        event.lstcat?.$values?.map((cat) => ({
+          id: cat.evtCatId,
+          category: cat.evtCategory,
+          laps: cat.nooflaps,
+          entryPrice: cat.entryprice,
+          participants: cat.noOfVeh,
+        })) || [],
     });
+
+    setSubmittedEvents(
+      submittedEvents.filter((e) => e.eventname !== event.eventname)
+    );
   };
 
   const handleDelete = (eventName) => {
     setSubmittedEvents(
-      submittedEvents.filter((event) => event.eventName !== eventName)
+      submittedEvents.filter((event) => event.eventname !== eventName)
     );
   };
 
   return (
     <section className="w-full h-full">
-      <div className="h-24 w-full">
+      <div className="w-full h-24 overflow-y-hidden shadow-lg">
         <Newheader />
       </div>
 
@@ -160,7 +199,6 @@ export default function EventForm() {
         <div className="bg-gray-100">
           <MainSideBar />
         </div>
-
         <div id="form" className="w-full overflow-auto flex flex-col">
           <section className="h-auto w-full flex p-6 justify-center items-center">
             <form
@@ -644,24 +682,26 @@ export default function EventForm() {
                       {submittedEvents.map((event, index) => (
                         <tr key={index}>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {event.eventName}
+                            {event.eventname}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {event.eventType}
+                            {event.eventtype}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                event.status === "active"
+                                event.isactive === "true"
                                   ? "bg-green-100 text-green-800"
                                   : "bg-red-100 text-red-800"
                               }`}
                             >
-                              {event.status}
+                              {event.isactive === "true"
+                                ? "Active"
+                                : "Inactive"}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {event.categories.length}
+                            {event.lstcat?.$values?.length || 0}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <button
@@ -671,7 +711,7 @@ export default function EventForm() {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDelete(event.eventName)}
+                              onClick={() => handleDelete(event.eventname)}
                               className="text-red-600 hover:text-red-900"
                             >
                               Delete
@@ -689,4 +729,5 @@ export default function EventForm() {
       </div>
     </section>
   );
-}
+};
+export default EventForm;

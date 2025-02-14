@@ -1,86 +1,75 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Modal,
-  TextField,
-  Typography,
-  CircularProgress,
-  IconButton,
-} from "@mui/material";
-import { BASE_URL } from "../constants/global-const";
-import { X as CloseIcon } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Search, X as CloseIcon } from "lucide-react";
+import Toast from "./Toast";
 import axios from "axios";
+import { BASE_URL } from "../constants/global-const";
 
 const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [drivers, setDrivers] = useState(false);
-  console.log("searchType", searchType);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    if (!inputValue.trim()) {
-      setOptions([]);
-      return;
-    }
+  const fetchOptions = useCallback(
+    async (searchTerm) => {
+      if (!searchTerm.trim()) {
+        setOptions([]);
+        return;
+      }
 
-    const fetchOptions = async () => {
       setLoading(true);
-      setError("");
-
       const authToken = localStorage.getItem("authToken");
+
       if (!authToken) {
-        setError("Authentication error: Please log in.");
+        setToast({
+          type: "error",
+          message: "Authentication error: Please log in.",
+        });
         setLoading(false);
         return;
       }
 
       try {
-        const endpoint =
-          searchType === "vehicle"
-            ? `${BASE_URL}/api/Search/vehicles?searchWord=${inputValue}`
-            : `${BASE_URL}/api/Search/drivers?searchWord=${inputValue}`;
-            console.log("driver",);
-            
-
-        const response = await fetch(endpoint, {
+        const endpoint = `${BASE_URL}/api/Search/${
+          searchType === "vehicle" ? "vehicles" : "drivers"
+        }?searchWord=${searchTerm}`;
+        const response = await axios.get(endpoint, {
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
           },
         });
 
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        const data = response.data.$values || [];
+        setOptions(data);
+        onDataReceived(data);
+
+        if (data.length === 0) {
+          setToast({ type: "warning", message: "No results found" });
         }
-
-        const data = await response.json();
-        const passingValue = data.$values;
-
-        onDataReceived(passingValue);
-
-        setOptions(data.$values || []);
       } catch (error) {
-        console.error("API Fetch Error:", error.message);
-        setError(error.message);
+        setToast({ type: "error", message: "Failed to fetch results" });
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [searchType, onDataReceived]
+  );
 
-    const debounce = setTimeout(() => {
-      fetchOptions();
-    }, 300);
+  useEffect(() => {
+    if (!isTyping) return;
 
-    return () => clearTimeout(debounce);
-  }, [inputValue, searchType, onDataReceived]);
+    const debounceTimer = setTimeout(() => {
+      fetchOptions(inputValue);
+      setIsTyping(false);
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [inputValue, fetchOptions, isTyping]);
 
   const getOptionLabel = (option) => {
     if (!option) return "";
@@ -88,170 +77,96 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
       option;
 
     return searchType === "vehicle"
-      ? `Make-${make ?? "N/A"}  Model-${model ?? "N/A"}  RegNo-${
-          regNumb ?? "N/A"
-        }`
-      : `${driverName} - Ph:${phone ?? "N/A"} - DL:${
-          dlNumb ?? "N/A"
-        } - FMSCI: ${fmsciNumb ?? "N/A"}`;
+      ? `${make || "N/A"} ${model || "N/A"} (${regNumb || "N/A"})`
+      : `${driverName} - ${phone || "N/A"} - DL:${dlNumb || "N/A"} - FMSCI:${
+          fmsciNumb || "N/A"
+        }`;
   };
 
-  const handleOptionSelect = async (event, value) => {
-    if (value) {
-      setSelectedItem(value);
-      onSelect(value);
-      setOpen(true);
-      console.log("value",value);
-      
-    }
+  const handleOptionSelect = (option) => {
+    setInputValue(getOptionLabel(option));
+    onSelect(option);
+    setShowDropdown(false);
+    setIsTyping(false);
+    setToast({
+      type: "success",
+      message: `${
+        searchType === "vehicle" ? "Vehicle" : "Driver"
+      } selected successfully`,
+    });
   };
 
   const handleClear = () => {
     setInputValue("");
     setOptions([]);
     onSelect(null);
+    setShowDropdown(false);
+    setIsTyping(false);
   };
 
-  const renderVehicleDetails = () => (
-    <>
-      <Typography variant="h6" component="h2" gutterBottom>
-        Vehicle Details
-      </Typography>
-      <Typography>
-        <strong>Make:</strong> {selectedItem.make}
-      </Typography>
-      <Typography>
-        <strong>Model:</strong> {selectedItem.model}
-      </Typography>
-      <Typography>
-        <strong>Registration Number:</strong> {selectedItem.regNumb}
-      </Typography>
-      <Typography>
-        <strong>Chassis Number:</strong> {selectedItem.chasisNumb}
-      </Typography>
-      {selectedItem.engNumber && (
-        <Typography>
-          <strong>Engine Number:</strong> {selectedItem.engNumber}
-        </Typography>
-      )}
-    </>
-  );
-
-  const renderDriverDetails = () => (
-    <>
-      <Typography variant="h6" component="h2" gutterBottom>
-        Driver Details
-      </Typography>
-      <Typography>
-        <strong>Name:</strong> {selectedItem.driverName}
-      </Typography>
-      <Typography>
-        <strong>Phone:</strong> {selectedItem.phone}
-      </Typography>
-      <Typography>
-        <strong>Email:</strong> {selectedItem.email}
-      </Typography>
-      <Typography>
-        <strong>FMSCI Number:</strong> {selectedItem.fmsciNumb}
-      </Typography>
-      <Typography>
-        <strong>DL Number:</strong> {selectedItem.dlNumb}
-      </Typography>
-      {selectedItem.teamName && (
-        <Typography>
-          <strong>Team:</strong> {selectedItem.teamName}
-        </Typography>
-      )}
-    </>
-  );
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setShowDropdown(true);
+    setIsTyping(true);
+  };
 
   return (
-    <div>
-      <Autocomplete
-        freeSolo
-        options={options}
-        getOptionLabel={getOptionLabel}
-        inputValue={inputValue}
-        onInputChange={(event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
-        onChange={handleOptionSelect}
-        loading={loading}
-        popupIcon={null}
-        clearOnBlur={false}
-        renderInput={(params) => {
-          const { InputProps, ...rest } = params;
-
-          const endAdornment = (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              {loading && <CircularProgress size={20} />}
-              {inputValue && (
-                <IconButton
-                  size="small"
-                  onClick={handleClear}
-                  sx={{ padding: "4px" }}
-                >
-                  <CloseIcon size={16} />
-                </IconButton>
-              )}
-            </div>
-          );
-
-          return (
-            <TextField
-              {...rest}
-              label={
-                searchType === "vehicle" ? "Search Vehicles" : "Search Drivers"
-              }
-              variant="outlined"
-              fullWidth
-              InputProps={{
-                ...InputProps,
-                endAdornment: endAdornment,
-              }}
-            />
-          );
-        }}
-      />
-
-      {/* <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="details-modal-title"
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-            maxHeight: "90vh",
-            overflow: "auto",
-          }}
-        >
-          {selectedItem && (
+    <div className="relative w-full">
+      <div className="relative">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          className="w-full px-4 py-2 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder={`Search ${
+            searchType === "vehicle" ? "Vehicles" : "Drivers"
+          }...`}
+        />
+        <div className="absolute right-0 top-0 h-full flex items-center pr-2 space-x-1">
+          {loading ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent" />
+          ) : (
             <>
-              {searchType === "vehicle"
-                ? renderVehicleDetails()
-                : renderDriverDetails()}
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-                onClick={() => setOpen(false)}
-                fullWidth
-              >
-                Close
-              </Button>
+              {inputValue && (
+                <button
+                  onClick={handleClear}
+                  className="p-1 hover:bg-gray-100 rounded-full"
+                >
+                  <CloseIcon className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+              {!inputValue && <Search className="w-4 h-4 text-gray-500 mr-2" />}
             </>
           )}
-        </Box>
-      </Modal> */}
+        </div>
+      </div>
+
+      {showDropdown && (
+        <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-auto">
+          {options.length > 0 ? (
+            options.map((option, index) => (
+              <div
+                key={index}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleOptionSelect(option)}
+              >
+                {getOptionLabel(option)}
+              </div>
+            ))
+          ) : (
+            <div className="px-4 py-2 text-gray-500">No results found</div>
+          )}
+        </div>
+      )}
+
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

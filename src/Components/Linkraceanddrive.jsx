@@ -2,26 +2,21 @@
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 import { useEffect, useState } from "react";
-
 import { IoPerson } from "react-icons/io5";
 import { LuBike } from "react-icons/lu";
-
 import Newheader from "./Newheader";
 import MainSideBar from "./MainSideBar";
 import AutoCompleteSearch from "./CustomAutoComplete";
-import { BASE_URL } from "../constants/global-const";
+import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 
 const formatDate = (dateString) => {
   if (!dateString || dateString === "0001-01-01T00:00:00") {
     return "N/A";
   }
-
   const date = new Date(dateString);
-
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-
   return `${day}/${month}/${year}`;
 };
 
@@ -45,6 +40,7 @@ const Linkraceanddrive = () => {
       .then((data) => {
         if (Array.isArray(data.$values)) {
           setEvents(data.$values);
+          console.log("Events:", data.$values);
         } else {
           console.error("Expected an array of events, but received:", data);
           setEvents([]);
@@ -54,32 +50,23 @@ const Linkraceanddrive = () => {
   }, []);
 
   const handleEventChange = (event) => {
-    console.log("event", event);
-
     const eventId = event.target.value;
-    console.log("eventID", eventId);
-
     setSelectedEvent(eventId);
 
     if (eventId) {
-      fetch(`${BASE_URL}/api/eventcategories/${eventId}`)
+      fetch(`${BASE_URL}/api/eventcategories?event_id=${eventId}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("Fetched Categories:", data); // Debugging line
-
-          if (Array.isArray(data)) {
-            setCategories(data);
+          if (data && Array.isArray(data.$values)) {
+            setCategories(data.$values);
+            console.log("Categories:", data.$values);
           } else {
-            setCategories([]); // Ensure it's an array to avoid .map error
-            // console.error(
-            //   "Invalid data format: Expected array but received",
-            //   data
-            // );
+            setCategories([]);
           }
         })
         .catch((error) => {
           console.error("Error fetching categories:", error);
-          setCategories([]); // Ensure it's an array to prevent .map error
+          setCategories([]);
         });
     } else {
       setCategories([]);
@@ -92,24 +79,26 @@ const Linkraceanddrive = () => {
     } else setIsVisible(true);
   };
 
-  const handleDriverDataReceived = (data) => {
-    setDriverData(data);
+  const handleDataReceived = (type, data) => {
+    if (type === "driver") {
+      setDriverData(data);
+    } else if (type === "vehicle") {
+      setVehicleData(data);
+    }
   };
 
-  const handleVehicleDataReceived = (data) => {
-    setVehicleData(data);
-  };
-
-  const handleDriverSelect = (driver) => {
-    setSelectedDriver(driver);
-    setDriverImageUrl(driver);
-    console.log("driver", driver);
-  };
-
-  const handleVehicleSelect = (vehicle) => {
-    setSelectedVehicle(vehicle);
-    setVehicleImageUrl(vehicle);
-    console.log("vehicle", vehicle);
+  const handleSelect = (type, item) => {
+    if (type === "driver") {
+      setSelectedDriver(item);
+      setDriverImageUrl(
+        item.driverPhoto ? `${IMAGE_URL}${item.driverPhoto}` : null
+      );
+    } else if (type === "vehicle") {
+      setSelectedVehicle(item);
+      setVehicleImageUrl(
+        item.vehiclePhoto ? `${IMAGE_URL}${item.vehiclePhoto}` : null
+      );
+    }
   };
 
   const numberInput = (e) => {
@@ -140,7 +129,7 @@ const Linkraceanddrive = () => {
         <div className="flex-1 p-3 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg border mb-6">
-              <div className="p-2 border-b">
+              <div className="p-2">
                 <h3 className="text-2xl font-semibold text-center text-gray-900">
                   Registration
                 </h3>
@@ -172,17 +161,32 @@ const Linkraceanddrive = () => {
                       Event Category
                     </label>
                     <select
-                      disabled={!selectedEvent}
-                      className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                      disabled={!selectedEvent || categories.length === 0}
+                      className={`w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 ${
+                        categories.length === 0
+                          ? "cursor-not-allowed opacity-50"
+                          : ""
+                      }`}
                     >
                       <option value="">Choose Category</option>
-                      {Array.isArray(categories) &&
+                      {categories.length > 0 ? (
                         categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
+                          <option
+                            key={category.evtCatId}
+                            value={category.evtCatId}
+                          >
+                            {category.evtCategory}
                           </option>
-                        ))}
+                        ))
+                      ) : (
+                        <option disabled>No categories found</option>
+                      )}
                     </select>
+                    {categories.length === 0 && (
+                      <p className="text-red-500 text-sm mt-1">
+                        No categories found
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -195,17 +199,17 @@ const Linkraceanddrive = () => {
                         </label>
                         <AutoCompleteSearch
                           searchType="Driver"
-                          onDataReceived={handleDriverDataReceived}
-                          onSelect={handleDriverSelect}
+                          onDataReceived={(data) =>
+                            handleDataReceived("driver", data)
+                          }
+                          onSelect={(driver) => handleSelect("driver", driver)}
                         />
                       </form>
                     </div>
                     <div className="w-full h-full ">
                       <div className="w-full border p-2 flex bg-gray-50 tab:w-full lappydesk:w-full  rounded-lg">
                         <div className="w-1/2 flex justify-center items-center p-2">
-                          {driverimageUrl &&
-                          typeof driverimageUrl === "string" &&
-                          driverimageUrl.trim() ? (
+                          {driverimageUrl ? (
                             <img
                               src={driverimageUrl}
                               className="h-32 w-48 rounded-lg object-cover flex lappydesk:justify-start"
@@ -215,6 +219,7 @@ const Linkraceanddrive = () => {
                             <IoPerson className="text-4xl border text-cyan-600 w-48 bg-white rounded-lg h-32 object-cover" />
                           )}
                         </div>
+
                         <div className="w-1/2 flex flex-col gap-4 justify-center ">
                           <span>
                             Name:{" "}
@@ -223,7 +228,7 @@ const Linkraceanddrive = () => {
                               : "Not Selected Yet"}
                           </span>
                           <span>
-                            Fmsci number:{" "}
+                            Fmsci No:{" "}
                             {selectedDriver
                               ? selectedDriver.fmsciNumb || "N/A"
                               : "Not Selected Yet"}
@@ -235,7 +240,7 @@ const Linkraceanddrive = () => {
                               : "Not Selected Yet"}
                           </span>
                           <span>
-                            Phone number:{" "}
+                            PH No:{" "}
                             {selectedDriver
                               ? selectedDriver.phone || "N/A"
                               : "Not Selected Yet"}
@@ -253,21 +258,23 @@ const Linkraceanddrive = () => {
                         </label>
                         <AutoCompleteSearch
                           searchType="vehicle"
-                          onDataReceived={handleVehicleDataReceived}
-                          onSelect={handleVehicleSelect}
+                          onDataReceived={(data) =>
+                            handleDataReceived("vehicle", data)
+                          }
+                          onSelect={(vehicle) =>
+                            handleSelect("vehicle", vehicle)
+                          }
                         />
                       </form>
                     </div>
                     <div className="w-full h-full tab:w-full">
                       <div className="w-full border p-2 flex bg-gray-50 tab:w-full lappydesk:w-full  rounded-lg">
                         <div className="w-1/2 flex justify-center items-center p-2">
-                          {vehicleimageUrl &&
-                          typeof vehicleimageUrl === "string" &&
-                          vehicleimageUrl.trim() ? (
+                          {vehicleimageUrl ? (
                             <img
                               src={vehicleimageUrl}
                               className="h-32 w-48 rounded-lg object-cover flex lappydesk:justify-start"
-                              alt="Vehicle"
+                              alt="driver"
                             />
                           ) : (
                             <LuBike className="text-4xl border text-cyan-600 w-48 bg-white rounded-lg h-32 object-cover" />
@@ -309,13 +316,13 @@ const Linkraceanddrive = () => {
                   <div className="w-1/2 tab:w-full flex justify-between px-2 ">
                     <div className="w-1/2 ">
                       <label className="text-sm font-medium text-gray-900">
-                        Enter Contestant number:
+                        Enter Contestant Number:
                       </label>
                       <input
                         value={value}
                         onChange={numberInput}
                         type="text"
-                        placeholder="Enter  number"
+                        placeholder="Enter  Number"
                         className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
                       />
                       {error && (
@@ -344,11 +351,11 @@ const Linkraceanddrive = () => {
                     <div className="w-1/2 flex items-end justify-between gap-2">
                       {isVisible && (
                         <div className="flex justify-center items-center  gap-2">
-                          <label className="text-md" htmlFor="Payment number">
+                          <label className="text-md" htmlFor="Payment Number">
                             Number:
                           </label>
                           <input
-                            placeholder="Enter Ref number"
+                            placeholder="Enter Ref Number"
                             className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
                             type="text"
                           />
