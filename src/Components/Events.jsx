@@ -1,18 +1,23 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
+import CustomAutoComplete from "./CustomAutoComplete";
 import DatePicker from "react-datepicker";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
+
+import "react-datepicker/dist/react-datepicker.css";
+import { format, parse } from "date-fns";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const EventForm = () => {
   const [eventData, setEventData] = useState({
     eventType: "",
     eventName: "",
     dateRange: { start: null, end: null },
-    status: "active",
+    status: "inactive",
     bannerImage: "",
     bankDetails: {
       bankName: "",
@@ -28,6 +33,18 @@ const EventForm = () => {
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [submittedEvents, setSubmittedEvents] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${BASE_URL}/api/EventRegistration`)
+      .then((response) => {
+        console.log("API Response:", response.data.$values); // Debugging
+        setSubmittedEvents(response.data.$values);
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
+  }, []);
 
   const handleInputChange = (e, field) => {
     setEventData({ ...eventData, [field]: e.target.value });
@@ -62,6 +79,7 @@ const EventForm = () => {
       };
       reader.readAsDataURL(file);
     }
+    e.target.value = ""; // Reset input to allow re-upload of the same file
   };
 
   const handleAddCategory = () => {
@@ -116,7 +134,7 @@ const EventForm = () => {
         evtCatId: 0,
         evtCategory: cat.category,
         noOfVeh: cat.participants,
-        status: "active",
+        status: "inactive",
         nooflaps: cat.laps,
         entryprice: cat.entryPrice,
         wheelertype: 0,
@@ -152,6 +170,7 @@ const EventForm = () => {
   };
 
   const handleEdit = (event) => {
+    // setEditMode(true);
     setEventData({
       eventType: event.eventtype,
       eventName: event.eventname,
@@ -189,6 +208,48 @@ const EventForm = () => {
     );
   };
 
+  const handleDateChange = (date, key) => {
+    setEventData((prev) => ({
+      ...prev,
+      dateRange: { ...prev.dateRange, [key]: date },
+    }));
+  };
+
+  const handleDateInput = (e, key) => {
+    if (e.target && e.target.value) {
+      let input = e.target.value.replace(/\D/g, "");
+
+      if (input.length > 2) input = input.slice(0, 2) + "-" + input.slice(2);
+      if (input.length > 5) input = input.slice(0, 5) + "-" + input.slice(5);
+      if (input.length > 10) input = input.slice(0, 10);
+
+      e.target.value = input;
+
+      if (input.length === 10) {
+        const parsedDate = parse(input, "dd-MM-yyyy", new Date());
+
+        if (!isNaN(parsedDate.getTime())) {
+          const month = parsedDate.getMonth() + 1; // Month is 0-indexed
+
+          if (month >= 1 && month <= 12) {
+            // <-- Explicit month validation
+            setEventData((prev) => ({
+              ...prev,
+              dateRange: { ...prev.dateRange, [key]: parsedDate },
+            }));
+          } else {
+            // Handle invalid month (e.g., reset input, show error message)
+            e.target.value = ""; // Or previous valid date
+            alert("Invalid month. Please enter a value between 1 and 12.");
+          }
+        }
+      }
+    } else if (!e.target || !e.target.value) {
+      if (e.target && !e.target.value) {
+        handleDateChange(null, key);
+      }
+    }
+  };
   return (
     <section className="w-full h-full">
       <div className="w-full h-24 overflow-y-hidden shadow-lg">
@@ -205,13 +266,17 @@ const EventForm = () => {
               onSubmit={handleSubmit}
               className="w-full  flex flex-col gap-6 rounded-lg bg-white shadow-lg p-8"
             >
+              <div className="w-full flex justify-center">
+                <div className="w-1/2 ">
+                  <CustomAutoComplete />
+                </div>
+              </div>
               <h2 className="text-2xl font-bold text-center">
                 {editMode ? "Edit Event" : "Event Form"}
               </h2>
-
               <div className="flex gap-4">
                 <div className="w-1/2 gap-2 flex flex-col">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-700">
                     Event Type
                   </label>
                   <select
@@ -229,7 +294,7 @@ const EventForm = () => {
                 </div>
 
                 <div className="w-1/2 gap-2 flex flex-col">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-bold text-gray-700">
                     Event Name
                   </label>
                   <input
@@ -252,37 +317,44 @@ const EventForm = () => {
                   </div>
                   <div className="flex items-center justify-center gap-2 w-full">
                     <div className="flex flex-col w-3/4 gap-3">
-                      <DatePicker
-                        selected={eventData.dateRange.start}
-                        onChange={(date) =>
-                          setEventData({
-                            ...eventData,
-                            dateRange: { ...eventData.dateRange, start: date },
-                          })
-                        }
-                        className="w-60 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                        placeholderText="Start Date"
-                        minDate={new Date()}
-                        required
-                      />
+                      <div className="relative w-60">
+                        <DatePicker
+                          selected={eventData.dateRange.start}
+                          onChange={(date) => handleDateChange(date, "start")}
+                          dateFormat="dd-MM-yyyy"
+                          className="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                          placeholderText="Start Date (dd-mm-yyyy)"
+                          minDate={new Date()}
+                          required
+                          onChangeRaw={(e) => handleDateInput(e, "start")}
+                          onBlur={(e) => {
+                            if (!e.target.value)
+                              handleDateChange(null, "start");
+                          }}
+                        />
+                        <FaCalendarAlt className="absolute left-3 top-3 text-gray-500 pointer-events-none" />
+                      </div>
 
-                      <DatePicker
-                        selected={eventData.dateRange.end}
-                        onChange={(date) =>
-                          setEventData({
-                            ...eventData,
-                            dateRange: { ...eventData.dateRange, end: date },
-                          })
-                        }
-                        className="w-60 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                        placeholderText="End Date"
-                        minDate={eventData.dateRange.start || new Date()}
-                        required
-                      />
+                      <div className="relative w-60">
+                        <DatePicker
+                          selected={eventData.dateRange.end}
+                          onChange={(date) => handleDateChange(date, "end")}
+                          dateFormat="dd-MM-yyyy"
+                          className="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                          placeholderText="End Date (DD-MM-YYYY)"
+                          minDate={eventData.dateRange.start || new Date()}
+                          required
+                          onChangeRaw={(e) => handleDateInput(e, "end")}
+                          onBlur={(e) => {
+                            if (!e.target.value) handleDateChange(null, "end");
+                          }}
+                        />
+                        <FaCalendarAlt className="absolute left-3 top-3 text-gray-500 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Status</h3>
+                    <h3 className="text-lg font-bold">Status</h3>
                     <div className="flex gap-4">
                       <label className="flex items-center">
                         <input
@@ -293,7 +365,7 @@ const EventForm = () => {
                           onChange={(e) => handleInputChange(e, "status")}
                           className="w-4 h-4 text-cyan-600 border-gray-300"
                         />
-                        <span className="ml-2 text-sm font-medium text-gray-700">
+                        <span className="ml-2 text-sm font-bold text-gray-700">
                           Active
                         </span>
                       </label>
@@ -306,7 +378,7 @@ const EventForm = () => {
                           onChange={(e) => handleInputChange(e, "status")}
                           className="w-4 h-4 text-cyan-600 border-gray-300"
                         />
-                        <span className="ml-2 text-sm font-medium text-gray-700">
+                        <span className="ml-2 text-sm font-bold text-gray-700">
                           Inactive
                         </span>
                       </label>
@@ -316,7 +388,7 @@ const EventForm = () => {
 
                 <div className="w-1/2">
                   <div className="flex flex-col gap-3">
-                    <h3 className="text-lg font-semibold">Upload Banner</h3>
+                    <h3 className="text-lg font-bold">Upload Banner</h3>
                     <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
                       <label className="cursor-pointer w-full h-full flex items-center justify-center">
                         {eventData.bannerImage ? (
@@ -354,9 +426,7 @@ const EventForm = () => {
                               />
                             </svg>
                             <p className="text-sm text-gray-500">
-                              <span className="font-semibold">
-                                Click to upload
-                              </span>{" "}
+                              <span className="font-bold">Click to upload</span>{" "}
                               or drag and drop
                             </p>
                             <p className="text-xs text-gray-500">
@@ -377,12 +447,12 @@ const EventForm = () => {
               </div>
 
               <div className="w-full bg-gray-100 p-3 rounded-lg">
-                <div className="text-xl font-semibold mb-4">Bank Details</div>
+                <div className="text-xl font-bold mb-4">Bank Details</div>
                 <div className="flex gap-4">
                   <div className="flex w-1/2">
                     <div className="flex flex-col gap-3 w-full">
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label className="block text-sm font-bold text-gray-700">
                           Bank Name
                         </label>
                         <input
@@ -397,7 +467,22 @@ const EventForm = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label className="block text-sm font-bold text-gray-700">
+                          IFSC Code
+                        </label>
+                        <input
+                          type="text"
+                          value={eventData.bankDetails.ifscCode}
+                          onChange={(e) =>
+                            handleBankDetailsChange(e, "ifscCode")
+                          }
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                          placeholder="Enter IFSC Code"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-sm font-bold text-gray-700">
                           Account Holder Name
                         </label>
                         <input
@@ -412,7 +497,7 @@ const EventForm = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label className="block text-sm font-bold text-gray-700">
                           Account Number
                         </label>
                         <input
@@ -426,27 +511,12 @@ const EventForm = () => {
                           required
                         />
                       </div>
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
-                          IFSC Code
-                        </label>
-                        <input
-                          type="text"
-                          value={eventData.bankDetails.ifscCode}
-                          onChange={(e) =>
-                            handleBankDetailsChange(e, "ifscCode")
-                          }
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                          placeholder="Enter IFSC Code"
-                          required
-                        />
-                      </div>
                     </div>
                   </div>
 
                   <div className="w-1/2">
                     <div className="flex flex-col gap-3">
-                      <h3 className="text-lg font-semibold">Upload QR Code</h3>
+                      <h3 className="text-lg font-bold">Upload QR Code</h3>
                       <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
                         <label className="cursor-pointer w-full h-full flex items-center justify-center">
                           {eventData.bankDetails.qrCode ? (
@@ -490,7 +560,7 @@ const EventForm = () => {
                                 />
                               </svg>
                               <p className="text-sm text-gray-500">
-                                <span className="font-semibold">
+                                <span className="font-bold">
                                   Click to upload
                                 </span>{" "}
                                 or drag and drop
@@ -519,9 +589,7 @@ const EventForm = () => {
                   className="border rounded-lg p-4 bg-gray-50"
                 >
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">
-                      Category {index + 1}
-                    </h3>
+                    <h3 className="text-lg font-bold">Category {index + 1}</h3>
                     <div className="flex gap-2">
                       <button
                         type="button"
@@ -553,7 +621,7 @@ const EventForm = () => {
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">
+                          <label className="block text-sm font-bold text-gray-700">
                             Category Name
                           </label>
                           <input
@@ -570,9 +638,27 @@ const EventForm = () => {
                             required
                           />
                         </div>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-4 gap-2">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700">
+                            <label className="block text-sm font-bold text-gray-700">
+                              Participants
+                            </label>
+                            <input
+                              type="number"
+                              value={category.participants}
+                              onChange={(e) =>
+                                handleCategoryChange(
+                                  category.id,
+                                  "participants",
+                                  parseInt(e.target.value)
+                                )
+                              }
+                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-bold text-gray-700">
                               Laps
                             </label>
                             <input
@@ -590,7 +676,7 @@ const EventForm = () => {
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700">
+                            <label className="block text-sm font-bold text-gray-700">
                               Price
                             </label>
                             <input
@@ -607,24 +693,7 @@ const EventForm = () => {
                               required
                             />
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                              Participants
-                            </label>
-                            <input
-                              type="number"
-                              value={category.participants}
-                              onChange={(e) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  "participants",
-                                  parseInt(e.target.value)
-                                )
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              required
-                            />
-                          </div>
+                          <div>{/* 2W/4W */}</div>
                         </div>
                       </div>
                     </div>
@@ -657,23 +726,23 @@ const EventForm = () => {
                 <h2 className="text-xl font-bold p-4 bg-gray-50 border-b">
                   Submitted Events
                 </h2>
-                <div className="overflow-x-auto">
+                <div className=" overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                           Event Name
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                           Event Type
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                           Status
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                           Categories
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
@@ -689,7 +758,7 @@ const EventForm = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              className={`px-2 inline-flex text-xs leading-5 font-bold rounded-full ${
                                 event.isactive === "true"
                                   ? "bg-green-100 text-green-800"
                                   : "bg-red-100 text-red-800"
@@ -703,7 +772,7 @@ const EventForm = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {event.lstcat?.$values?.length || 0}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
                             <button
                               onClick={() => handleEdit(event)}
                               className="text-indigo-600 hover:text-indigo-900 mr-4"
