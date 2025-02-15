@@ -653,7 +653,7 @@ const EventForm = () => {
 
           {submittedEvents.length > 0 && (
             <section className="p-6">
-              <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="w-full  mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
                 <h2 className="text-xl font-bold p-4 bg-gray-50 border-b">
                   Submitted Events
                 </h2>
