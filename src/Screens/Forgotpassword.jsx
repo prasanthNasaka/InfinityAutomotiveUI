@@ -1,8 +1,15 @@
 import { Link } from "react-router-dom";
 import videoBg from "../assets/videoBg.mp4";
 import Footer from "../Components/Footer";
+import { useState } from "react";
 
 const Forgotpassword = () => {
+  const [step, setStep] = useState(1); 
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   return (
     <section className="w-full h-screen lappy:h-auto relative ">
       <div className="h-full flex flex-col lg:flex-row w-full">
@@ -58,101 +65,96 @@ const Forgotpassword = () => {
               <h3 className="text-xl font-semibold text-black mb-2 dark:text-black">
                 Reset your password
               </h3>
-              {/* <p className="text-gray-600 mb-6 dark:text-black">
-                Enter your email and we&apos;ll send you instructions to reset
-                your password.
-              </p> */}
+             
 
               <form className="mt-4 space-y-4 lg:mt-5 md:space-y-5">
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-black dark:text-black"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:text-black"
-                    placeholder="Enter your email"
-                    required=""
-                  />
-                </div>
-                <div className="relative">
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-black dark:text-black"
-                  >
-                    Enter OTP
-                  </label>
-                  <input
-                    className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:text-black"
-                    placeholder="Enter your OTP"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-2 top-7 flex items-center text-gray-500 "
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="black"
-                      className="size-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-black dark:text-black"
-                  >
-                    Password
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:text-black"
-                    placeholder="Enter your password"
-                    required=""
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-black dark:text-black"
-                  >
-                    Confirm Password
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-300 dark:text-black"
-                    placeholder="Enter New Password"
-                    required=""
-                  />
-                </div>
+                {step === 1 && (
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-black">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <div className="flex justify-end mt-3">
+                      <button
+                        type="button"
+                        className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
+                        onClick={() => setStep(2)} // Move to OTP step
+                      >
+                        Send OTP
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-                <div className="flex justify-end items-center">
-                  <button
-                    type="submit"
-                    className="w-full sm:w-auto px-5 py-2 text-xs sm:text-sm md:text-base bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
-                  >
-                    Change
-                  </button>
-                </div>
+                {step === 2 && (
+                  <div className="relative">
+                    <label className="block mb-2 text-sm font-medium text-black">
+                      Enter OTP
+                    </label>
+                    <input
+                      className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
+                      placeholder="Enter your OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                    />
+
+                    <div className="flex justify-end mt-3">
+                      <button
+                        type="button"
+                        className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
+                        onClick={() => setStep(3)} 
+                      >
+                        Submit OTP
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {step === 3 && (
+                  <>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-black">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-black">
+                        Confirm Password
+                      </label>
+                      <input
+                        type="password"
+                        className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
+                        placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
+                      >
+                        Change
+                      </button>
+                    </div>
+                  </>
+                )}
               </form>
             </div>
           </div>

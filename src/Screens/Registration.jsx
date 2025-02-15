@@ -106,8 +106,7 @@ const Registration = () => {
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setImage(selectedFile);
-    showToast("✅ Image uploaded successfully!");
-  };
+   };
   const handleUploadChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setUpload(selectedFile);
