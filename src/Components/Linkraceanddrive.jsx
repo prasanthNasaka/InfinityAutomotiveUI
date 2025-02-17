@@ -37,20 +37,6 @@ const Linkraceanddrive = () => {
   const [referenceNumber, setReferenceNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetch(`${BASE_URL}/api/EventRegistration`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data.$values)) {
-          setEvents(data.$values);
-        } else {
-          console.error("Expected an array of events, but received:", data);
-          setEvents([]);
-        }
-      })
-      .catch((error) => console.error("Error fetching events:", error));
-  }, []);
-
   const handleEventChange = (event) => {
     const eventId = event.target.value;
     setSelectedEvent(eventId);
@@ -69,8 +55,22 @@ const Linkraceanddrive = () => {
           console.error("Error fetching categories:", error);
           setCategories([]);
         });
+
+      fetch(`${BASE_URL}/api/Registration/event/${eventId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (Array.isArray(data.$values)) {
+            setEvents(data.$values);
+            console.log("Data", data.$values);
+          } else {
+            console.error("Expected an array of events, but received:", data);
+            setEvents([]);
+          }
+        })
+        .catch((error) => console.error("Error fetching events:", error));
     } else {
       setCategories([]);
+      setEvents([]);
     }
   };
 
@@ -127,6 +127,7 @@ const Linkraceanddrive = () => {
       !error
     );
   };
+
   const handleSubmit = async () => {
     if (!isFormValid()) {
       return;
@@ -149,15 +150,7 @@ const Linkraceanddrive = () => {
         }),
       });
       if (response.code === 201) {
-        console.log("data", data);
-
-        const data = await fetch(`${BASE_URL}api/Registration`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log("data", data);
+        handleGetData();
       }
       if (!response.ok) {
         throw new Error("Registration failed");
@@ -177,9 +170,67 @@ const Linkraceanddrive = () => {
       console.log("Failed to register. Please try again.");
     } finally {
       setIsSubmitting(false);
-      console.log("jreruytuy")
+      console.log("jreruytuy");
     }
   };
+
+  const handleGetData = () => {
+    fetch(`${BASE_URL}/api/EventRegistration`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data.$values)) {
+          setEvents(data.$values);
+        } else {
+          console.error("Expected an array of events, but received:", data);
+          setEvents([]);
+        }
+      })
+      .catch((error) => console.error("Error fetching events:", error));
+  };
+
+  const handleEdit = (eventId) => {
+    fetch(`${BASE_URL}/api/EventRegistration/${eventId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        vechId: parseInt(selectedVehicle?.vehicleId) || 0,
+        driverId: parseInt(selectedDriver?.driverId) || 0,
+        eventId: parseInt(selectedEvent) || 0,
+        eventcategoryId: parseInt(selectedCategory) || 0,
+        contestantNo: parseInt(value) || 0,
+        amountPaid: isVisible,
+        referenceNo: referenceNumber || "",
+      }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        handleGetData();
+      })
+      .catch((error) => console.error("Error editing event:", error));
+  };
+
+  const handleDelete = (eventId) => {
+    if (window.confirm("Are you sure you want to delete this event?")) {
+      fetch(`${BASE_URL}/api/EventRegistration/${eventId}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            handleGetData();
+          } else {
+            throw new Error("Failed to delete event");
+          }
+        })
+        .catch((error) => console.error("Error deleting event:", error));
+    }
+  };
+
+  useEffect(() => {
+    handleGetData();
+  }, []);
+
   return (
     <section className="w-full h-screen flex flex-col">
       <div className="w-full h-24 overflow-y-hidden shadow-lg">
@@ -454,92 +505,120 @@ const Linkraceanddrive = () => {
                 </div>
               </div>
             </div>
-
-            <div className="border rounded-lg overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left text-gray-500">
-                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
-                    <tr>
-                      <th className="px-6 py-3 whitespace-nowrap">SL.no</th>
-                      <th className="px-6 py-3 whitespace-nowrap">
-                        Event name
-                      </th>
-                      <th className="px-6 py-3 whitespace-nowrap">Category</th>
-                      <th className="px-6 py-3 whitespace-nowrap">
-                        Contestant Number
-                      </th>
-                      <th className="px-6 py-3 whitespace-nowrap">
-                        Payment Status
-                      </th>
-                      <th className="px-6 py-3 whitespace-nowrap">Documents</th>
-                      <th className="px-6 py-3 whitespace-nowrap">Scrutiny</th>
-                      <th className="px-6 py-3 whitespace-nowrap">Vehicle</th>
-                      <th className="px-6 py-3 whitespace-nowrap">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
-                      <tr key={index} className="bg-white hover:bg-gray-50">
-                        <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
-                          <span className="flex gap-2 justify-center">
-                            {index + 1}
-                          </span>
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap text-gray-900">
-                          <span className="flex gap-2 justify-center">
-                            Piston cup
-                          </span>
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          <span className="flex gap-2 justify-center">
-                            1600cc
-                          </span>
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          <span className="flex gap-2 justify-center">23</span>
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          <span className="flex gap-2 justify-center text-green-600 capitalize">
-                            paid
-                          </span>
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          <span className="flex gap-2 justify-center text-green-600 capitalize">
-                            Verified
-                          </span>
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          <span className="flex gap-2 justify-center text-red-600 capitalize">
-                            Rejected
-                          </span>
-                        </td>
-                        <td className="px-6 py-2 text-wrap">
-                          <span className="flex gap-2 justify-center capitalize">
-                            Lamborghini huracan
-                          </span>
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors "
-                            >
-                              <CiEdit className="size-6" />
-                            </button>
-                            <button
-                              type="button"
-                              className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors "
-                            >
-                              <MdOutlineDelete className="size-6" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {events.length > 0 && (
+              <div className="min-h-screen bg-gray-100 p-6">
+                <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left text-gray-500">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
+                        <tr>
+                          <th className="px-6 py-3 whitespace-nowrap">SL.No</th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Event name
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Category
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Contestant Number
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Payment Status
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Documents
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Scrutiny
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            vehicle
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {events.map((event, index) => (
+                          <tr
+                            key={event.eventid}
+                            className="bg-white hover:bg-gray-50"
+                          >
+                            <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
+                              {index + 1}
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap text-gray-900">
+                              {event.eventname}
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              {event.eventtype}
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs ${
+                                  event.eventstatus === 1
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-yellow-100 text-yellow-800"
+                                }`}
+                              >
+                                {event.eventstatus === 1 ? "Active" : "Pending"}
+                              </span>
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              <div className="text-sm">
+                                <p>Bank: {event.bankname}</p>
+                                <p>A/C: {event.accountnum}</p>
+                              </div>
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs ${
+                                  event.isactive === "true"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {event.isactive}
+                              </span>
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs ${
+                                  event.showdashboard === "true"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {event.showdashboard}
+                              </span>
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleEdit(event.eventid)}
+                                  className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                                >
+                                  <CiEdit className="w-6 h-6" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(event.eventid)}
+                                  className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                                >
+                                  <MdOutlineDelete className="w-6 h-6" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

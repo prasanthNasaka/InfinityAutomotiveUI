@@ -1,13 +1,10 @@
-import { useState } from "react";
-import {
-  Bike,
-  Car,
-  CheckCircle2,
-  AlertCircle,
-  ChevronDown,
-} from "lucide-react";
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
+import { CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { BASE_URL } from "../constants/global-const";
+import axios from "axios";
 
 const Scrutinys = () => {
   const [vehicleType, setVehicleType] = useState("car");
@@ -17,6 +14,8 @@ const Scrutinys = () => {
   const [reasonInput, setReasonInput] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState("");
 
   const questions = [
     {
@@ -93,6 +92,44 @@ const Scrutinys = () => {
     },
   ];
 
+  const handleGetData = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/EventRegistration`);
+      console.log("Response Data:", response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleEventChange = (event) => {
+    const eventId = event.target.value;
+    setSelectedEvent(eventId);
+    if (eventId) {
+      fetch(`${BASE_URL}/api/EventRegistration?event_id=${eventId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Event Registrations:", data);
+        })
+        .catch((error) => {
+          console.error("Error fetching event registrations:", error);
+        });
+
+      fetch(`${BASE_URL}/api/Registration/event/${eventId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (Array.isArray(data.$values)) {
+            setEvents(data.$values);
+          } else {
+            console.error("Expected an array of events, but received:", data);
+            setEvents([]);
+          }
+        })
+        .catch((error) => console.error("Error fetching events:", error));
+    } else {
+      setEvents([]);
+    }
+  };
+
   const categories = Array.from(new Set(questions.map((q) => q.category)));
 
   const handleAnswerChange = (questionId, value) => {
@@ -140,28 +177,30 @@ const Scrutinys = () => {
     );
     const totalQuestions = applicableQuestions.length;
 
-    let passedQuestions = 0;
-    let failedQuestions = 0;
+    if (totalQuestions === 0) return { passed: 0, failed: 0, total: 0 };
 
-    applicableQuestions.forEach((question) => {
-      if (answers[question.id]?.value === true) {
-        passedQuestions++;
-      } else if (answers[question.id]?.value === false) {
-        failedQuestions++;
-      }
-    });
+    let passedQuestions = applicableQuestions.filter(
+      (q) => answers[q.id]?.value === true
+    ).length;
+    let failedQuestions = applicableQuestions.filter(
+      (q) => answers[q.id]?.value === false
+    ).length;
 
     return {
-      passed: totalQuestions > 0 ? (passedQuestions / totalQuestions) * 100 : 0,
-      failed: totalQuestions > 0 ? (failedQuestions / totalQuestions) * 100 : 0,
-      total:
-        totalQuestions > 0
-          ? ((passedQuestions + failedQuestions) / totalQuestions) * 100
-          : 0,
+      passed: (passedQuestions / totalQuestions) * 100,
+      failed: (failedQuestions / totalQuestions) * 100,
+      total: ((passedQuestions + failedQuestions) / totalQuestions) * 100,
     };
   };
 
   const progress = getProgress();
+
+  useEffect(() => {
+    handleGetData();
+    if (selectedEvent) {
+      handleEventChange({ target: { value: selectedEvent } });
+    }
+  }, [selectedEvent]);
 
   return (
     <>
@@ -181,30 +220,25 @@ const Scrutinys = () => {
                   Dashboard
                 </Link>
               </div>
-
-              <div className="mt-4 flex items-center space-x-4">
-                <button
-                  onClick={() => setVehicleType("car")}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                    vehicleType === "car"
-                      ? "bg-white text-cyan-600"
-                      : "bg-cyan-300"
-                  }`}
-                >
-                  <Car size={20} />
-                  <span>Car</span>
-                </button>
-                <button
-                  onClick={() => setVehicleType("bike")}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                    vehicleType === "bike"
-                      ? "bg-white text-cyan-600"
-                      : "bg-cyan-300"
-                  }`}
-                >
-                  <Bike size={20} />
-                  <span>Bike</span>
-                </button>
+              <div className="w-full flex p-2 gap-2 tab:flex-col">
+                <div className="w-1/2 tab:w-full">
+                  <label className="text-sm font-medium text-gray-900">
+                    Event Name
+                  </label>
+                  <select
+                    value={selectedEvent}
+                    onChange={handleEventChange}
+                    className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                  >
+                    <option value="">Choose Event</option>
+                    {Array.isArray(events) &&
+                      events.map((event) => (
+                        <option key={event.eventid} value={event.eventid}>
+                          {event.eventname}
+                        </option>
+                      ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
