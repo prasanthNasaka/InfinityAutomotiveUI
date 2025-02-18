@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import Card from "../Components/Card";
+import { FaArrowRight } from "react-icons/fa";
 
 const liveEvents = [
   {
@@ -225,6 +227,15 @@ const completedEvents = [
 const LandingPage = () => {
   return (
     <div className="container mx-auto p-4">
+      <div className="w-full h-auto flex items-center justify-end">
+        <Link
+          to={"/login"}
+          className="w-fit flex items-center bg-cyan-500 text-white gap-3 p-2 border text-center hover:bg-cyan-600 hover:text-black transform ease-in-out duration-1000 rounded-md"
+        >
+          Login
+          <FaArrowRight className="size-5 flex items-center" />
+        </Link>
+      </div>
       <h1 className="text-3xl font-bold mb-6">Live Events</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {liveEvents.map((event) => (
