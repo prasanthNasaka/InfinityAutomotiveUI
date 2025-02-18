@@ -1,24 +1,13 @@
 /* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
-import { useEffect, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import { LuBike } from "react-icons/lu";
 import Newheader from "./Newheader";
 import MainSideBar from "./MainSideBar";
 import AutoCompleteSearch from "./CustomAutoComplete";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
-
-const formatDate = (dateString) => {
-  if (!dateString || dateString === "0001-01-01T00:00:00") {
-    return "N/A";
-  }
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
 
 const Linkraceanddrive = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -29,19 +18,23 @@ const Linkraceanddrive = () => {
   const [driverimageUrl, setDriverImageUrl] = useState("");
   const [vehicleimageUrl, setVehicleImageUrl] = useState("");
   const [events, setEvents] = useState([]);
-  const [categories, setCategories] = useState({});
+  const [categories, setCategories] = useState([]); 
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tableData, setTableData] = useState([]); 
 
   const handleEventChange = (event) => {
     const eventId = event.target.value;
     setSelectedEvent(eventId);
+    setSelectedCategory(""); 
+    setTableData([]); 
 
     if (eventId) {
+      
       fetch(`${BASE_URL}/api/eventcategories?event_id=${eventId}`)
         .then((response) => response.json())
         .then((data) => {
@@ -60,17 +53,19 @@ const Linkraceanddrive = () => {
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data.$values)) {
-            setEvents(data.$values);
-            console.log("Data", data.$values);
+            setTableData(data.$values);
           } else {
-            console.error("Expected an array of events, but received:", data);
-            setEvents([]);
+            console.error(
+              "Expected an array of table data, but received:",
+              data
+            );
+            setTableData([]);
           }
         })
-        .catch((error) => console.error("Error fetching events:", error));
+        .catch((error) => console.error("Error fetching table data:", error));
     } else {
       setCategories([]);
-      setEvents([]);
+      setTableData([]);
     }
   };
 
@@ -228,7 +223,17 @@ const Linkraceanddrive = () => {
   };
 
   useEffect(() => {
-    handleGetData();
+    fetch(`${BASE_URL}/api/EventRegistration`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data.$values)) {
+          setEvents(data.$values);
+        } else {
+          console.error("Expected an array of events, but received:", data);
+          setEvents([]);
+        }
+      })
+      .catch((error) => console.error("Error fetching events:", error));
   }, []);
 
   return (
@@ -265,12 +270,11 @@ const Linkraceanddrive = () => {
                       className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
                     >
                       <option value="">Choose Event</option>
-                      {Array.isArray(events) &&
-                        events.map((event) => (
-                          <option key={event.eventid} value={event.eventid}>
-                            {event.eventname}
-                          </option>
-                        ))}
+                      {events.map((event) => (
+                        <option key={event.eventid} value={event.eventid}>
+                          {event.eventname}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -281,37 +285,26 @@ const Linkraceanddrive = () => {
                     <select
                       value={selectedCategory}
                       onChange={handleCategoryChange}
-                      disabled={
-                        !selectedEvent || Object.keys(categories).length === 0
-                      }
+                      disabled={!selectedEvent || categories.length === 0}
                       className={`w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 ${
-                        Object.keys(categories).length === 0
+                        categories.length === 0
                           ? "cursor-not-allowed opacity-50"
                           : ""
                       }`}
                     >
                       <option value="">Choose Category</option>
-                      {Object.keys(categories).length > 0 ? (
-                        Object.values(categories).map((category) => (
-                          <option
-                            key={category.evtCatId}
-                            value={category.evtCatId}
-                          >
-                            {category.evtCategory}
-                          </option>
-                        ))
-                      ) : (
-                        <option disabled>No categories found</option>
-                      )}
+                      {categories.map((category) => (
+                        <option
+                          key={category.evtCatId}
+                          value={category.evtCatId}
+                        >
+                          {category.evtCategory}
+                        </option>
+                      ))}
                     </select>
-                    {categories.length === 0 && (
-                      <p className="text-red-500 text-sm mt-1">
-                        No categories found
-                      </p>
-                    )}
+                    
                   </div>
                 </div>
-
                 <div className="w-full flex h-auto p-2 gap-2 tab:flex-col">
                   <div className="w-1/2 flex flex-col gap-2 tab:w-full">
                     <div className="w-full">
@@ -505,12 +498,12 @@ const Linkraceanddrive = () => {
                 </div>
               </div>
             </div>
-            {events.length > 0 && (
-              <div className="min-h-screen bg-gray-100 p-6">
+            {tableData.length > 0 && (
+              <div className="min-h-auto">
                 <div className="border rounded-lg overflow-hidden bg-white shadow-md">
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left text-gray-500">
-                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
                         <tr>
                           <th className="px-6 py-3 whitespace-nowrap">SL.No</th>
                           <th className="px-6 py-3 whitespace-nowrap">
@@ -532,15 +525,15 @@ const Linkraceanddrive = () => {
                             Scrutiny
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">
-                            vehicle
+                            Vehicle
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">
                             Action
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {events.map((event, index) => (
+                      <tbody className="divide-y divide-gray-200 text-center uppercase">
+                        {tableData.map((event, index) => (
                           <tr
                             key={event.eventid}
                             className="bg-white hover:bg-gray-50"
@@ -552,46 +545,54 @@ const Linkraceanddrive = () => {
                               {event.eventname}
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap">
-                              {event.eventtype}
+                              {event.evtCategory}
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              {event.contestantNo}
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  event.eventstatus === 1
+                                className={`p-2 rounded-full text-xs ${
+                                  event.amountPaid === true
                                     ? "bg-green-100 text-green-800"
                                     : "bg-yellow-100 text-yellow-800"
                                 }`}
                               >
-                                {event.eventstatus === 1 ? "Active" : "Pending"}
-                              </span>
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              <div className="text-sm">
-                                <p>Bank: {event.bankname}</p>
-                                <p>A/C: {event.accountnum}</p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  event.isactive === "true"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {event.isactive}
+                                {event.amountPaid === true ? "Paid" : "Pending"}
                               </span>
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  event.showdashboard === "true"
+                                className={`p-2 rounded-full text-xs ${
+                                  event.documentStatus === "0"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-green-100 text-green-800"
+                                }`}
+                              >
+                                {event.documentStatus === "0"
+                                  ? "Pending"
+                                  : "Verified"}
+                              </span>
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              <span
+                                className={`p-2 rounded-full text-xs ${
+                                  event.scrutinyStatus === "0"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : event.scrutinyStatus === "1"
                                     ? "bg-green-100 text-green-800"
                                     : "bg-red-100 text-red-800"
                                 }`}
                               >
-                                {event.showdashboard}
+                                {event.scrutinyStatus === "0"
+                                  ? "Pending"
+                                  : event.scrutinyStatus === "1"
+                                  ? "Verified"
+                                  : "Rejected"}
                               </span>
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              {event.regNumb}
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap">
                               <div className="flex gap-2">
