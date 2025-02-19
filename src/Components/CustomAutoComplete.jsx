@@ -6,9 +6,7 @@ import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import { FaCar, FaUser } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
-import { Link } from "react-router-dom";
 import DriverRegistration from "../Screens/DriverRegistration";
-import Vehicledetails from "../Screens/Vehicledetails";
 import VehicleRegistration from "../Screens/VehicleRegistration";
 
 const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from }) => {
@@ -217,13 +215,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from }) => {
         </div>
       )}
 
-      {toast && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-          onClose={() => setToast(null)}
-        />
-      )}
+     
     </div>
   );
 };
