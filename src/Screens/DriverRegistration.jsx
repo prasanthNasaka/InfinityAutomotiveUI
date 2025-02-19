@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const DriverRegistration = ({ closePopup }) => {
   const [name, setName] = useState("");

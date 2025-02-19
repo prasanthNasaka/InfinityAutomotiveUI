@@ -12,7 +12,6 @@ import LandingPage from "./Screens/LandingPage";
 import Dashboard from "./Screens/Dashboard";
 import Main_DriverRaceLink from "./Screens/Main_DriverRaceLink";
 
-import DriverRegistration from "./Screens/DriverRegistration";
 import Events from "./Components/Events";
 import Scrutinys from "./Screens/Scrutinys";
 import Vehicledetails from "./Screens/Vehicledetails";
@@ -52,7 +51,6 @@ const App = () => {
             path="/driverracelink"
             element={auth ? <Navigate to="/dashboard" /> : <Login />}
           />
-          <Route path="/register" element={<DriverRegistration />} />
 
           <Route path="/events" element={<Events/>} />
 
@@ -61,10 +59,6 @@ const App = () => {
             element={auth ? <Navigate to="/dashboard" /> : <Login />}
           />
 
-          <Route
-            path="/register"
-            element={auth ? <Navigate to="/" /> : <Registration />}
-          />
           <Route
             path="/signup"
             element={auth ? <Navigate to="/" /> : <Signup />}

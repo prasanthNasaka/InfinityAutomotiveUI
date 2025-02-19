@@ -6,20 +6,10 @@ import Newheader from "../Components/Newheader";
 import axios from "axios";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
-const Toast = ({ message, onClose }) => {
-  return (
-    <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
-      {message}
-      <button onClick={onClose} className="ml-4 text-gray-300 hover:text-white">
-        X
-      </button>
-    </div>
-  );
-};
+import toast, { Toaster } from "react-hot-toast";
 
 const Registration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
@@ -65,57 +55,22 @@ const Registration = () => {
     }
   };
 
-  useEffect(() => {
-    if (selecteddetails !== null) {
-      console.log("selectedDriver", selecteddetails);
-    }
-    if (selecteddetails) {
-      setName(selecteddetails.drivername || "");
-      setDlNumb(selecteddetails.dlNumb || "");
-      setFmsciNumb(selecteddetails.fmsciNumb || "");
-      setPhone(selecteddetails.phone || "");
-      setBloodGroup(selecteddetails.bloodgroup || "");
-      setDob(selecteddetails.dob || "");
-      setFmsciValidTill(selecteddetails.fmsciValidTill || "");
-      setDlValidTill(selecteddetails.dlValidTill || "");
-      setEmail(selecteddetails.email || "");
-      setFile(
-        selecteddetails.driverPhoto
-          ? `${IMAGE_URL}${selecteddetails.driverPhoto}`
-          : null
-      );
-      setImage(
-        selecteddetails.dlPhoto
-          ? `${IMAGE_URL}${selecteddetails.dlPhoto}`
-          : null
-      );
-      setUpload(
-        selecteddetails.fmsciLicPhoto
-          ? `${IMAGE_URL}${selecteddetails.fmsciLicPhoto}`
-          : null
-      );
-    }
-  }, [selecteddetails]);
-
-  const showToast = (message) => {
-    setToastMessage(message);
-    setTimeout(() => setToastMessage(""), 3000);
-  };
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setImage(selectedFile);
-   };
+    toast.success(" Image uploaded successfully!");
+  };
   const handleUploadChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setUpload(selectedFile);
-    showToast("✅ Image uploaded successfully!");
+    toast.success(" Image uploaded successfully!");
   };
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setFile(selectedFile);
 
     setFile(selectedFile);
-    showToast("✅ Image uploaded successfully!");
+    toast.success(" Image uploaded successfully!");
   };
 
   const handleSave = async (e) => {
@@ -158,7 +113,7 @@ const Registration = () => {
     formData.append("dlValidTill", dlValidTill);
     formData.append("dob", dob);
     formData.append("bloodGroup", bloodGroup);
-    formData.append("teamMemberOf", 1);
+    formData.append("teamMemberOf", 0);
     if (file) formData.append("driverPhoto", file);
     if (upload) formData.append("fmsciLicPhoto", upload);
     if (image) formData.append("dlPhoto", image);
@@ -171,7 +126,7 @@ const Registration = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      showToast("Driver registered successfully:", response.data);
+      toast.success("Driver registered successfully:", response.data);
     } catch (error) {
       console.error("Error registering driver:", error);
       if (error.response && error.response.data) {
@@ -213,11 +168,41 @@ const Registration = () => {
     setFmsciNumb("");
   };
 
+  useEffect(() => {
+    if (selecteddetails !== null) {
+      console.log("selectedDriver", selecteddetails);
+    }
+    if (selecteddetails) {
+      setName(selecteddetails.drivername || "");
+      setDlNumb(selecteddetails.dlNumb || "");
+      setFmsciNumb(selecteddetails.fmsciNumb || "");
+      setPhone(selecteddetails.phone || "");
+      setBloodGroup(selecteddetails.bloodgroup || "");
+      setDob(selecteddetails.dob || "");
+      setFmsciValidTill(selecteddetails.fmsciValidTill || "");
+      setDlValidTill(selecteddetails.dlValidTill || "");
+      setEmail(selecteddetails.email || "");
+      setFile(
+        selecteddetails.driverPhoto
+          ? `${IMAGE_URL}${selecteddetails.driverPhoto}`
+          : null
+      );
+      setImage(
+        selecteddetails.dlPhoto
+          ? `${IMAGE_URL}${selecteddetails.dlPhoto}`
+          : null
+      );
+      setUpload(
+        selecteddetails.fmsciLicPhoto
+          ? `${IMAGE_URL}${selecteddetails.fmsciLicPhoto}`
+          : null
+      );
+    }
+  }, [selecteddetails]);
+
   return (
     <>
-      {toastMessage && (
-        <Toast message={toastMessage} onClose={() => setToastMessage("")} />
-      )}
+      <Toaster position="bottom-center" reverseOrder={false} />
       <div className="h-24 w-full shadow-md p-1">
         <Newheader />
       </div>
@@ -578,8 +563,6 @@ const Registration = () => {
               >
                 Save
               </button>
-
-              
             </div>
           </div>
         </div>

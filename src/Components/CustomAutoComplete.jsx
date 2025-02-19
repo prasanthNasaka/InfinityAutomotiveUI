@@ -2,7 +2,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback } from "react";
 import { Search, X as CloseIcon } from "lucide-react";
-import Toast from "./Toast";
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import { FaCar, FaUser } from "react-icons/fa";
