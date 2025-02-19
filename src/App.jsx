@@ -18,6 +18,9 @@ import Scrutinys from "./Screens/Scrutinys";
 import Vehicledetails from "./Screens/Vehicledetails";
 import AddCompany from "./Screens/AddCompany";
 import Home from "./Screens/Home";
+import Add_Employee from "./Components/Add_Employee";
+import Emp_Login from "./Components/Emp_Login";
+import ScrutineerPage from "./Components/ScrutineerPage";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -34,12 +37,16 @@ const App = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="home" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login/>} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/driverracelink" element={<Main_DriverRaceLink />} />
           <Route path="/scrutiny" element={<Scrutinys />} />
           <Route path="/vehicle_registration" element={<Vehicledetails />} />
           <Route path="/addcompany" element={<AddCompany />} />
+          <Route path="/addemployee" element={<Add_Employee />} />
+          <Route path="/emplogin" element={<Emp_Login />} />
+          <Route path="/scrutineerpage" element={<ScrutineerPage/>} />
 
           <Route
             path="/driverracelink"
@@ -47,7 +54,7 @@ const App = () => {
           />
           <Route path="/register" element={<DriverRegistration />} />
 
-          <Route path="/events" element={<Events />} />
+          <Route path="/events" element={<Events/>} />
 
           <Route
             path="/dashboard"
