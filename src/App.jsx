@@ -17,6 +17,7 @@ import Events from "./Components/Events";
 import Scrutinys from "./Screens/Scrutinys";
 import Vehicledetails from "./Screens/Vehicledetails";
 import AddCompany from "./Screens/AddCompany";
+import Home from "./Screens/Home";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -31,6 +32,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/registration" element={<Registration />} />

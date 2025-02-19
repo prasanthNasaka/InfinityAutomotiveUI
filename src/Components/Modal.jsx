@@ -1,6 +1,6 @@
 // eslint-disable-next-line react/prop-types
 const Modal = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null; // Don't render if not open
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">

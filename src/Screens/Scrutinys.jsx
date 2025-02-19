@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
+import { MdOutlineDelete } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
 
 const Scrutinys = () => {
   const [vehicleType, setVehicleType] = useState("car");
@@ -15,6 +17,7 @@ const Scrutinys = () => {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
   const [events, setEvents] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
 
   const questions = [
@@ -95,30 +98,26 @@ const Scrutinys = () => {
   const handleGetData = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/EventRegistration`);
-      console.log("Response Data:", response.data);
+      setEvents(response.data.$values);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   const handleEventChange = (event) => {
+    console.log("event", event);
+
     const eventId = event.target.value;
     setSelectedEvent(eventId);
-    if (eventId) {
-      fetch(`${BASE_URL}/api/EventRegistration?event_id=${eventId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Event Registrations:", data);
-        })
-        .catch((error) => {
-          console.error("Error fetching event registrations:", error);
-        });
 
+    if (eventId) {
+      console.log("Event ID:", eventId);
       fetch(`${BASE_URL}/api/Registration/event/${eventId}`)
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data.$values)) {
-            setEvents(data.$values);
+            setTableData(data.$values);
+            console.log("Data", data.$values);
           } else {
             console.error("Expected an array of events, but received:", data);
             setEvents([]);
@@ -126,6 +125,7 @@ const Scrutinys = () => {
         })
         .catch((error) => console.error("Error fetching events:", error));
     } else {
+      setTableData([]);
       setEvents([]);
     }
   };
@@ -222,7 +222,7 @@ const Scrutinys = () => {
               </div>
               <div className="w-full flex p-2 gap-2 tab:flex-col">
                 <div className="w-1/2 tab:w-full">
-                  <label className="text-sm font-medium text-gray-900">
+                  <label className="text-sm font-medium text-white">
                     Event Name
                   </label>
                   <select
@@ -242,6 +242,106 @@ const Scrutinys = () => {
               </div>
             </div>
           </div>
+
+          {tableData.length > 0 && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                      <tr>
+                        <th className="px-6 py-3 whitespace-nowrap">SL.No</th>
+                        <th className="px-6 py-3 whitespace-nowrap">
+                          Event name
+                        </th>
+                        <th className="px-6 py-3 whitespace-nowrap">
+                          Category
+                        </th>
+                        <th className="px-6 py-3 whitespace-nowrap">
+                          Contestant Number
+                        </th>
+                        <th className="px-6 py-3 whitespace-nowrap">
+                          Payment Status
+                        </th>
+                        <th className="px-6 py-3 whitespace-nowrap">
+                          Documents
+                        </th>
+                        <th className="px-6 py-3 whitespace-nowrap">
+                          Scrutiny
+                        </th>
+                        <th className="px-6 py-3 whitespace-nowrap">Vehicle</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 text-center uppercase">
+                      {tableData.map((event, index) => (
+                        <tr
+                          key={event.eventid}
+                          className="bg-white hover:bg-gray-50"
+                        >
+                          <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
+                            {index + 1}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap text-gray-900">
+                            {event.eventname}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {event.evtCategory}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {event.contestantNo}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            <span
+                              className={`p-2 rounded-full text-xs ${
+                                event.amountPaid === true
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
+                            >
+                              {event.amountPaid === true ? "Paid" : "Pending"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            <span
+                              className={`p-2 rounded-full text-xs ${
+                                event.documentStatus === "0"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-green-100 text-green-800"
+                              }`}
+                            >
+                              {event.documentStatus === "0"
+                                ? "Pending"
+                                : "Verified"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            <span
+                              className={`p-2 rounded-full text-xs ${
+                                event.scrutinyStatus === "0"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : event.scrutinyStatus === "1"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {event.scrutinyStatus === "0"
+                                ? "Pending"
+                                : event.scrutinyStatus === "1"
+                                ? "Verified"
+                                : "Rejected"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {event.regNumb}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="bg-white rounded-lg p-4 shadow-sm">

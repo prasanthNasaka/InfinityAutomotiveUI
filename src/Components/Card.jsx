@@ -46,7 +46,7 @@ const Card = ({ event, type }) => {
                 {event.date}
               </p>
               <Link
-                to="/register"
+                to="/driverracelink"
                 className="mt-4 w-full bg-cyan-500 text-white px-4 py-2 rounded flex justify-center hover:bg-cyan-600 transition"
               >
                 Register Now
@@ -133,7 +133,7 @@ const Card = ({ event, type }) => {
                     Close
                   </button>
                   <Link
-                    to="/register"
+                    to="/driverracelink"
                     className="w-full text-center bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition"
                   >
                     Register Now

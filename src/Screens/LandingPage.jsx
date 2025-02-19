@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Card from "../Components/Card";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRightLong } from "react-icons/fa6";
 
 const liveEvents = [
   {
@@ -233,7 +233,7 @@ const LandingPage = () => {
           className="w-fit flex items-center bg-cyan-500 text-white gap-3 p-2 border text-center hover:bg-cyan-600 hover:text-black transform ease-in-out duration-1000 rounded-md"
         >
           Login
-          <FaArrowRight className="size-5 flex items-center" />
+          <FaArrowRightLong className="size-5 flex items-center" />
         </Link>
       </div>
       <h1 className="text-3xl font-bold mb-6">Live Events</h1>
