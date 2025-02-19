@@ -4,8 +4,8 @@ import {
   FaRegDotCircle,
   FaRegCircle,
   FaClipboardList,
-  // FaTv,
-  // FaClock,
+  FaTv,
+  FaClock,
   FaUserCheck,
   FaCalendarAlt,
   FaCar,
@@ -87,13 +87,8 @@ const MainSideBar = () => {
             <FaUserCheck />
             {!isCollapsed && <span>Mapping</span>}
           </Link>
-<<<<<<< Updated upstream
           <Link
             to="/addemployee"
-=======
-          {/* <Link
-            to="/timekeeper"
->>>>>>> Stashed changes
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
               isActive("/timekeeper") ? "bg-cyan-600 rounded-lg" : ""
             }`}
@@ -117,13 +112,8 @@ const MainSideBar = () => {
             }`}
           >
             <FaClipboardList />
-<<<<<<< Updated upstream
             {!isCollapsed && <span>ScrutineerPage</span>}
           </Link>
-=======
-            {!isCollapsed && <span>Results</span>}
-          </Link> */}
->>>>>>> Stashed changes
           <Link
             to="/scrutiny"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
