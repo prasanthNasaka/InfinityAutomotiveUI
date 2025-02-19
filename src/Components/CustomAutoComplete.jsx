@@ -5,6 +5,9 @@ import { Search, X as CloseIcon } from "lucide-react";
 import Toast from "./Toast";
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
+import { FaCar, FaUser } from "react-icons/fa";
+import { GoPlus } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const [inputValue, setInputValue] = useState("");
@@ -13,6 +16,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [toast, setToast] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   const fetchOptions = useCallback(
     async (searchTerm) => {
@@ -155,7 +159,26 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
               </div>
             ))
           ) : (
-            <div className="px-4 py-2 text-gray-500">No results found</div>
+            <div className="flex flex-col items-center p-2 text-gray-500">
+              {searchType === "vehicle" ? (
+                <>
+                  <button className="flex p-2 w-fit rounded-full bg-gray-100 hover:bg-gray-100 hover:transform hover:scale-x-105 	 hover:duration-1000 ease-in-out hover:text-cyan-500 text-lg">
+                    <Link className="flex" to="/vehicle_registration">
+                      <FaCar />
+                      <GoPlus />
+                    </Link>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button className="flex p-2 w-fit  rounded-full bg-gray-100 hover:bg-gray-200 hover:transform hover:scale-x-105 	 hover:duration-1000 ease-in-out hover:text-cyan-500 text-lg">
+                    <FaUser />
+                    <GoPlus />
+                  </button>
+                </>
+              )}
+              No Results Found
+            </div>
           )}
         </div>
       )}

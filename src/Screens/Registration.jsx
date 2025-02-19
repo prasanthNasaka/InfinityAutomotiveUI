@@ -6,8 +6,6 @@ import Newheader from "../Components/Newheader";
 import axios from "axios";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
-import imageCompression from "browser-image-compression";
-
 const Toast = ({ message, onClose }) => {
   return (
     <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
