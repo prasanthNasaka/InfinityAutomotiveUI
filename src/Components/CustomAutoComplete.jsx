@@ -8,8 +8,11 @@ import { BASE_URL } from "../constants/global-const";
 import { FaCar, FaUser } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 import { Link } from "react-router-dom";
+import DriverRegistration from "../Screens/DriverRegistration";
+import Vehicledetails from "../Screens/Vehicledetails";
+import VehicleRegistration from "../Screens/VehicleRegistration";
 
-const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
+const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from }) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -17,6 +20,21 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
   const [toast, setToast] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isVehiclePopup, setIsVehiclePopup] = useState(false);
+
+  const openPopup = (e) => {
+    e.preventDefault();
+    if (searchType === "vehicle") {
+      setIsVehiclePopup(true);
+    } else {
+      setIsPopupVisible(true);
+    }
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false);
+    setIsVehiclePopup(false);
+  };
 
   const fetchOptions = useCallback(
     async (searchTerm) => {
@@ -106,7 +124,14 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
     onSelect(null);
     setShowDropdown(false);
     setIsTyping(false);
+    
   };
+
+  useEffect(() => {
+    if (options.length == 0) {
+        setShowDropdown(false);
+    }
+}, [options]); 
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -160,26 +185,36 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect }) => {
             ))
           ) : (
             <div className="flex flex-col items-center p-2 text-gray-500">
-              {searchType === "vehicle" ? (
-                <>
-                  <button className="flex p-2 w-fit rounded-full bg-gray-100 hover:bg-gray-100 hover:transform hover:scale-x-105 	 hover:duration-1000 ease-in-out hover:text-cyan-500 text-lg">
-                    <Link className="flex" to="/vehicle_registration">
-                      <FaCar />
-                      <GoPlus />
-                    </Link>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button className="flex p-2 w-fit  rounded-full bg-gray-100 hover:bg-gray-200 hover:transform hover:scale-x-105 	 hover:duration-1000 ease-in-out hover:text-cyan-500 text-lg">
-                    <FaUser />
+              <p>No Results Found</p>
+
+              {from === "myComponent" && (
+                <div className="mt-2">
+                  <button
+                    onClick={openPopup}
+                    className="flex p-2 w-fit rounded-full bg-gray-100 hover:bg-gray-200 hover:transform hover:scale-x-105 hover:duration-1000 ease-in-out hover:text-cyan-500 text-lg"
+                  >
+                    {searchType === "vehicle" ? <FaCar /> : <FaUser />}
                     <GoPlus />
                   </button>
-                </>
+                </div>
               )}
-              No Results Found
             </div>
           )}
+        </div>
+      )}
+      {isPopupVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
+          <div className="relative  rounded-lg shadow-lg w-full max-w-md">
+            <DriverRegistration closePopup={closePopup} />
+          </div>
+        </div>
+      )}
+
+      {isVehiclePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
+          <div className="relative  rounded-lg shadow-lg w-full max-w-md">
+            <VehicleRegistration closePopup={closePopup} />
+          </div>
         </div>
       )}
 

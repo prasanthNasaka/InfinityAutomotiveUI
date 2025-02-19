@@ -18,23 +18,22 @@ const Linkraceanddrive = () => {
   const [driverimageUrl, setDriverImageUrl] = useState("");
   const [vehicleimageUrl, setVehicleImageUrl] = useState("");
   const [events, setEvents] = useState([]);
-  const [categories, setCategories] = useState([]); 
+  const [categories, setCategories] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tableData, setTableData] = useState([]); 
+  const [tableData, setTableData] = useState([]);
 
   const handleEventChange = (event) => {
     const eventId = event.target.value;
     setSelectedEvent(eventId);
-    setSelectedCategory(""); 
-    setTableData([]); 
+    setSelectedCategory("");
+    setTableData([]);
 
     if (eventId) {
-      
       fetch(`${BASE_URL}/api/eventcategories?event_id=${eventId}`)
         .then((response) => response.json())
         .then((data) => {
@@ -302,7 +301,6 @@ const Linkraceanddrive = () => {
                         </option>
                       ))}
                     </select>
-                    
                   </div>
                 </div>
                 <div className="w-full flex h-auto p-2 gap-2 tab:flex-col">
@@ -313,6 +311,7 @@ const Linkraceanddrive = () => {
                           Search
                         </label>
                         <AutoCompleteSearch
+                        from="myComponent"
                           searchType="Driver"
                           onDataReceived={(data) =>
                             handleDataReceived("driver", data)
@@ -324,7 +323,7 @@ const Linkraceanddrive = () => {
                     <div className="w-full h-full">
                       <div className="w-full border p-2 flex bg-gray-50 tab:w-full lappydesk:w-full rounded-lg">
                         <div className="w-1/2 flex justify-center items-center p-2">
-                          {driverimageUrl ? (
+                          {driverimageUrl && !driverimageUrl ? (
                             <img
                               src={driverimageUrl}
                               className="h-32 w-48 rounded-lg object-cover flex lappydesk:justify-start"
@@ -372,6 +371,7 @@ const Linkraceanddrive = () => {
                           Search
                         </label>
                         <AutoCompleteSearch
+                          from="myComponent"
                           searchType="vehicle"
                           onDataReceived={(data) =>
                             handleDataReceived("vehicle", data)
@@ -385,7 +385,7 @@ const Linkraceanddrive = () => {
                     <div className="w-full h-full tab:w-full">
                       <div className="w-full border p-2 flex bg-gray-50 tab:w-full lappydesk:w-full rounded-lg">
                         <div className="w-1/2 flex justify-center items-center p-2">
-                          {vehicleimageUrl ? (
+                          {vehicleimageUrl && !vehicleimageUrl ? (
                             <img
                               src={vehicleimageUrl}
                               className="h-32 w-48 rounded-lg object-cover flex lappydesk:justify-start"
