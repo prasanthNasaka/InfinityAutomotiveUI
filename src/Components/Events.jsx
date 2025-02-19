@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
-import CustomAutoComplete from "./CustomAutoComplete";
 import DatePicker from "react-datepicker";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
@@ -12,39 +11,32 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
 import { FaCalendarAlt } from "react-icons/fa";
 
+import { CiEdit } from "react-icons/ci";
+import { MdOutlineDelete } from "react-icons/md";
+
 const EventForm = () => {
   const [eventData, setEventData] = useState({
     eventType: "",
     eventName: "",
     dateRange: { start: null, end: null },
     status: "inactive",
-    bannerImage: "",
+    bannerImage: null, // We will store the File object here
     bankDetails: {
       bankName: "",
       accountHolderName: "",
       accountNumber: "",
       ifscCode: "",
-      qrCode: "",
+      qrCode: "", // Store the File object for QR code here
     },
     categories: [],
   });
+
+  console.log("jhgtds", EventForm);
 
   const [expandedCategories, setExpandedCategories] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [submittedEvents, setSubmittedEvents] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get(`${BASE_URL}/api/EventRegistration`)
-      .then((response) => {
-        console.log("API Response:", response.data.$values); // Debugging
-        setSubmittedEvents(response.data.$values);
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
-  }, []);
 
   const handleInputChange = (e, field) => {
     setEventData({ ...eventData, [field]: e.target.value });
@@ -60,24 +52,25 @@ const EventForm = () => {
     });
   };
 
-  const handleFileChange = (e, field) => {
+ 
+  const handleBannerImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (field === "bannerImage") {
-          setEventData({ ...eventData, bannerImage: reader.result });
-        } else {
-          setEventData({
-            ...eventData,
-            bankDetails: {
-              ...eventData.bankDetails,
-              qrCode: reader.result,
-            },
-          });
-        }
-      };
-      reader.readAsDataURL(file);
+      setEventData({ ...eventData, bannerImage: file });
+    }
+    e.target.value = ""; // Reset input to allow re-upload of the same file
+  };
+
+  const handleQRCodeChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setEventData({
+        ...eventData,
+        bankDetails: {
+          ...eventData.bankDetails,
+          qrCode: file, // Store the file object for QR code
+        },
+      });
     }
     e.target.value = ""; // Reset input to allow re-upload of the same file
   };
@@ -115,52 +108,251 @@ const EventForm = () => {
     setExpandedCategories(rest);
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const payload = {
+  //     eventtype: eventData.eventType,
+  //     eventname: eventData.eventName,
+  //     startdate: eventData.dateRange.start.toISOString(),
+  //     enddate: eventData.dateRange.end.toISOString(),
+  //     isactive: eventData.status === "active" ? "true" : "false",
+  //     showdashboard: "true",
+  //     eventstatus: 0,
+  //     bankname: eventData.bankDetails.bankName,
+  //     ifsccode: eventData.bankDetails.ifscCode,
+  //     accountname: eventData.bankDetails.accountHolderName,
+  //     accountnum: eventData.bankDetails.accountNumber,
+  //     companyid: 1,
+  //     lstcat: eventData.categories.map((cat) => ({
+  //       evtCatId: 0,
+  //       evtCategory: cat.category,
+  //       noOfVeh: cat.participants,
+  //       status: "inactive",
+  //       nooflaps: cat.laps,
+  //       entryprice: cat.entryPrice,
+  //       wheelertype: 0,
+  //       eventId: 0,
+  //     })),
+  //   };
+  //   let banner = FormData.append("banner",eventData.bannerImage)
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${BASE_URL}/api/EventRegistration`,
+  //       payload, banner
+
+  //     );
+  //     console.log("Event registered successfully:", response.data);
+  //     setSubmittedEvents([...submittedEvents, response.data]);
+  //     setEventData({
+  //       eventType: "",
+  //       eventName: "",
+  //       dateRange: { start: null, end: null },
+  //       status: "active",
+  //       bannerImage: "",
+  //       bankDetails: {
+  //         bankName: "",
+  //         accountHolderName: "",
+  //         accountNumber: "",
+  //         ifscCode: "",
+  //         qrCode: "",
+  //       },
+  //       categories: [],
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to register event:", error);
+  //   }
+  // };
+
+  // const handleEdit = (event) => {
+  //   setEditMode(true);
+  //   setEventData({
+  //     eventType: event.eventtype,
+  //     eventName: event.eventname,
+  //     dateRange: {
+  //       start: new Date(event.startdate),
+  //       end: new Date(event.enddate),
+  //     },
+  //     status: event.isactive === "true" ? "active" : "inactive",
+  //     bannerImage: "",
+  //     bankDetails: {
+  //       bankName: event.bankname,
+  //       accountHolderName: event.accountname,
+  //       accountNumber: event.accountnum,
+  //       ifscCode: event.ifsccode,
+  //       qrCode: "",
+  //     },
+  //     categories:
+  //       event.lstcat?.$values?.map((cat) => ({
+  //         id: cat.evtCatId,
+  //         category: cat.evtCategory,
+  //         laps: cat.nooflaps,
+  //         entryPrice: cat.entryprice,
+  //         participants: cat.noOfVeh,
+  //       })) || [],
+  //   });
+
+  //   setSubmittedEvents(
+  //     submittedEvents.filter((e) => e.eventname !== event.eventname)
+  //   );
+  // };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Create a FormData object
+  //   const formData = new FormData();
+  //   console.log("Dummy", eventData.bannerImage);
+
+  //   // Append the non-file fields to FormData
+  //   formData.append("eventtype", eventData.eventType);
+  //   formData.append("eventname", eventData.eventName);
+  //   formData.append("startdate", eventData.dateRange.start.toISOString());
+  //   formData.append("enddate", eventData.dateRange.end.toISOString());
+  //   formData.append(
+  //     "isactive",
+  //     eventData.status === "active" ? "true" : "false"
+  //   );
+  //   formData.append("showdashboard", "true");
+  //   formData.append("eventstatus", 0);
+  //   formData.append("bankname", eventData.bankDetails.bankName);
+  //   formData.append("ifsccode", eventData.bankDetails.ifscCode);
+  //   formData.append("accountname", eventData.bankDetails.accountHolderName);
+  //   formData.append("accountnum", eventData.bankDetails.accountNumber);
+  //   formData.append("companyid", 1);
+  //   formData.append("banner", eventData.bannerImage);
+
+  //   // Loop through categories and append them as JSON string
+  //   eventData.categories.forEach((cat) => {
+  //     formData.append(
+  //       "lstcat",
+  //       JSON.stringify({
+  //         evtCatId: 0,
+  //         evtCategory: cat.category,
+  //         noOfVeh: cat.participants,
+  //         status: "inactive",
+  //         nooflaps: cat.laps,
+  //         entryprice: cat.entryPrice,
+  //         wheelertype: 0,
+  //         eventId: 0,
+  //       })
+  //     );
+  //   });
+
+  //   // Append the banner image to FormData
+
+  //   try {
+  //     // Make the POST request with the FormData
+  //     const response = await axios.post(
+  //       `${BASE_URL}/api/EventRegistration`,
+  //       formData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+  //     console.log("Event registered successfully:", response.data);
+
+  //     // Reset the form data
+  //     setSubmittedEvents([...submittedEvents, response.data]);
+  //     setEventData({
+  //       eventType: "",
+  //       eventName: "",
+  //       dateRange: { start: null, end: null },
+  //       status: "active",
+  //       bannerImage: "",
+  //       bankDetails: {
+  //         bankName: "",
+  //         accountHolderName: "",
+  //         accountNumber: "",
+  //         ifscCode: "",
+  //         qrCode: "",
+  //       },
+  //       categories: [],
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to register event:", error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const payload = {
-      eventtype: eventData.eventType,
-      eventname: eventData.eventName,
-      startdate: eventData.dateRange.start.toISOString(),
-      enddate: eventData.dateRange.end.toISOString(),
-      isactive: eventData.status === "active" ? "true" : "false",
-      showdashboard: "true",
-      eventstatus: 0,
-      bankname: eventData.bankDetails.bankName,
-      ifsccode: eventData.bankDetails.ifscCode,
-      accountname: eventData.bankDetails.accountHolderName,
-      accountnum: eventData.bankDetails.accountNumber,
-      companyid: 1,
-      lstcat: eventData.categories.map((cat) => ({
-        evtCatId: 0,
-        evtCategory: cat.category,
-        noOfVeh: cat.participants,
-        status: "inactive",
-        nooflaps: cat.laps,
-        entryprice: cat.entryPrice,
-        wheelertype: 0,
-        eventId: 0,
-      })),
-    };
+
+    // Create a FormData object
+    const formData = new FormData();
+
+    // Append non-file fields to FormData
+    formData.append("eventtype", eventData.eventType);
+    formData.append("eventname", eventData.eventName);
+    formData.append("startdate", eventData.dateRange.start.toISOString());
+    formData.append("enddate", eventData.dateRange.end.toISOString());
+    formData.append(
+      "isactive",
+      eventData.status === "active" ? "true" : "false"
+    );
+    formData.append("showdashboard", "true");
+    formData.append("eventstatus", 0);
+    formData.append("bankname", eventData.bankDetails.bankName);
+    formData.append("ifsccode", eventData.bankDetails.ifscCode);
+    formData.append("accountname", eventData.bankDetails.accountHolderName);
+    formData.append("accountnum", eventData.bankDetails.accountNumber);
+    formData.append("companyid", 1);
+
+    // Append the banner image (File object)
+    if (eventData.bannerImage) {
+      formData.append("banner", eventData.bannerImage);
+    }
+
+    // Append the QR Code image (File object)
+    if (eventData.bankDetails.qrCode) {
+      formData.append("qrCode", eventData.bankDetails.qrCode);
+    }
+
+    // Loop through categories and append them as JSON strings
+    eventData.categories.forEach((cat) => {
+      formData.append(
+        "lstcat",
+        JSON.stringify({
+          evtCatId: 0,
+          evtCategory: cat.category,
+          noOfVeh: cat.participants,
+          status: "inactive",
+          nooflaps: cat.laps,
+          entryprice: cat.entryPrice,
+          wheelertype: 0,
+          eventId: 0,
+        })
+      );
+    });
 
     try {
+      // Make the POST request with FormData
       const response = await axios.post(
         `${BASE_URL}/api/EventRegistration`,
-        payload
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       console.log("Event registered successfully:", response.data);
+
+      // Reset the form data
       setSubmittedEvents([...submittedEvents, response.data]);
       setEventData({
         eventType: "",
         eventName: "",
         dateRange: { start: null, end: null },
         status: "active",
-        bannerImage: "",
+        bannerImage: null,
         bankDetails: {
           bankName: "",
           accountHolderName: "",
           accountNumber: "",
           ifscCode: "",
-          qrCode: "",
+          qrCode: "", // Reset QR code file
         },
         categories: [],
       });
@@ -170,7 +362,9 @@ const EventForm = () => {
   };
 
   const handleEdit = (event) => {
-    // setEditMode(true);
+    setEditMode(true);
+
+    // Pre-fill the form fields with the selected event's data
     setEventData({
       eventType: event.eventtype,
       eventName: event.eventname,
@@ -179,7 +373,7 @@ const EventForm = () => {
         end: new Date(event.enddate),
       },
       status: event.isactive === "true" ? "active" : "inactive",
-      bannerImage: "",
+      bannerImage: "", // Assuming you're handling this later
       bankDetails: {
         bankName: event.bankname,
         accountHolderName: event.accountname,
@@ -197,8 +391,11 @@ const EventForm = () => {
         })) || [],
     });
 
-    setSubmittedEvents(
-      submittedEvents.filter((e) => e.eventname !== event.eventname)
+    // Update the event in the submitted events list
+    setSubmittedEvents((prevEvents) =>
+      prevEvents.map((e) =>
+        e.eventname === event.eventname ? { ...e, ...event } : e
+      )
     );
   };
 
@@ -250,6 +447,19 @@ const EventForm = () => {
       }
     }
   };
+
+  useEffect(() => {
+    axios
+      .get(`${BASE_URL}/api/EventRegistration`)
+      .then((response) => {
+        console.log("API Response:", response.data.$values); // Debugging
+        setSubmittedEvents(response.data.$values);
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
+  }, []);
+
   return (
     <section className="w-full h-full">
       <div className="w-full h-24 overflow-y-hidden shadow-lg">
@@ -264,13 +474,8 @@ const EventForm = () => {
           <section className="h-auto w-full flex p-6 justify-center items-center">
             <form
               onSubmit={handleSubmit}
-              className="w-full  flex flex-col gap-6 rounded-lg bg-white shadow-lg p-8"
+              className="w-full  flex flex-col gap-6 rounded-lg bg-white shadow-lg p-4"
             >
-              <div className="w-full flex justify-center">
-                <div className="w-1/2 ">
-                  <CustomAutoComplete />
-                </div>
-              </div>
               <h2 className="text-2xl font-bold text-center">
                 {editMode ? "Edit Event" : "Event Form"}
               </h2>
@@ -386,6 +591,7 @@ const EventForm = () => {
                   </div>
                 </div>
 
+               
                 <div className="w-1/2">
                   <div className="flex flex-col gap-3">
                     <h3 className="text-lg font-bold">Upload Banner</h3>
@@ -394,14 +600,17 @@ const EventForm = () => {
                         {eventData.bannerImage ? (
                           <div className="relative w-full h-full">
                             <img
-                              src={eventData.bannerImage}
+                              src={URL.createObjectURL(eventData.bannerImage)} // Show image preview using File URL
                               alt="Uploaded Banner"
                               className="w-full h-full object-cover rounded-lg"
                             />
                             <button
                               type="button"
                               onClick={() =>
-                                setEventData({ ...eventData, bannerImage: "" })
+                                setEventData({
+                                  ...eventData,
+                                  bannerImage: null,
+                                })
                               }
                               className="absolute bottom-2 right-2 bg-white text-gray-700 px-4 py-2 rounded-md shadow-md hover:bg-gray-200"
                             >
@@ -437,7 +646,7 @@ const EventForm = () => {
                         <input
                           type="file"
                           className="hidden"
-                          onChange={(e) => handleFileChange(e, "bannerImage")}
+                          onChange={handleBannerImageChange} // Attach the file handler
                           accept="image/*"
                         />
                       </label>
@@ -514,6 +723,8 @@ const EventForm = () => {
                     </div>
                   </div>
 
+                  
+
                   <div className="w-1/2">
                     <div className="flex flex-col gap-3">
                       <h3 className="text-lg font-bold">Upload QR Code</h3>
@@ -521,8 +732,11 @@ const EventForm = () => {
                         <label className="cursor-pointer w-full h-full flex items-center justify-center">
                           {eventData.bankDetails.qrCode ? (
                             <div className="relative w-full h-full">
+                              {/* Show QR Code preview */}
                               <img
-                                src={eventData.bankDetails.qrCode}
+                                src={URL.createObjectURL(
+                                  eventData.bankDetails.qrCode
+                                )} // Show QR code preview
                                 alt="Uploaded QR Code"
                                 className="w-full h-full object-cover rounded-lg"
                               />
@@ -533,7 +747,7 @@ const EventForm = () => {
                                     ...eventData,
                                     bankDetails: {
                                       ...eventData.bankDetails,
-                                      qrCode: "",
+                                      qrCode: null, // Reset the QR code
                                     },
                                   })
                                 }
@@ -573,7 +787,7 @@ const EventForm = () => {
                           <input
                             type="file"
                             className="hidden"
-                            onChange={(e) => handleFileChange(e, "qrCode")}
+                            onChange={handleQRCodeChange} // Attach the file handler for QR code
                             accept="image/*"
                           />
                         </label>
@@ -726,8 +940,8 @@ const EventForm = () => {
                 <h2 className="text-xl font-bold p-4 bg-gray-50 border-b">
                   Submitted Events
                 </h2>
-                <div className=" overflow-x-auto">
-                  <table className="w-full">
+                <div className=" overflow-auto max-h-96">
+                  <table className="w-full h-full overflow-y-auto">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -769,21 +983,27 @@ const EventForm = () => {
                                 : "Inactive"}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4  whitespace-nowrap">
                             {event.lstcat?.$values?.length || 0}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                          <td className="px-6 py-4  whitespace-nowrap text-sm font-bold">
                             <button
                               onClick={() => handleEdit(event)}
-                              className="text-indigo-600 hover:text-indigo-900 mr-4"
+                              className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors "
                             >
-                              Edit
+                              <CiEdit className="size-6" />
                             </button>
-                            <button
-                              onClick={() => handleDelete(event.eventname)}
+                            {/* <button
                               className="text-red-600 hover:text-red-900"
                             >
                               Delete
+                            </button> */}
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(event.eventname)}
+                              className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors "
+                            >
+                              <MdOutlineDelete className="size-6" />
                             </button>
                           </td>
                         </tr>

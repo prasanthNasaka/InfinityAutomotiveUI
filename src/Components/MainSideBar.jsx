@@ -34,7 +34,7 @@ const MainSideBar = () => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -43,14 +43,12 @@ const MainSideBar = () => {
         isCollapsed ? "w-16" : "w-56"
       }`}
     >
-      
       <div className="p-2 flex justify-end">
         <button onClick={toggleSidebar} className="text-white text-xl">
           {menuIcon}
         </button>
       </div>
 
-     
       <div className="flex-grow">
         <ul className="p-2 flex flex-col font-serif gap-4">
           <Link
@@ -90,31 +88,31 @@ const MainSideBar = () => {
             {!isCollapsed && <span>Mapping</span>}
           </Link>
           <Link
-            to="/timekeeper"
+            to="/addemployee"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
               isActive("/timekeeper") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
             <FaClock />
-            {!isCollapsed && <span>TimeKeeper</span>}
+            {!isCollapsed && <span>Add Employee</span>}
           </Link>
           <Link
-            to="/bigscreen_display"
+            to="/emplogin"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
               isActive("/bigscreen_display") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
             <FaTv />
-            {!isCollapsed && <span>BigScr Display</span>}
+            {!isCollapsed && <span>Emp Login</span>}
           </Link>
           <Link
-            to="/current_categ"
+            to="/scrutineerpage"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
               isActive("/current_categ") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
             <FaClipboardList />
-            {!isCollapsed && <span>Results</span>}
+            {!isCollapsed && <span>ScrutineerPage</span>}
           </Link>
           <Link
             to="/scrutiny"
