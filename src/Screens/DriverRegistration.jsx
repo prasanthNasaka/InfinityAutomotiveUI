@@ -1,22 +1,22 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
-import Head from "../Screens/Head";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
 
-const DriverRegistration = () => {
-  const [name, setName] = useState("shafi");
-  const [dob, setDob] = useState("2025-02-03");
-  const [bloodGroup, setBloodGroup] = useState("O-");
-  const [drivingLicEnd, setDrivingLicEnd] = useState("2025-02-03");
-  const [fmsciLicEnd, setFmsciLicEnd] = useState("2025-02-03");
-  const [phone, setPhone] = useState("0123456789");
-  const [email, setEmail] = useState("shafi@gmail.com");
+const DriverRegistration = ({ closePopup }) => {
+  const [name, setName] = useState("");
+  const [dob, setDob] = useState("");
+  const [bloodGroup, setBloodGroup] = useState("");
+  const [drivingLicEnd, setDrivingLicEnd] = useState("");
+  const [fmsciLicEnd, setFmsciLicEnd] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
   const [upload, setUpload] = useState(null);
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
-  const [drivingLicNumber, setDrivingLicNumber] = useState("DL123456");
-  const [fmsciLicNumber, setFmsciLicNumber] = useState("FMSCI123");
+  const [drivingLicNumber, setDrivingLicNumber] = useState("");
+  const [fmsciLicNumber, setFmsciLicNumber] = useState("");
 
   const handleSave = async () => {
     if (
@@ -62,9 +62,8 @@ const DriverRegistration = () => {
 
     if (file) formData.append("driverPhoto", file);
     if (upload) formData.append("dlPhoto", upload);
- console.log("Data ", formData)
-    try
-     {
+    console.log("Data ", formData);
+    try {
       const response = await axios.post(`${BASE_URL}/Drivers`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -81,28 +80,45 @@ const DriverRegistration = () => {
   };
 
   const handleCancel = () => {
-    setName("shafi");
-    setDob("2025-02-03");
-    setBloodGroup("O-");
-    setDrivingLicEnd("2025-02-03");
-    setFmsciLicEnd("2025-02-03");
-    setPhone("0123456789");
-    setEmail("shafi@gmail.com");
+    setName("");
+    setDob("");
+    setBloodGroup("");
+    setDrivingLicEnd("");
+    setFmsciLicEnd("");
+    setPhone("");
+    setEmail("");
     setFile(null);
     setUpload(null);
     setError("");
-    setDrivingLicNumber("DL123456");
-    setFmsciLicNumber("FMSCI123");
+    setDrivingLicNumber("");
+    setFmsciLicNumber("");
   };
 
   return (
     <>
-      <div className="h-24 w-full">
-        <Head />
-      </div>
-      <div className="flex h-auto  ">
-        <div className="flex-1 p-8 bg-white ">
-          <div className="w-3/4  mx-auto p-3 rounded-sm shadow-lg ">
+      <div className="flex justify-center items-center">
+        <div className="fixed border inset-0 bg-black opacity-100 flex justify-center items-center z-50 transition-opacity duration-1000 ease-in-out ">
+          <div className="bg-white w-4/6 h-auto rounded-lg shadow-lg p-4">
+            <button
+              onClick={closePopup}
+              className="absolute top-2 right-2 bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-600 transition z-50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2.5"
+                stroke="currentColor"
+                className="size-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18 18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
             <h2 className="text-3xl font-bold mb-6 text-center">
               Racer Details
             </h2>
@@ -399,7 +415,7 @@ const DriverRegistration = () => {
                 onClick={handleCancel}
                 className="px-6 py-3 bg-gray-300 text-black rounded"
               >
-                Cancel
+                Clear
               </button>
               <button
                 onClick={handleSave}
