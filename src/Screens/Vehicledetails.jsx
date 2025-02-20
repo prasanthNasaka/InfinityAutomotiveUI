@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
@@ -6,17 +5,7 @@ import { useState, useEffect } from "react";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import axios from "axios";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
-
-const Toast = ({ message, onClose }) => {
-  return (
-    <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
-      {message}
-      <button onClick={onClose} className="ml-4 text-gray-300 hover:text-white">
-        ×
-      </button>
-    </div>
-  );
-};
+import toast, { Toaster } from "react-hot-toast";
 
 const Vehicledetails = () => {
   const [vehicleData, setVehicleData] = useState([]);
@@ -25,7 +14,6 @@ const Vehicledetails = () => {
   const [selecteddetails, setSelectedDetails] = useState(null);
   const [Vehicles, setVehicles] = useState(false);
   const [error, setError] = useState("");
-  const [toastMessage, setToastMessage] = useState("");
 
   const [vehicleMake, setVehicleMake] = useState("");
   const [model, setModel] = useState("");
@@ -40,12 +28,6 @@ const Vehicledetails = () => {
   const [insuranceValidTill, setInsuranceValidTill] = useState("");
   const [rcNumb, setRcNumb] = useState("");
   const [insuranceNumb, setInsuranceNumb] = useState("");
-  const [status, setStatus] = useState(1);
-
-  const showToast = (message) => {
-    setToastMessage(message);
-    setTimeout(() => setToastMessage(""), 1000);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -94,7 +76,7 @@ const Vehicledetails = () => {
       const response = await axios.post(`${BASE_URL}/api/Vehicle`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      showToast(" ✅ Vehicle registered successfully!", response.data);
+      toast.success("  Vehicle registered successfully!", response.data);
     } catch (error) {
       console.error("Error registering vehicle:", error);
       if (error.response && error.response.data) {
@@ -204,27 +186,23 @@ const Vehicledetails = () => {
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setImage(selectedFile);
-    showToast("✅ Image uploaded successfully!");
-
+    toast.success(" Image uploaded successfully!");
   };
   const handleUploadChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setUpload(selectedFile);
-    showToast("✅ Image uploaded successfully!");
-
+    toast.success(" Image uploaded successfully!");
   };
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setFile(selectedFile);
-    showToast("✅ Image uploaded successfully!");
-
+    toast.success(" Image uploaded successfully!");
   };
   return (
     <>
-      {toastMessage && (
-        <Toast message={toastMessage} onClose={() => setToastMessage("")} />
-      )}
+      <Toaster position="bottom-center" reverseOrder={false} />
+
       <section className="w-full min-h-screen">
         <div className="h-24 w-full shadow-md p-1">
           <Newheader />
@@ -339,8 +317,23 @@ const Vehicledetails = () => {
                   />
                   <label
                     htmlFor="file-upload"
-                    className="flex items-center justify-center w-full h-52 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    className="flex flex-col items-center justify-center w-full h-52 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                   >
+                    <svg
+                      className="w-6 h-6 text-gray-500"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
                     {file ? (
                       <img
                         src={
@@ -348,7 +341,7 @@ const Vehicledetails = () => {
                             ? URL.createObjectURL(file)
                             : file
                         }
-                        alt="Driver Photo"
+                        alt="Vehicle Photo"
                         className="w-full h-full object-contain"
                       />
                     ) : (
@@ -364,7 +357,7 @@ const Vehicledetails = () => {
               </div>
               <div className="flex flex-col lg:flex-row gap-2">
                 <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
-                  <div className="flex gap-6 items-center overflow-scroll">
+                  <div className="flex gap-6 items-center ">
                     <div className="w-1/2">
                       <label className="block text-sm font-bold text-gray-700 mb-2">
                         Upload RC Book
@@ -403,7 +396,7 @@ const Vehicledetails = () => {
                                   ? URL.createObjectURL(image)
                                   : image
                               }
-                              alt="Driving License Preview"
+                              alt=" RC Image Preview"
                               className="w-full h-full object-contain"
                             />
                           ) : (
@@ -443,7 +436,6 @@ const Vehicledetails = () => {
                           className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                           value={RCValidTill}
                           onChange={(e) => setRCValidTill(e.target.value)}
-                          
                         />
                       </div>
                     </div>
@@ -490,7 +482,7 @@ const Vehicledetails = () => {
                                   ? URL.createObjectURL(upload)
                                   : upload
                               }
-                              alt="FMSCI License Preview"
+                              alt="Insurance Image Preview"
                               className="w-full h-full object-contain"
                             />
                           ) : (
