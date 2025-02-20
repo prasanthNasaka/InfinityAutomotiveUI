@@ -3,33 +3,54 @@ import { useState } from "react";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
 import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 const DriverRegistration = ({ closePopup }) => {
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
-  const [drivingLicEnd, setDrivingLicEnd] = useState("");
-  const [fmsciLicEnd, setFmsciLicEnd] = useState("");
+  const [dlValidTill, setDlValidTill] = useState("");
+  const [fmsciValidTill, setFmsciValidTill] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [file, setFile] = useState(null);
   const [upload, setUpload] = useState(null);
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
-  const [drivingLicNumber, setDrivingLicNumber] = useState("");
-  const [fmsciLicNumber, setFmsciLicNumber] = useState("");
+  const [dlNumb, setDlNumb] = useState("");
+  const [fmsciNumb, setFmsciNumb] = useState("");
 
-  const handleSave = async () => {
+  const handleImageChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setImage(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
+  const handleUploadChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setUpload(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setFile(selectedFile);
+
+    setFile(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+
     if (
-      !name ||
+      !name.trim() ||
       !dob ||
-      !bloodGroup ||
-      !drivingLicNumber ||
-      !drivingLicEnd ||
-      !fmsciLicNumber ||
-      !fmsciLicEnd ||
-      !phone ||
-      !email
+      !bloodGroup.trim() ||
+      !dlNumb.trim() ||
+      !dlValidTill ||
+      !fmsciNumb.trim() ||
+      !fmsciValidTill ||
+      !phone.trim() ||
+      !email.trim()
     ) {
       setError("All fields are mandatory.");
       return;
@@ -47,59 +68,75 @@ const DriverRegistration = ({ closePopup }) => {
 
     setError("");
 
-    // Prepare FormData to send to the API
     const formData = new FormData();
-    formData.append("drivername", name);
+    formData.append("driverName", name);
     formData.append("phone", phone);
     formData.append("email", email);
-    formData.append("fmsciNumb", fmsciLicNumber);
-    formData.append("fmsciValidTill", fmsciLicEnd);
-    formData.append("dlNumb", drivingLicNumber);
-    formData.append("dlValidTill", drivingLicEnd);
+    formData.append("fmsciNumb", fmsciNumb);
+    formData.append("fmsciValidTill", fmsciValidTill);
+    formData.append("dlNumb", dlNumb);
+    formData.append("dlValidTill", dlValidTill);
     formData.append("dob", dob);
-    formData.append("bloodgroup", bloodGroup);
-    formData.append("status", true);
-    formData.append("vehicles", []);
-
+    formData.append("bloodGroup", bloodGroup);
+    formData.append("teamMemberOf", 0);
     if (file) formData.append("driverPhoto", file);
-    if (upload) formData.append("dlPhoto", upload);
-    console.log("Data ", formData);
+    if (upload) formData.append("fmsciLicPhoto", upload);
+    if (image) formData.append("dlPhoto", image);
+
+    console.log("Data being sent:", formData);
+
     try {
-      const response = await axios.post(`${BASE_URL}/Drivers`, formData, {
+      const response = await axios.post(`${BASE_URL}/api/drivers`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Driver registered successfully:", response.data);
+      toast.success("Driver registered successfully:", response.data);
     } catch (error) {
       console.error("Error registering driver:", error);
-      setError(
-        "An error occurred while registering the driver. Please try again."
-      );
+      if (error.response && error.response.data) {
+        console.error("Server response:", error.response.data);
+        if (error.response.data.errors) {
+          console.error("Validation errors:", error.response.data.errors);
+        }
+      }
     }
-    console.log("Form Data:", formData);
+
+    setName("");
+    setDob("");
+    setBloodGroup("");
+    setDlValidTill("");
+    setFmsciValidTill("");
+    setPhone("");
+    setEmail("");
+    setFile(null);
+    setUpload(null);
+    setImage(null);
+    setError("");
+    setDlNumb("");
+    setFmsciNumb("");
   };
 
   const handleCancel = () => {
     setName("");
     setDob("");
     setBloodGroup("");
-    setDrivingLicEnd("");
-    setFmsciLicEnd("");
+    setDlValidTill("");
+    setFmsciValidTill("");
     setPhone("");
     setEmail("");
     setFile(null);
     setUpload(null);
+    setImage(null);
     setError("");
-    setDrivingLicNumber("");
-    setFmsciLicNumber("");
+    setDlNumb("");
+    setFmsciNumb("");
   };
-
   return (
     <>
       <div className="flex justify-center items-center">
         <div className="fixed border inset-0 bg-black opacity-100 flex justify-center items-center z-50 transition-opacity duration-1000 ease-in-out ">
-          <div className="bg-white w-4/6 h-auto rounded-lg shadow-lg p-4">
+          <div className="bg-white w-4/6  h-auto lappy:w-5/6 lappy:h-5/6 lappy:overflow-y-scroll rounded-lg shadow-lg p-4">
             <button
               onClick={closePopup}
               className="absolute top-2 right-2 bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-600 transition z-50"
@@ -140,10 +177,7 @@ const DriverRegistration = ({ closePopup }) => {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => {
-                      setImage(URL.createObjectURL(e.target.files[0]));
-                      setFile(e.target.files[0]);
-                    }}
+                    onChange={handleFileChange}
                     id="file-upload"
                   />
                   <label
@@ -165,16 +199,26 @@ const DriverRegistration = ({ closePopup }) => {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-
-                    {image && (
+                    {file ? (
                       <img
-                        src={image}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
+                        src={
+                          file instanceof File
+                            ? URL.createObjectURL(file)
+                            : file
+                        }
+                        alt="Driver Photo"
+                        className="w-full h-full object-contain"
                       />
+                    ) : (
+                      <p className="text-gray-500 text-sm">Click to upload</p>
                     )}
                   </label>
                 </div>
+                {file && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    File: {file.name || "Selected from search"}
+                  </p>
+                )}
               </div>
 
               <div className="w-full lg:w-2/3">
@@ -192,8 +236,8 @@ const DriverRegistration = ({ closePopup }) => {
                   />
                 </div>
 
-                <div className="flex w-full gap-2">
-                  <div className="mb-4 w-1/2">
+                <div className="flex w-full gap-2 phone:flex-col ">
+                  <div className="mb-4 w-1/2 phone:w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       DOB
                     </label>
@@ -205,7 +249,7 @@ const DriverRegistration = ({ closePopup }) => {
                       required
                     />
                   </div>
-                  <div className="mb-4 w-1/2">
+                  <div className="mb-4 w-1/2 phone:w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       Blood Group
                     </label>
@@ -227,8 +271,8 @@ const DriverRegistration = ({ closePopup }) => {
                     </select>
                   </div>
                 </div>
-                <div className="flex w-full gap-2">
-                  <div className="mb-4 w-1/2">
+                <div className="flex w-full gap-2 phone:flex-col">
+                  <div className="mb-4 w-1/2 phone:w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       Phone Number
                     </label>
@@ -242,7 +286,7 @@ const DriverRegistration = ({ closePopup }) => {
                       maxLength={10}
                     />
                   </div>
-                  <div className="mb-4 w-1/2">
+                  <div className="mb-4 w-1/2 phone:w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-1">
                       Email Address
                     </label>
@@ -259,9 +303,9 @@ const DriverRegistration = ({ closePopup }) => {
               </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-2">
-              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
-                <div className="flex gap-6 items-center">
+            <div className="flex flex-col lg:flex-row desk:flex-col gap-2">
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2 desk:w-full">
+                <div className="flex gap-6 items-center lappydesk:flex-col ">
                   <div className="w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload License
@@ -272,9 +316,7 @@ const DriverRegistration = ({ closePopup }) => {
                         accept="image/*,application/pdf"
                         className="hidden"
                         id="license-file-upload"
-                        onChange={(e) => {
-                          setFile(URL.createObjectURL(e.target.files[0]));
-                        }}
+                        onChange={handleImageChange}
                       />
                       <label
                         htmlFor="license-file-upload"
@@ -295,26 +337,39 @@ const DriverRegistration = ({ closePopup }) => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        {file && (
+                        {image ? (
                           <img
-                            src={file}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
+                            src={
+                              image instanceof File
+                                ? URL.createObjectURL(image)
+                                : image
+                            }
+                            alt="Driving License Preview"
+                            className="w-full h-full object-contain"
                           />
+                        ) : (
+                          <p className="text-gray-500 text-sm">
+                            Click to upload
+                          </p>
                         )}
                       </label>
                     </div>
+                    {image && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        File: {image.name || "Selected from search"}
+                      </p>
+                    )}
                   </div>
-                  <div className="w-2/3">
-                    <div className="mb-4">
+                  <div className="w-2/3 lappydesk:w-full">
+                    <div className="mb-4 ">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         Driving License Number
                       </label>
                       <input
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={drivingLicNumber}
-                        onChange={(e) => setDrivingLicNumber(e.target.value)}
+                        value={dlNumb}
+                        onChange={(e) => setDlNumb(e.target.value)}
                         placeholder="Enter your license number"
                         required
                       />
@@ -326,8 +381,8 @@ const DriverRegistration = ({ closePopup }) => {
                       <input
                         type="date"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={drivingLicEnd}
-                        onChange={(e) => setDrivingLicEnd(e.target.value)}
+                        value={dlValidTill}
+                        onChange={(e) => setDlValidTill(e.target.value)}
                         required
                       />
                     </div>
@@ -335,8 +390,8 @@ const DriverRegistration = ({ closePopup }) => {
                 </div>
               </div>
 
-              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
-                <div className="flex gap-6 items-center">
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2 desk:w-full">
+                <div className="flex gap-6 items-center lappydesk:flex-col">
                   <div className="w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload FMSCI License
@@ -347,9 +402,7 @@ const DriverRegistration = ({ closePopup }) => {
                         accept="image/*,application/pdf"
                         className="hidden"
                         id="fmsci-file-upload"
-                        onChange={(e) => {
-                          setUpload(URL.createObjectURL(e.target.files[0]));
-                        }}
+                        onChange={handleUploadChange}
                       />
                       <label
                         htmlFor="fmsci-file-upload"
@@ -370,17 +423,30 @@ const DriverRegistration = ({ closePopup }) => {
                             d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                           />
                         </svg>
-                        {upload && (
+                        {upload ? (
                           <img
-                            src={upload}
+                            src={
+                              upload instanceof File
+                                ? URL.createObjectURL(upload)
+                                : upload
+                            }
                             alt="FMSCI License Preview"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
+                        ) : (
+                          <p className="text-gray-500 text-sm">
+                            Click to upload
+                          </p>
                         )}
                       </label>
                     </div>
+                    {upload && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        File: {upload.name || "Selected from search"}
+                      </p>
+                    )}
                   </div>
-                  <div className="w-2/3">
+                  <div className="w-2/3 lappydesk:w-full">
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         FMSCI License Number
@@ -388,8 +454,8 @@ const DriverRegistration = ({ closePopup }) => {
                       <input
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={fmsciLicNumber}
-                        onChange={(e) => setFmsciLicNumber(e.target.value)}
+                        value={fmsciNumb}
+                        onChange={(e) => setFmsciNumb(e.target.value)}
                         placeholder="Enter your license number"
                         required
                       />
@@ -401,8 +467,8 @@ const DriverRegistration = ({ closePopup }) => {
                       <input
                         type="date"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                        value={fmsciLicEnd}
-                        onChange={(e) => setFmsciLicEnd(e.target.value)}
+                        value={fmsciValidTill}
+                        onChange={(e) => setFmsciValidTill(e.target.value)}
                         required
                       />
                     </div>

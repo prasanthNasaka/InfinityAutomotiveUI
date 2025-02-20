@@ -222,7 +222,7 @@ const VehicleRegistration = ({ closePopup }) => {
       )}
       <div className="flex justify-center items-center">
         <div className="fixed border inset-0 bg-black opacity-100 flex justify-center items-center z-50 transition-opacity duration-1000 ease-in-out ">
-          <div className="bg-white w-4/6 h-auto rounded-lg shadow-lg p-4">
+          <div className="bg-white w-4/6  h-auto lappy:w-5/6 lappy:h-5/6 lappy:overflow-y-scroll rounded-lg shadow-lg p-4">
             <button
               onClick={closePopup}
               className="absolute top-2 right-2 bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-600 transition z-50"
@@ -245,9 +245,9 @@ const VehicleRegistration = ({ closePopup }) => {
             <h2 className="text-3xl font-bold mb-6 text-center">
               Vehicle Details
             </h2>
-            <div className="w-full flex gap-8 items-center">
-              <div className="flex flex-col gap-5 w-1/3">
-                <div>
+            <div className="w-full flex gap-8 items-center lappy:flex-col">
+              <div className="flex flex-col gap-5 w-1/3 lappy:w-full">
+                <div >
                   <label className="block text-sm font-bold">
                     Vehicle Make
                   </label>
@@ -282,7 +282,7 @@ const VehicleRegistration = ({ closePopup }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-5 w-1/3">
+              <div className="flex flex-col gap-5 w-1/3 lappy:w-full">
                 <div>
                   <label className="block text-sm font-bold">
                     Registration No
@@ -317,7 +317,7 @@ const VehicleRegistration = ({ closePopup }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center w-1/3">
+              <div className="flex flex-col items-center justify-center w-1/3 lappy:w-full">
                 <label className="block text-sm font-bold mb-2">
                   Upload Vehicle Image
                 </label>
@@ -352,9 +352,9 @@ const VehicleRegistration = ({ closePopup }) => {
               </div>
             </div>
             <div className="flex flex-col lg:flex-row gap-2">
-              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
-                <div className="flex gap-6 items-center overflow-scroll">
-                  <div className="w-1/2">
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2 ">
+                <div className="flex gap-6 items-center lappy:flex-col">
+                  <div className="w-1/2 lappy:w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload RC Book
                     </label>
@@ -409,7 +409,7 @@ const VehicleRegistration = ({ closePopup }) => {
                     )}
                   </div>
 
-                  <div className="w-1/2">
+                  <div className="w-1/2 lappy:w-full">
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         RC Number
@@ -439,8 +439,8 @@ const VehicleRegistration = ({ closePopup }) => {
               </div>
 
               <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
-                <div className="flex gap-6 items-center">
-                  <div className="w-1/2">
+                <div className="flex gap-6 items-center lappy:flex-col">
+                  <div className="w-1/2 lappy:w-full">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload Insurance
                     </label>
@@ -495,7 +495,7 @@ const VehicleRegistration = ({ closePopup }) => {
                     )}
                   </div>
 
-                  <div className="w-1/2">
+                  <div className="w-1/2 lappy:w-full">
                     <div className="mb-4">
                       <label className="block text-sm font-bold text-gray-700 mb-1">
                         Insurance Number

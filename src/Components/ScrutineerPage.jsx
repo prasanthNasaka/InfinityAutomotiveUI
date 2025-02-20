@@ -1,86 +1,107 @@
-import { useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
+import axios from "axios";
 import MainSideBar from "./MainSideBar";
 import Newheader from "./Newheader";
+import { BASE_URL } from "../constants/global-const";
 import { MdOutlineDelete } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
+import toast, { Toaster } from "react-hot-toast";
 
 const ScrutineerPage = () => {
   const [formData, setFormData] = useState({
     scrutineerName: "",
-    raceName: "",
-    vehicleNumber: "",
-    inspectionStatus: "",
-    comments: "",
+    email: "",
+    fmsciId: "",
+    phone: "",
   });
-  const [scrutinyList, setScrutinyList] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
+
+  const [tableData, setTableData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [errors, setErrors] = useState({});
+
+  const fetchScrutineers = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/Scrutineer`);
+
+      const Data = response.data.$values;
+      setTableData(Data);
+    } catch (error) {
+      console.error("Error fetching scrutineers:", error);
+      toast.error("Failed to fetch scrutineers");
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validateForm = () => {
-    let formErrors = {};
-    if (!formData.scrutineerName)
-      formErrors.scrutineerName = "Scrutineer Name is required";
-    if (!formData.raceName) formErrors.raceName = "Race Name is required";
-    if (!formData.vehicleNumber)
-      formErrors.vehicleNumber = "Vehicle Number is required";
-    if (!formData.inspectionStatus)
-      formErrors.inspectionStatus = "Inspection Status is required";
-
-    setErrors(formErrors);
-    return Object.keys(formErrors).length === 0;
-  };
-
-  const handleAddScrutiny = () => {
-    if (!validateForm()) return;
-
-    if (isEdit) {
-      const updatedList = [...scrutinyList];
-      updatedList[editIndex] = formData;
-      setScrutinyList(updatedList);
-      setIsEdit(false);
-      setEditIndex(null);
-    } else {
-      setScrutinyList([...scrutinyList, formData]);
+  const handleAdd = async () => {
+    if (
+      !formData.scrutineerName ||
+      !formData.email ||
+      !formData.fmsciId ||
+      !formData.phone
+    ) {
+      toast.error("Please fill all fields!");
+      return;
     }
-    setFormData({
-      scrutineerName: "",
-      raceName: "",
-      vehicleNumber: "",
-      inspectionStatus: "",
-      comments: "",
-    });
-    setErrors({});
-  };
 
-  const handleCancel = () => {
-    setFormData({
-      scrutineerName: "",
-      raceName: "",
-      vehicleNumber: "",
-      inspectionStatus: "",
-      comments: "",
-    });
-    setErrors({});
-    setIsEdit(false);
-    setEditIndex(null);
+    try {
+      if (editIndex !== null) {
+        const response = await axios.put(
+          `${BASE_URL}/api/Scrutineer/${tableData[editIndex].id}`,
+          formData
+        );
+        toast.success("Scrutineer updated successfully!");
+
+        await fetchScrutineers();
+      } else {
+        const response = await axios.post(
+          `${BASE_URL}/api/Scrutineer`,
+          formData
+        );
+        toast.success("Scrutineer added successfully!");
+
+        await fetchScrutineers();
+      }
+
+      setFormData({ scrutineerName: "", email: "", fmsciId: "", phone: "" });
+      setEditIndex(null);
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      toast.error("Failed to save scrutineer");
+    }
   };
 
   const handleEdit = (index) => {
-    setFormData(scrutinyList[index]);
-    setIsEdit(true);
+    const item = tableData[index];
+    setFormData({
+      scrutineerName: item.scrutineerName || "",
+      email: item.email || "",
+      fmsciId: item.fmsciId || "",
+      phone: item.phone || "",
+    });
     setEditIndex(index);
+    toast.info("Editing scrutineer details...");
   };
 
-  const handleDelete = (index) => {
-    const updatedList = scrutinyList.filter((_, i) => i !== index);
-    setScrutinyList(updatedList);
+  const handleDelete = async (index) => {
+    try {
+      const itemToDelete = tableData[index];
+      await axios.delete(`${BASE_URL}api/Scrutineer/${itemToDelete.id}`);
+      await fetchScrutineers(); 
+      toast.success("Scrutineer deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting scrutineer:", error);
+      toast.error("Failed to delete scrutineer");
+    }
   };
+
+  useEffect(() => {
+    fetchScrutineers();
+    setFormData([]);
+  }, []);
 
   return (
     <>
@@ -95,114 +116,143 @@ const ScrutineerPage = () => {
           </div>
 
           <div className="flex-1 p-6 space-y-6 overflow-auto bg-gray-100">
-            {/* Scrutineer Form Section */}
-            <div className="bg-white p-6 flex flex-col items-center rounded-lg shadow-lg">
-              <h3 className="text-2xl font-semibold mb-4 text-center text-cyan-700">
-                {isEdit ? "Edit Scrutiny" : "Add Scrutiny"}
-              </h3>
-              <div className="space-y-4 w-3/4">
-                {[
-                  "scrutineerName",
-                  "raceName",
-                  "vehicleNumber",
-                  "inspectionStatus",
-                  "comments",
-                ].map((field) => (
-                  <div key={field}>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      {field === "scrutineerName"
-                        ? "Scrutineer Name"
-                        : field === "raceName"
-                        ? "Event Name"
-                        : field === "vehicleNumber"
-                        ? "Vehicle Number"
-                        : field === "inspectionStatus"
-                        ? "Inspection Status"
-                        : "Comments"}
-                    </label>
-                    <input
-                      type={field === "comments" ? "text" : "text"}
-                      name={field}
-                      value={formData[field]}
-                      onChange={handleChange}
-                      className={`w-full p-3 border-2 rounded-md ${
-                        errors[field] ? "border-red-500" : "border-gray-300"
-                      } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                      placeholder={`Enter ${
-                        field === "scrutineerName" ? "Scrutineer Name" : field
-                      }`}
-                    />
-                    {errors[field] && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors[field]}
-                      </p>
-                    )}
-                  </div>
-                ))}
+            <div className="w-full h-auto bg-white border rounded-lg">
+              <div className="w-full h-auto flex justify-center p-2">
+                <h3 className="text-xl font-semibold text-cyan-700 mb-4">
+                  Add Scrutineer
+                </h3>
               </div>
-              <div className="flex w-1/2 gap-4 mt-4">
+
+              <div className="w-full h-auto flex justify-between items-center gap-3">
+                <div className="w-1/2 p-2 gap-2 flex flex-col">
+                  <label className="text-sm font-medium text-gray-900">
+                    Enter Name
+                  </label>
+                  <input
+                    type="text"
+                    name="scrutineerName"
+                    value={formData.scrutineerName}
+                    onChange={handleChange}
+                    placeholder="Enter Name"
+                    className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                  />
+                </div>
+                <div className="w-1/2 p-2 gap-2 flex flex-col">
+                  <label className="text-sm font-medium text-gray-900">
+                    Enter Email
+                  </label>
+                  <input
+                    type="text"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter Email"
+                    className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                  />
+                </div>
+              </div>
+
+              <div className="w-full h-auto flex justify-between items-center gap-3">
+                <div className="w-1/2 p-2 gap-2 flex flex-col">
+                  <label className="text-sm font-medium text-gray-900">
+                    Enter FMSCI ID
+                  </label>
+                  <input
+                    type="text"
+                    name="fmsciId"
+                    value={formData.fmsciId}
+                    onChange={handleChange}
+                    placeholder="Enter FMSCI ID"
+                    className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                  />
+                </div>
+                <div className="w-1/2 p-2 gap-2 flex flex-col">
+                  <label className="text-sm font-medium text-gray-900">
+                    Enter Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter Phone Number"
+                    className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                  />
+                </div>
+              </div>
+
+              <div className="w-full h-auto flex justify-center p-2">
                 <button
-                  onClick={handleCancel}
-                  className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                  type="button"
+                  onClick={handleAdd}
+                  className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg text-sm transition-colors"
                 >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddScrutiny}
-                  className="w-1/2 py-3 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-700 transition duration-300"
-                >
-                  {isEdit ? "Update" : "Submit"}
+                  {editIndex !== null ? "Update" : "Add"}
                 </button>
               </div>
             </div>
 
-            {/* Scrutiny Table Section */}
-            <div className="bg-white p-6 rounded-lg shadow-lg mt-6">
-              <h3 className="text-xl font-semibold text-cyan-700 mb-4">
-                Scrutiny List
-              </h3>
-              <table className="w-full text-sm text-gray-700">
-                <thead className="bg-gray-50 text-gray-600">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Scrutineer Name</th>
-                    <th className="px-4 py-2 text-left">Race Name</th>
-                    <th className="px-4 py-2 text-left">Vehicle Number</th>
-                    <th className="px-4 py-2 text-left">Inspection Status</th>
-                    <th className="px-4 py-2 text-left">Comments</th>
-                    <th className="px-4 py-2 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {scrutinyList.map((scrutiny, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-2">{scrutiny.scrutineerName}</td>
-                      <td className="px-4 py-2">{scrutiny.raceName}</td>
-                      <td className="px-4 py-2">{scrutiny.vehicleNumber}</td>
-                      <td className="px-4 py-2">{scrutiny.inspectionStatus}</td>
-                      <td className="px-4 py-2">{scrutiny.comments}</td>
-                      <td className="px-4 py-2 text-center">
-                        <div className="flex justify-center space-x-2">
-                          <button
-                            onClick={() => handleEdit(index)}
-                            className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors "
-                          >
-                            <CiEdit className="size-6" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(index)}
-                            className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors "
-                          >
-                            <MdOutlineDelete className="size-6" />
-                          </button>
-                        </div>
-                      </td>
+            <div className="bg-white rounded-lg shadow-lg  h-screen overflow-auto">
+              <div className="w-full h-auto flex justify-center">
+                <h3 className="text-xl font-semibold text-cyan-700 mb-4">
+                  Scrutiny List
+                </h3>
+              </div>
+
+              {tableData.length === 0 ? ( // Corrected the condition
+                <p className="text-center text-gray-500 py-4">
+                  No data available.
+                </p>
+              ) : (
+                <table className="w-full text-sm text-gray-700">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                    <tr>
+                      <th className="px-4 py-2  ">SL.No</th>
+                      <th className="px-4 py-2  ">Scrutineer Name</th>
+                      <th className="px-4 py-2  ">Email</th>
+                      <th className="px-4 py-2  ">FMSCI ID</th>
+                      <th className="px-4 py-2  ">Phone Number</th>
+                      <th className="px-4 py-2 text-center">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 text-center">
+                    {tableData.map((row, index) => (
+                      <tr
+                        key={row.scrutineerId || index}
+                        className="hover:bg-gray-50 "
+                      >
+                        <td className="px-4 py-2">{index + 1}</td>
+                        <td className="px-4 py-2 capitalize">
+                          {row.scrutineerName}
+                        </td>
+                        <td className="px-4 py-2">{row.email || "N/A"}</td>
+                        <td className="px-4 py-2">{row.fmsciId || "N/A"}</td>
+                        <td className="px-4 py-2">{row.phoneNumber || "N/A"}</td>
+                        <td className="px-4 py-2">
+                          <div className="flex justify-center space-x-2">
+                            <button
+                              onClick={() => handleEdit(index)}
+                              className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                            >
+                              <CiEdit className="size-6" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(index)}
+                              className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                            >
+                              <MdOutlineDelete className="size-6" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
+        <Toaster position="bottom-center" reverseOrder={false} />
       </section>
     </>
   );
