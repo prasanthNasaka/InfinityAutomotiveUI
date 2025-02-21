@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import axios from "axios";
 import MainSideBar from "./MainSideBar";
@@ -13,7 +12,7 @@ const ScrutineerPage = () => {
     scrutineerName: "",
     email: "",
     fmsciId: "",
-    phone: "",
+    phoneNumber: "",
   });
 
   const [tableData, setTableData] = useState([]);
@@ -22,11 +21,9 @@ const ScrutineerPage = () => {
   const fetchScrutineers = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/Scrutineer`);
-
       const Data = response.data.$values;
       setTableData(Data);
-    } catch (error) {
-      console.error("Error fetching scrutineers:", error);
+    } catch {
       toast.error("Failed to fetch scrutineers");
     }
   };
@@ -36,12 +33,13 @@ const ScrutineerPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAdd = async () => {
+  const handleAdd = async (e) => {
+    e.preventDefault();
     if (
       !formData.scrutineerName ||
       !formData.email ||
       !formData.fmsciId ||
-      !formData.phone
+      !formData.phoneNumber
     ) {
       toast.error("Please fill all fields!");
       return;
@@ -49,51 +47,54 @@ const ScrutineerPage = () => {
 
     try {
       if (editIndex !== null) {
-        const response = await axios.put(
-          `${BASE_URL}/api/Scrutineer/${tableData[editIndex].id}`,
+        await axios.put(
+          `${BASE_URL}/api/Scrutineer/${editIndex.scrutineerId}`,
           formData
         );
         toast.success("Scrutineer updated successfully!");
-
-        await fetchScrutineers();
       } else {
-        const response = await axios.post(
-          `${BASE_URL}/api/Scrutineer`,
-          formData
-        );
+        await axios.post(`${BASE_URL}/api/Scrutineer`, formData);
         toast.success("Scrutineer added successfully!");
-
-        await fetchScrutineers();
       }
-
-      setFormData({ scrutineerName: "", email: "", fmsciId: "", phone: "" });
-      setEditIndex(null);
-    } catch (error) {
-      console.error("Error submitting data:", error);
+    } catch {
+     
       toast.error("Failed to save scrutineer");
+    } finally {
+      
+      await fetchScrutineers();
+      setFormData({
+        scrutineerName: "",
+        email: "",
+        fmsciId: "",
+        phoneNumber: "",
+      });
+      setEditIndex(null);
     }
   };
 
   const handleEdit = (index) => {
-    const item = tableData[index];
     setFormData({
-      scrutineerName: item.scrutineerName || "",
-      email: item.email || "",
-      fmsciId: item.fmsciId || "",
-      phone: item.phone || "",
+      scrutineerName: index.scrutineerName || "",
+      email: index.email || "",
+      fmsciId: index.fmsciId || "",
+      phoneNumber: index.phoneNumber || "",
     });
     setEditIndex(index);
-    toast.info("Editing scrutineer details...");
+    toast.call("Editing scrutineer details...");
   };
 
   const handleDelete = async (index) => {
+    console.log("index", index);
+
     try {
-      const itemToDelete = tableData[index];
-      await axios.delete(`${BASE_URL}api/Scrutineer/${itemToDelete.id}`);
-      await fetchScrutineers(); 
+      const itemToDelete = index.scrutineerId;
+      const response = await axios.delete(
+        `${BASE_URL}api/Scrutineer/${itemToDelete}`
+      );
+      await fetchScrutineers();
+      setTableData(response.$values);
       toast.success("Scrutineer deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting scrutineer:", error);
+    } catch {
       toast.error("Failed to delete scrutineer");
     }
   };
@@ -172,8 +173,8 @@ const ScrutineerPage = () => {
                   </label>
                   <input
                     type="text"
-                    name="phone"
-                    value={formData.phone}
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder="Enter Phone Number"
                     className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
@@ -227,17 +228,19 @@ const ScrutineerPage = () => {
                         </td>
                         <td className="px-4 py-2">{row.email || "N/A"}</td>
                         <td className="px-4 py-2">{row.fmsciId || "N/A"}</td>
-                        <td className="px-4 py-2">{row.phoneNumber || "N/A"}</td>
+                        <td className="px-4 py-2">
+                          {row.phoneNumber || "N/A"}
+                        </td>
                         <td className="px-4 py-2">
                           <div className="flex justify-center space-x-2">
                             <button
-                              onClick={() => handleEdit(index)}
+                              onClick={() => handleEdit(row)}
                               className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
                             >
                               <CiEdit className="size-6" />
                             </button>
                             <button
-                              onClick={() => handleDelete(index)}
+                              onClick={() => handleDelete(row)}
                               className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
                             >
                               <MdOutlineDelete className="size-6" />

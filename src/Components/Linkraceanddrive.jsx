@@ -27,8 +27,11 @@ const Linkraceanddrive = () => {
   const [referenceNumber, setReferenceNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [DrvtableData, setDrvTableData] = useState([]);
 
   const handleEventChange = (event) => {
+    console.log("event", event);
+
     const eventId = event.target.value;
     setSelectedEvent(eventId);
     setSelectedCategory("");
@@ -45,7 +48,7 @@ const Linkraceanddrive = () => {
           }
         })
         .catch((error) => {
-          console.error("Error fetching categories:", error);
+         
           setCategories([]);
         });
 
@@ -55,10 +58,7 @@ const Linkraceanddrive = () => {
           if (Array.isArray(data.$values)) {
             setTableData(data.$values);
           } else {
-            console.error(
-              "Expected an array of table data, but received:",
-              data
-            );
+            
             setTableData([]);
           }
         })
@@ -86,7 +86,12 @@ const Linkraceanddrive = () => {
   };
 
   const handleSelect = (type, item) => {
+
     if (type === "driver") {
+      const FilteredDrvData = tableData.filter(d => d.driverId == item.driverId);
+      console.log(FilteredDrvData);
+      
+      setDrvTableData(FilteredDrvData);
       setSelectedDriver(item);
       setDriverImageUrl(
         item.driverPhoto ? `${IMAGE_URL}${item.driverPhoto}` : null
@@ -125,7 +130,7 @@ const Linkraceanddrive = () => {
 
   const handleSubmit = async () => {
     if (!isFormValid()) {
-      toast.success('Successfully added')
+      toast.success("Successfully added");
       return;
     }
     setIsSubmitting(true);
@@ -162,11 +167,9 @@ const Linkraceanddrive = () => {
       setDriverImageUrl(false);
       setVehicleImageUrl(false);
     } catch (error) {
-      console.error("Registration error:", error);
-      console.log("Failed to register. Please try again.");
+      toast.error("Failed to register. Please try again.");
     } finally {
       setIsSubmitting(false);
-      console.log("jreruytuy");
     }
   };
 
@@ -177,7 +180,7 @@ const Linkraceanddrive = () => {
         if (Array.isArray(data.$values)) {
           setEvents(data.$values);
         } else {
-          console.error("Expected an array of events, but received:", data);
+         
           setEvents([]);
         }
       })
@@ -313,7 +316,7 @@ const Linkraceanddrive = () => {
                           Search
                         </label>
                         <AutoCompleteSearch
-                        from="myComponent"
+                          from="myComponent"
                           searchType="Driver"
                           onDataReceived={(data) =>
                             handleDataReceived("driver", data)
@@ -429,6 +432,108 @@ const Linkraceanddrive = () => {
                   </div>
                 </div>
 
+                {DrvtableData.length > 0 && (
+                  <div className="min-h-auto">
+                    <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left text-gray-500">
+                          <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                            <tr>
+                              <th className="px-6 py-3 whitespace-nowrap">
+                                SL.No
+                              </th>
+                              <th className="px-6 py-3 whitespace-nowrap">
+                                Vehicle
+                              </th>
+                              <th className="px-6 py-3 whitespace-nowrap">
+                                Category
+                              </th>
+                              <th className="px-6 py-3 whitespace-nowrap">
+                                Contestant Number
+                              </th>
+                              <th className="px-6 py-3 whitespace-nowrap">
+                                Payment Status
+                              </th>
+                              <th className="px-6 py-3 whitespace-nowrap">
+                                Documents
+                              </th>
+                              <th className="px-6 py-3 whitespace-nowrap">
+                                Scrutiny
+                              </th>
+                              
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200 text-center uppercase">
+                            {DrvtableData.map((event, index) => (
+                              <tr
+                                key={event.eventid}
+                                className="bg-white hover:bg-gray-50"
+                              >
+                                <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
+                                  {index + 1}
+                                </td>
+
+                                <td className="px-6 py-2 whitespace-nowrap">
+                                  {event.regNumb}
+                                </td>
+                                <td className="px-6 py-2 whitespace-nowrap">
+                                  {event.evtCategory}
+                                </td>
+                                <td className="px-6 py-2 whitespace-nowrap">
+                                  {event.contestantNo}
+                                </td>
+                                <td className="px-6 py-2 whitespace-nowrap">
+                                  <span
+                                    className={`p-2 rounded-full text-xs ${
+                                      event.amountPaid === true
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-yellow-100 text-yellow-800"
+                                    }`}
+                                  >
+                                    {event.amountPaid === true
+                                      ? "Paid"
+                                      : "Pending"}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-2 whitespace-nowrap">
+                                  <span
+                                    className={`p-2 rounded-full text-xs ${
+                                      event.documentStatus === "0"
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : "bg-green-100 text-green-800"
+                                    }`}
+                                  >
+                                    {event.documentStatus === "0"
+                                      ? "Pending"
+                                      : "Verified"}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-2 whitespace-nowrap">
+                                  <span
+                                    className={`p-2 rounded-full text-xs ${
+                                      event.scrutinyStatus === "0"
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : event.scrutinyStatus === "1"
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-red-100 text-red-800"
+                                    }`}
+                                  >
+                                    {event.scrutinyStatus === "0"
+                                      ? "Pending"
+                                      : event.scrutinyStatus === "1"
+                                      ? "Verified"
+                                      : "Rejected"}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="w-full flex p-2 gap-2 tab:flex-col items-center">
                   <div className="w-1/2 tab:w-full flex justify-between px-2">
                     <div className="w-1/2">
@@ -509,7 +614,10 @@ const Linkraceanddrive = () => {
                         <tr>
                           <th className="px-6 py-3 whitespace-nowrap">SL.No</th>
                           <th className="px-6 py-3 whitespace-nowrap">
-                            Event name
+                            Driver Name
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
+                            Vehicle
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">
                             Category
@@ -527,9 +635,6 @@ const Linkraceanddrive = () => {
                             Scrutiny
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">
-                            Vehicle
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
                             Action
                           </th>
                         </tr>
@@ -544,7 +649,10 @@ const Linkraceanddrive = () => {
                               {index + 1}
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap text-gray-900">
-                              {event.eventname}
+                              {event.drivername}
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
+                              {event.regNumb}
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap">
                               {event.evtCategory}
@@ -563,6 +671,9 @@ const Linkraceanddrive = () => {
                                 {event.amountPaid === true ? "Paid" : "Pending"}
                               </span>
                             </td>
+                           
+                            
+                            
                             <td className="px-6 py-2 whitespace-nowrap">
                               <span
                                 className={`p-2 rounded-full text-xs ${
@@ -593,9 +704,7 @@ const Linkraceanddrive = () => {
                                   : "Rejected"}
                               </span>
                             </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              {event.regNumb}
-                            </td>
+
                             <td className="px-6 py-2 whitespace-nowrap">
                               <div className="flex gap-2">
                                 <button
@@ -625,10 +734,7 @@ const Linkraceanddrive = () => {
           </div>
         </div>
       </div>
-      <Toaster
-  position="bottom-center"
-  reverseOrder={false}
-/>
+      <Toaster position="bottom-center" reverseOrder={false} />
     </section>
   );
 };
