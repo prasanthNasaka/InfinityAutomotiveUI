@@ -26,49 +26,7 @@ const Registration = () => {
   const [loading, setLoading] = useState(false);
   const [drivers, setDrivers] = useState(false);
   const [selecteddetails, setSelectedDetails] = useState(null);
-
-  const handleDriverDataReceived = (data) => {
-    setDriverData(data);
-  };
-
-  const handleDriverSelect = async (driver) => {
-    setSelectedDriver(driver);
-    console.log("Driver", driver);
-    if (driver.driverId) {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/api/drivers/${driver.driverId}`
-        );
-        console.log("response", response);
-        setSelectedDetails(response.data);
-        setDrivers(response.data);
-      } catch (err) {
-        console.error("Error fetching driver details:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setImage(selectedFile);
-    toast.success(" Image uploaded successfully!");
-  };
-  const handleUploadChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setUpload(selectedFile);
-    toast.success(" Image uploaded successfully!");
-  };
-  const handleFileChange = async (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setFile(selectedFile);
-
-    setFile(selectedFile);
-    toast.success(" Image uploaded successfully!");
-  };
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -115,22 +73,50 @@ const Registration = () => {
     if (upload) formData.append("fmsciLicPhoto", upload);
     if (image) formData.append("dlPhoto", image);
 
-    console.log("Data being sent:", formData);
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/drivers`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      toast.success("Driver registered successfully:", response.data);
+      let response;
+
+      if (isEditing) {
+        if (!selecteddetails || !selecteddetails.driverId) {
+          throw new Error("Driver ID is required for editing.");
+        }
+
+        response = await axios.put(
+          `${BASE_URL}/api/drivers/${selecteddetails.driverId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        toast.success("Driver updated successfully:", response.data);
+      } else {
+        if (!name || !phone || !email) {
+          throw new Error("Driver name, phone, and email are required.");
+        }
+
+        response = await axios.post(`${BASE_URL}/api/drivers`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        toast.success("Driver registered successfully:", response.data);
+      }
     } catch (error) {
-      console.error("Error registering driver:", error);
       if (error.response && error.response.data) {
         console.error("Server response:", error.response.data);
         if (error.response.data.errors) {
-          console.error("Validation errors:", error.response.data.errors);
+          toast.error("Validation errors occurred. Check console for details.");
+        } else {
+          toast.error("Server error occurred. Please try again.");
         }
+      } else {
+        toast.error("An unexpected error occurred: " + error.message);
       }
     }
 
@@ -164,12 +150,50 @@ const Registration = () => {
     setDlNumb("");
     setFmsciNumb("");
   };
+  const handleDriverDataReceived = (data) => {
+    setDriverData(data);
+  };
+
+  const handleDriverSelect = async (driver) => {
+    setSelectedDriver(driver);
+    if (driver.driverId) {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/api/drivers/${driver.driverId}`
+        );
+        setSelectedDetails(response.data);
+        setDrivers(response.data);
+      } catch (err) {
+        console.error("Error fetching driver details:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setImage(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
+  const handleUploadChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setUpload(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setFile(selectedFile);
+
+    setFile(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
 
   useEffect(() => {
     if (selecteddetails !== null) {
-      console.log("selectedDriver", selecteddetails);
-    }
-    if (selecteddetails) {
+      setIsEditing(true); 
       setName(selecteddetails.drivername || "");
       setDlNumb(selecteddetails.dlNumb || "");
       setFmsciNumb(selecteddetails.fmsciNumb || "");
@@ -194,6 +218,8 @@ const Registration = () => {
           ? `${IMAGE_URL}${selecteddetails.fmsciLicPhoto}`
           : null
       );
+    } else {
+      setIsEditing(false); 
     }
   }, [selecteddetails]);
 
@@ -558,7 +584,7 @@ const Registration = () => {
                 onClick={handleSave}
                 className="px-6 py-3 bg-cyan-600 text-white rounded"
               >
-                Save
+                {isEditing ? "Update" : "Save"}
               </button>
             </div>
           </div>

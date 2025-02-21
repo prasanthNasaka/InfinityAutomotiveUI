@@ -28,6 +28,7 @@ const Vehicledetails = () => {
   const [insuranceValidTill, setInsuranceValidTill] = useState("");
   const [rcNumb, setRcNumb] = useState("");
   const [insuranceNumb, setInsuranceNumb] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,20 +71,47 @@ const Vehicledetails = () => {
     formData.append("InsuranceImage", upload);
     formData.append("Status", true);
 
-    console.log("Data being sent:", Object.fromEntries(formData.entries()));
+
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/Vehicle`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("  Vehicle registered successfully!", response.data);
-    } catch (error) {
-      console.error("Error registering vehicle:", error);
-      if (error.response && error.response.data) {
-        console.error("Server response:", error.response.data);
-        if (error.response.data.errors) {
-          console.error("Validation errors:", error.response.data.errors);
+      let response;
+
+      if (isEditing) {
+        if (!selecteddetails || !selecteddetails.vehicleId) {
+          throw new Error("Vehicle ID is required for editing.");
         }
+
+        response = await axios.put(
+          `${BASE_URL}/api/Vehicle/${selecteddetails.vehicleId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        toast.success("Vehicle updated successfully:", response.data);
+      } else {
+        response = await axios.post(`${BASE_URL}/api/Vehicle`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        toast.success("Vehicle registered successfully:", response.data);
+      }
+    } catch (error) {
+      console.error("Error during operation:", error);
+      if (error.response && error.response.data) {
+        if (error.response.data.errors) {
+          toast.error("Validation errors occurred. Check console for details.");
+        } else {
+          toast.error("Server error occurred. Please try again.");
+        }
+      } else {
+        toast.error("An unexpected error occurred: " + error.message);
       }
     }
 
@@ -127,18 +155,13 @@ const Vehicledetails = () => {
 
   const handleVehicleSelect = async (vehicle) => {
     setSelectedVehicle(vehicle);
-    console.log("Vehicle", vehicle);
     if (vehicle.vehicleId) {
-      console.log(vehicle.vehicleId);
-
       setLoading(true);
       try {
         const response = await axios.get(
           `${BASE_URL}/api/Vehicle/${vehicle.vehicleId}`
         );
-        console.log("response", response);
         setSelectedDetails(response.data);
-        console.log("dfghgfdf", response.data);
 
         setVehicles(response.data);
       } catch (err) {
@@ -150,10 +173,26 @@ const Vehicledetails = () => {
     }
   };
 
-  useEffect(() => {
-    if (selecteddetails) {
-      console.log("selectedVehicle:", selecteddetails);
+  const handleImageChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setImage(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
+  const handleUploadChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setUpload(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
 
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) setFile(selectedFile);
+    toast.success(" Image uploaded successfully!");
+  };
+
+  useEffect(() => {
+    if (selecteddetails !== null) {
+      setIsEditing(true);
       setVehicleMake(selecteddetails.make || "");
       setModel(selecteddetails.model || "");
       setCc(selecteddetails.cc || "");
@@ -180,25 +219,10 @@ const Vehicledetails = () => {
           ? `${IMAGE_URL}${selecteddetails.insuranceImage}`
           : null
       );
+    } else {
+      setIsEditing(false);
     }
   }, [selecteddetails]);
-
-  const handleImageChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setImage(selectedFile);
-    toast.success(" Image uploaded successfully!");
-  };
-  const handleUploadChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setUpload(selectedFile);
-    toast.success(" Image uploaded successfully!");
-  };
-
-  const handleFileChange = async (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) setFile(selectedFile);
-    toast.success(" Image uploaded successfully!");
-  };
   return (
     <>
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -532,17 +556,15 @@ const Vehicledetails = () => {
               </div>
 
               <div className="flex justify-end mt-6 gap-5">
-                <button
-                  onClick={handleCancel}
-                  className="px-6 py-3 bg-gray-300 text-black rounded "
-                >
+                <button className="px-6 py-3 bg-gray-300 text-black rounded">
                   Cancel
                 </button>
+
                 <button
-                  className="px-6 py-3 bg-cyan-600 text-white rounded "
                   onClick={handleSubmit}
+                  className="px-6 py-3 bg-cyan-600 text-white rounded"
                 >
-                  Save
+                  {isEditing ? "Update" : "Save"}
                 </button>
               </div>
             </form>

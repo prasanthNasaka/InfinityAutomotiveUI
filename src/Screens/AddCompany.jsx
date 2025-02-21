@@ -85,7 +85,6 @@ const AddCompany = () => {
         `${BASE_URL}/api/companies`,
         formattedData
       );
-      console.log("Added Company:", response.data);
       toast.success("Added Company:", response.data);
       setCompanies((prevCompanies) => [...prevCompanies, response.data]);
 
@@ -113,81 +112,6 @@ const AddCompany = () => {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleEdit = async (companyId) => {
-    try {
-      // Find the company data that you want to edit from the companies list
-      const companyToEdit = companies.find(
-        (company) => company.id === companyId
-      );
-      console.log('companyToEdit',companyToEdit);
-      
-
-      if (companyToEdit) {
-        // Populate the form with company data for editing
-        setFormData({
-          name: companyToEdit.companyName,
-          address: {
-            street: companyToEdit.street,
-            city: companyToEdit.city,
-            state: companyToEdit.state,
-            zip: companyToEdit.zip,
-            country: companyToEdit.country,
-            website: companyToEdit.website,
-          },
-          contact: {
-            contactPerson: companyToEdit.contactPerson,
-            phone: companyToEdit.phone,
-            email: companyToEdit.email,
-          },
-          login: {
-            username: companyToEdit.username,
-            password: companyToEdit.password, // Adjust if required
-          },
-        });
-
-        // Make a PUT request to update company details
-        const updatedCompany = {
-          companyName: formData.name,
-          street: formData.address.street,
-          city: formData.address.city,
-          state: formData.address.state,
-          zip: formData.address.zip,
-          country: formData.address.country,
-          website: formData.address.website,
-          contactPerson: formData.contact.contactPerson,
-          phone: formData.contact.phone,
-          email: formData.contact.email,
-          username: formData.login.username,
-          password: formData.login.password, // Optional if updating password
-        };
-
-        const response = await axios.put(
-          `${BASE_URL}/api/companies/${companyToEdit.companyId}`,
-          updatedCompany
-
-        );
-        console.log('response',response);
-        
-        
-
-        if (response.status === 200) {
-          // Successfully updated, refresh company list or state
-          setCompanies(
-            companies.map((company) =>
-              company.id === companyId ? response.data : company
-            )
-          );
-          alert("Company updated successfully!");
-        } else {
-          throw new Error("Failed to update company");
-        }
-      }
-    } catch (error) {
-      console.error("Error updating company:", error);
-      alert("Failed to update company. Please try again.");
     }
   };
 
@@ -420,7 +344,6 @@ const AddCompany = () => {
                             <button
                               type="button"
                               className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                              onClick={() => handleEdit(company.id)} // Call handleEdit with company id
                             >
                               <CiEdit className="w-6 h-6" />
                             </button>
