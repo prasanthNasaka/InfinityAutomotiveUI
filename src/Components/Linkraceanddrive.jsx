@@ -8,6 +8,7 @@ import Newheader from "./Newheader";
 import MainSideBar from "./MainSideBar";
 import AutoCompleteSearch from "./CustomAutoComplete";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
+import toast, { Toaster } from "react-hot-toast";
 
 const Linkraceanddrive = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -124,6 +125,7 @@ const Linkraceanddrive = () => {
 
   const handleSubmit = async () => {
     if (!isFormValid()) {
+      toast.success('Successfully added')
       return;
     }
     setIsSubmitting(true);
@@ -157,8 +159,8 @@ const Linkraceanddrive = () => {
       setValue("");
       setIsVisible(false);
       setReferenceNumber("");
-      setDriverImageUrl(null);
-      setVehicleImageUrl(null);
+      setDriverImageUrl(false);
+      setVehicleImageUrl(false);
     } catch (error) {
       console.error("Registration error:", error);
       console.log("Failed to register. Please try again.");
@@ -623,6 +625,10 @@ const Linkraceanddrive = () => {
           </div>
         </div>
       </div>
+      <Toaster
+  position="bottom-center"
+  reverseOrder={false}
+/>
     </section>
   );
 };

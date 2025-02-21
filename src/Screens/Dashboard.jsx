@@ -2,29 +2,33 @@
 // import MainSideBar from "../Components/MainSideBar";
 // import Newheader from "../Components/Newheader";
 
+import MainSideBar from "../Components/MainSideBar";
+
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen w-full h-screen flex flex-col bg-gray-100">
       {/* Navigation Bar */}
-      <nav className="bg-cyan-500 p-4 text-white">
+      <nav className="bg-cyan-600 p-4 text-white ">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">Racing Dashboard</h1>
           <div className="flex items-center space-x-4">
             <span className="text-lg">Welcome, Racer!</span>
-            <img
-              src="https://via.placeholder.com/40"
-              alt="User Avatar"
-              className="rounded-full"
+            <img className="border w-10 rounded-lg h-10"
+              
             />
           </div>
         </div>
       </nav>
 
-      {/* Main Content */}
-      <div className="container mx-auto p-6">
+
+        <div className="w-full flex h-full">
+          <div className="h-full">
+            <MainSideBar />
+          </div>
+        <div className="container mx-auto p-6 ">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Race Statistics Card */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg ">
             <h2 className="text-xl font-semibold text-cyan-500 mb-4">Race Statistics</h2>
             <div className="space-y-3">
               <p className="text-gray-700">Total Races: <span className="font-bold">25</span></p>
@@ -63,6 +67,10 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+        </div>
+      {/* Main Content */}
+      
     </div>
   );
 };
