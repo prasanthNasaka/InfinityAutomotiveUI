@@ -8,7 +8,6 @@ import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import toast, { Toaster } from "react-hot-toast";
 
 const Registration = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
@@ -24,7 +23,6 @@ const Registration = () => {
   const [fmsciNumb, setFmsciNumb] = useState("");
   const [driverData, setDriverData] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
-  const [toastMessage, setToastMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [drivers, setDrivers] = useState(false);
   const [selecteddetails, setSelectedDetails] = useState(null);
@@ -372,7 +370,7 @@ const Registration = () => {
 
             <div className="flex flex-col lg:flex-row gap-2">
               <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
-                <div className="flex gap-6 items-center overflow-scroll">
+                <div className="flex gap-6 items-center ">
                   <div className="w-1/2">
                     <label className="block text-sm font-bold text-gray-700 mb-2">
                       Upload License
