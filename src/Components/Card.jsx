@@ -45,12 +45,6 @@ const Card = ({ event, type }) => {
                 <Calendar className="mr-2" size={16} />
                 {event.date}
               </p>
-              <Link
-                to="/driverracelink"
-                className="mt-4 w-full bg-cyan-500 text-white px-4 py-2 rounded flex justify-center hover:bg-cyan-600 transition"
-              >
-                Register Now
-              </Link>
             </>
           )}
           {type === "completed" && (
@@ -163,13 +157,40 @@ const Card = ({ event, type }) => {
                 ))}
               </div>
             )}
-            {type != "upcoming" && (
-              <button
-                onClick={closeModal}
-                className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-              >
-                Close
-              </button>
+            {type === "live" && (
+              <>
+                <div className="flex gap-4">
+                  <button
+                    onClick={closeModal}
+                    className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+                  >
+                    Close
+                  </button>
+                  <Link target="_blank" to="/resultTable">
+                    <button className="mt-4 bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition">
+                      Details
+                    </button>
+                  </Link>
+                </div>
+              </>
+            )}
+            {type === "completed" && (
+              <>
+                <div className="flex gap-4">
+                  <button
+                    onClick={closeModal}
+                    className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+                  >
+                    Close
+                  </button>
+
+                  <Link target="_blank" to="/resultTable">
+                    <button className="mt-4 bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition">
+                      Results
+                    </button>
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>

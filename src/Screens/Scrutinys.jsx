@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -17,7 +18,9 @@ function Scrutinys() {
 
   const handleGetData = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/EventRegistration/names`);
+      const response = await axios.get(
+        `${BASE_URL}/api/EventRegistration/names`
+      );
       setEvents(response.data.$values);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -64,21 +67,14 @@ function Scrutinys() {
       .catch((error) => console.error("Error fetching scrutiny data:", error));
   };
 
-  const handleAnswerChange = (ruleId, value) => {
-    if (value === false) {
-      setSelectedQuestion(ruleId);
-      setReasonInput("");
-      setError("");
-    } else {
-      setAnswers((prev) => ({
-        ...prev,
-        [ruleId]: { value, reason: null },
-      }));
-      updateScrutinyStatus(ruleId, value ? 1 : 0, null);
-    }
+  const handleAnswerChange = (ruleId, value, comment = "") => {
+    setAnswers((prev) => ({
+      ...prev,
+      [ruleId]: { value, comment },
+    }));
   };
 
-  const handleReasonSubmit = (e) => {
+  const handleReasonSubmit = (ruleId, e) => {
     e.preventDefault();
 
     if (!reasonInput.trim()) {
@@ -88,25 +84,34 @@ function Scrutinys() {
 
     setAnswers((prev) => ({
       ...prev,
-      [selectedQuestion]: { value: false, reason: reasonInput.trim() },
+      [ruleId]: { value: false, comment: reasonInput.trim() },
     }));
-
-    updateScrutinyStatus(selectedQuestion, 0, reasonInput.trim());
 
     setReasonInput("");
     setSelectedQuestion(null);
     setError("");
   };
 
-  const updateScrutinyStatus = async (ruleId, status, comment) => {
+  const handleReportSubmit = async () => {
+    const scrutinyData = Object.keys(answers).map((ruleId) => ({
+      scrutineydetailsId: 0, // This can be auto-generated or fetched from the server
+      scrutineyruleId: parseInt(ruleId, 10),
+      scrutineyrule: scrutinyRules.find(
+        (rule) => rule.scrutineyruleId === parseInt(ruleId, 10)
+      ).scrutineyrule,
+      status: answers[ruleId].value ? 1 : 0,
+      comment: answers[ruleId].comment || "",
+      regId: selectedEvent, // Assuming selectedEvent is the registration ID
+    }));
+
     try {
-      await axios.put(`${BASE_URL}/api/Scrutiny/${ruleId}`, {
-        scrutineyruleId: ruleId,
-        status: status,
-        comment: comment || "",
-      });
+      const response = await axios.put(
+        `${BASE_URL}/api/Scrutiny`,
+        scrutinyData
+      );
+      console.log("Report submitted successfully:", response.data);
     } catch (error) {
-      console.error("Error updating scrutiny status:", error);
+      console.error("Error submitting report:", error);
     }
   };
 
@@ -267,14 +272,27 @@ function Scrutinys() {
                 </div>
                 <div className="bg-white rounded w-1/2 items-center justify-between gap-3 flex">
                   <div className="w-2/3">
-                    <form onSubmit={handleReasonSubmit}>
+                    <form
+                      onSubmit={(e) =>
+                        handleReasonSubmit(rule.scrutineyruleId, e)
+                      }
+                    >
                       <input
                         type="text"
-                        value={reasonInput}
-                        onChange={(e) => setReasonInput(e.target.value)}
+                        value={answers[rule.scrutineyruleId]?.comment || ""}
+                        onChange={(e) =>
+                          setAnswers((prev) => ({
+                            ...prev,
+                            [rule.scrutineyruleId]: {
+                              ...prev[rule.scrutineyruleId],
+                              comment: e.target.value,
+                            },
+                          }))
+                        }
                         className="w-full p-3 border border-gray-300 rounded"
                         placeholder="Comments"
                       />
+
                       {error && (
                         <p className="text-red-500 text-sm mt-1">{error}</p>
                       )}
@@ -309,17 +327,14 @@ function Scrutinys() {
                   </div>
                 </div>
               </div>
-              {answers[rule.scrutineyruleId]?.value === false &&
-                answers[rule.scrutineyruleId]?.reason && (
-                  <p className="text-red-500 mt-2 text-sm">
-                    Reason for Rejection: {answers[rule.scrutineyruleId].reason}
-                  </p>
-                )}
             </div>
           ))}
 
           <div className="flex w-full justify-end font-bold text-lg">
-            <button className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded">
+            <button
+              className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded"
+              onClick={() => handleReportSubmit()}
+            >
               Submit
             </button>
           </div>
