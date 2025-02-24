@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Card from "../Components/Card";
 import { FaArrowRightLong } from "react-icons/fa6";
+import RacingVideo from "../assets/Racing.mp4";
 
 const liveEvents = [
   {
@@ -226,35 +227,49 @@ const completedEvents = [
 
 const LandingPage = () => {
   return (
-    <div className="container mx-auto p-4">
-      <div className="w-full h-auto flex items-center justify-end">
-        <Link
-          to={"/login"}
-          className="w-fit flex items-center bg-cyan-500 text-white gap-3 p-2 border text-center hover:bg-cyan-600 hover:text-black transform ease-in-out duration-1000 rounded-md"
+    <>
+      <div className="relative overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          className="absolute top-0 left-0 w-full h-full object-cover z-[-1] "
+          style={{ animation: "fadeIn 3s ease-in-out" }}
         >
-          Login
-          <FaArrowRightLong className="size-5 flex items-center" />
-        </Link>
+          <source src={RacingVideo} type="video/mp4" />
+        </video>
+
+        <div className="container mx-auto p-4 relative z-10">
+          <div className="w-full h-auto flex items-center justify-end">
+            <Link
+              to={"/login"}
+              className="w-fit flex items-center bg-cyan-500 text-white gap-3 p-2 border text-center hover:bg-cyan-600 hover:text-black transform ease-in-out duration-1000 rounded-md"
+            >
+              Login
+              <FaArrowRightLong className="size-5 flex items-center" />
+            </Link>
+          </div>
+          <h1 className="text-3xl font-bold mb-6">Live Events</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white">
+            {liveEvents.map((event) => (
+              <Card key={event.id} event={event} type="live" />
+            ))}
+          </div>
+          <h2 className="text-2xl font-bold mt-8 mb-4">Upcoming Events</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white">
+            {upcomingEvents.map((event) => (
+              <Card key={event.id} event={event} type="upcoming" />
+            ))}
+          </div>
+          <h2 className="text-2xl font-bold mt-8 mb-4">Completed Events</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white">
+            {completedEvents.map((event) => (
+              <Card key={event.id} event={event} type="completed" />
+            ))}
+          </div>
+        </div>
       </div>
-      <h1 className="text-3xl font-bold mb-6">Live Events</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {liveEvents.map((event) => (
-          <Card key={event.id} event={event} type="live" />
-        ))}
-      </div>
-      <h2 className="text-2xl font-bold mt-8 mb-4">Upcoming Events</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {upcomingEvents.map((event) => (
-          <Card key={event.id} event={event} type="upcoming" />
-        ))}
-      </div>
-      <h2 className="text-2xl font-bold mt-8 mb-4">Completed Events</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {completedEvents.map((event) => (
-          <Card key={event.id} event={event} type="completed" />
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 

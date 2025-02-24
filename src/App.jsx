@@ -20,6 +20,7 @@ import Add_Employee from "./Components/Add_Employee";
 import Emp_Login from "./Components/Emp_Login";
 import ScrutineerPage from "./Components/ScrutineerPage";
 import Table from "./Components/Table";
+import TermsAndConditions from "./Components/TermsAndConditions";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -47,6 +48,7 @@ const App = () => {
           <Route path="/emplogin" element={<Emp_Login />} />
           <Route path="/scrutineerpage" element={<ScrutineerPage />} />
           <Route path="/resultTable" element={<Table />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
 
           <Route
             path="/driverracelink"

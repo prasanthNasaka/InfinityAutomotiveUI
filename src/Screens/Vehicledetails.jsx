@@ -6,6 +6,7 @@ import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import axios from "axios";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const Vehicledetails = () => {
   const [vehicleData, setVehicleData] = useState([]);
@@ -29,6 +30,7 @@ const Vehicledetails = () => {
   const [rcNumb, setRcNumb] = useState("");
   const [insuranceNumb, setInsuranceNumb] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,11 +50,14 @@ const Vehicledetails = () => {
       !upload ||
       !image
     ) {
-      setError("All fields are mandatory.");
+      toast.error("All fields are mandatory.");
       return;
     }
 
-    setError("");
+    if (!isAgreed) {
+      toast.error("You must agree to the terms and conditions.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("RegNumb", regNo);
@@ -70,7 +75,6 @@ const Vehicledetails = () => {
     formData.append("RcImage", image);
     formData.append("InsuranceImage", upload);
     formData.append("Status", true);
-
 
     for (const [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
@@ -128,7 +132,6 @@ const Vehicledetails = () => {
     setFile(null);
     setUpload(null);
     setImage(null);
-    setError("");
   };
 
   const handleCancel = (e) => {
@@ -236,7 +239,7 @@ const Vehicledetails = () => {
           <div className="bg-gray-100">
             <MainSideBar />
           </div>
-          <div className="w-full bg-white shadow-lg p-6 rounded-lg overflow-auto">
+          <div className="w-full bg-white shadow-lg p-8 rounded-lg overflow-auto">
             <div className="w-full flex justify-center">
               <form className="w-1/2 ">
                 <label className="mb-2 text-sm font-medium text-gray-900 sr-only  ">
@@ -554,7 +557,28 @@ const Vehicledetails = () => {
                   </div>
                 </div>
               </div>
-
+              <div className="flex items-center mt-8">
+                <input
+                  id="link-checkbox"
+                  type="checkbox"
+                  className="w-4 h-4  bg-gray-100 border-gray-300 rounded-sm accent-cyan-600"
+                  checked={isAgreed}
+                  onChange={(e) => setIsAgreed(e.target.checked)}
+                />
+                <label
+                  htmlFor="link-checkbox"
+                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
+                  I agree with the{" "}
+                  <Link
+                    to="/terms"
+                    className="text-cyan-600 dark:text-blue-500 hover:underline"
+                  >
+                    Terms and conditions
+                  </Link>
+                  .
+                </label>
+              </div>
               <div className="flex justify-end mt-6 gap-5">
                 <button className="px-6 py-3 bg-gray-300 text-black rounded">
                   Cancel
