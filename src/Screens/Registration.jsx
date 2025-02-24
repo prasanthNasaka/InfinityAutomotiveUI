@@ -6,6 +6,7 @@ import axios from "axios";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const Registration = () => {
   const [name, setName] = useState("");
@@ -27,6 +28,7 @@ const Registration = () => {
   const [drivers, setDrivers] = useState(false);
   const [selecteddetails, setSelectedDetails] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -42,21 +44,24 @@ const Registration = () => {
       !phone.trim() ||
       !email.trim()
     ) {
-      setError("All fields are mandatory.");
+      toast.error("All fields are mandatory.");
       return;
     }
 
     if (!/^\d{10}$/.test(phone)) {
-      setError("Phone number must be exactly 10 digits.");
+      toast.error("Phone number must be exactly 10 digits.");
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Invalid email address.");
+      toast.error("Invalid email address.");
       return;
     }
 
-    setError("");
+    if (!isAgreed) {
+      toast.error("You must agree to the terms and conditions.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("driverName", name);
@@ -193,7 +198,7 @@ const Registration = () => {
 
   useEffect(() => {
     if (selecteddetails !== null) {
-      setIsEditing(true); 
+      setIsEditing(true);
       setName(selecteddetails.drivername || "");
       setDlNumb(selecteddetails.dlNumb || "");
       setFmsciNumb(selecteddetails.fmsciNumb || "");
@@ -219,7 +224,7 @@ const Registration = () => {
           : null
       );
     } else {
-      setIsEditing(false); 
+      setIsEditing(false);
     }
   }, [selecteddetails]);
 
@@ -570,6 +575,30 @@ const Registration = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="flex items-center mt-8">
+              <input
+                id="link-checkbox"
+                type="checkbox"
+                className="w-4 h-4  bg-gray-100 border-gray-300 rounded-sm accent-cyan-600"
+                checked={isAgreed}
+                onChange={(e) => setIsAgreed(e.target.checked)}
+                required
+              />
+              <label
+                htmlFor="link-checkbox"
+                className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              >
+                I agree with the{" "}
+                <Link
+                  to="/terms"
+                  className="text-cyan-600 dark:text-blue-500 hover:underline"
+                >
+                  Terms and conditions
+                </Link>
+                .
+              </label>
             </div>
 
             <div className="flex justify-end mt-6 gap-5">
