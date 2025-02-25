@@ -239,7 +239,7 @@ const LandingPage = () => {
           <source src={RacingVideo} type="video/mp4" />
         </video>
 
-        <div className="container mx-auto p-4 relative z-10">
+        <div className="w-full mx-auto p-4 relative z-10">
           <div className="w-full h-auto flex items-center justify-end">
             <Link
               to={"/login"}
@@ -250,19 +250,19 @@ const LandingPage = () => {
             </Link>
           </div>
           <h1 className="text-3xl font-bold mb-6">Live Events</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {liveEvents.map((event) => (
               <Card key={event.id} event={event} type="live" />
             ))}
           </div>
           <h2 className="text-2xl font-bold mt-8 mb-4">Upcoming Events</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {upcomingEvents.map((event) => (
               <Card key={event.id} event={event} type="upcoming" />
             ))}
           </div>
           <h2 className="text-2xl font-bold mt-8 mb-4">Completed Events</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {completedEvents.map((event) => (
               <Card key={event.id} event={event} type="completed" />
             ))}

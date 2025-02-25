@@ -19,7 +19,7 @@ const Card = ({ event, type }) => {
   return (
     <>
       <div
-        className="border rounded-lg overflow-hidden shadow-lg cursor-pointer"
+        className="border rounded-lg overflow-hidden shadow-lg cursor-pointer bg-white"
         onClick={handleClick}
       >
         <img
@@ -63,7 +63,6 @@ const Card = ({ event, type }) => {
               <h2 className="text-2xl font-bold mb-4 text-center">
                 {event.title}
               </h2>
-
               <button
                 onClick={closeModal}
                 className="bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-600 transition"
@@ -84,26 +83,39 @@ const Card = ({ event, type }) => {
                 </svg>
               </button>
             </div>
+
             <img
               src={event.image}
               alt={event.title}
               className="w-full h-48 object-cover mb-4"
             />
+
             <p className="text-gray-600 mb-2">
-              <MapPin className="inline mr-2" size={16} />
-              {event.location}
+              <MapPin className="inline mr-2" size={16} /> {event.location}
             </p>
+
             {type === "live" && (
-              <p className="text-gray-600 mb-2">
-                <Timer className="inline mr-2" size={16} />
-                Lap {event.currentLap} of {event.totalLaps}
-              </p>
+              <>
+                <p className="text-gray-600 mb-2">
+                  <Timer className="inline mr-2" size={16} /> Lap{" "}
+                  {event.currentLap} of {event.totalLaps}
+                </p>
+                <div className="mt-4">
+                  <h4 className="font-semibold">Leaders</h4>
+                  {event.leaders.map((leader) => (
+                    <div key={leader.position} className="text-sm">
+                      {leader.position}. {leader.rider} ({leader.team}) -{" "}
+                      {leader.gap}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
+
             {type === "upcoming" && (
               <>
                 <p className="text-gray-600 mb-2">
-                  <Calendar className="inline mr-2" size={16} />
-                  {event.date}
+                  <Calendar className="inline mr-2" size={16} /> {event.date}
                 </p>
                 <p className="text-gray-600">{event.description}</p>
                 <p className="text-gray-600 mt-2">
@@ -119,33 +131,9 @@ const Card = ({ event, type }) => {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6 flex justify-between gap-5">
-                  <button
-                    onClick={closeModal}
-                    className="w-full text-center bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-                  >
-                    Close
-                  </button>
-                  <Link
-                    to="/driverracelink"
-                    className="w-full text-center bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition"
-                  >
-                    Register Now
-                  </Link>
-                </div>
               </>
             )}
-            {type === "live" && (
-              <div className="mt-4">
-                <h4 className="font-semibold">Leaders</h4>
-                {event.leaders.map((leader) => (
-                  <div key={leader.position} className="text-sm">
-                    {leader.position}. {leader.rider} ({leader.team}) -{" "}
-                    {leader.gap}
-                  </div>
-                ))}
-              </div>
-            )}
+
             {type === "completed" && (
               <div className="mt-4">
                 <h4 className="font-semibold">Results</h4>
@@ -157,41 +145,33 @@ const Card = ({ event, type }) => {
                 ))}
               </div>
             )}
-            {type === "live" && (
-              <>
-                <div className="flex gap-4">
-                  <button
-                    onClick={closeModal}
-                    className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-                  >
-                    Close
-                  </button>
-                  <Link target="_blank" to="/resultTable">
-                    <button className="mt-4 bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition">
-                      Details
-                    </button>
-                  </Link>
-                </div>
-              </>
-            )}
-            {type === "completed" && (
-              <>
-                <div className="flex gap-4">
-                  <button
-                    onClick={closeModal}
-                    className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-                  >
-                    Close
-                  </button>
 
-                  <Link target="_blank" to="/resultTable">
-                    <button className="mt-4 bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition">
-                      Results
-                    </button>
-                  </Link>
-                </div>
-              </>
-            )}
+            <div className="w-full mt-5 flex justify-between gap-5">
+              <button
+                onClick={closeModal}
+                className="w-1/2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+              >
+                Close
+              </button>
+
+              {(type === "upcoming" ||
+                type === "completed" ||
+                type === "live") && (
+                <Link
+                  className="w-1/2"
+                  target="_blank"
+                  to={type === "upcoming" ? "/driverracelink" : "/resultTable"}
+                >
+                  <button className="w-full bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition">
+                    {type === "upcoming"
+                      ? "Register Now"
+                      : type === "completed"
+                      ? "Results"
+                      : "Details"}
+                  </button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}
