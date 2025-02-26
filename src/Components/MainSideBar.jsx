@@ -164,6 +164,15 @@ const MainSideBar = () => {
             <CalendarFold />
             {!isCollapsed && <span>Approve Event</span> }
           </Link>
+          <Link
+            to="/template"
+            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              isActive("/template") ? "bg-cyan-600 rounded-lg" : ""
+            }`}
+          >
+            <CalendarFold />
+            {!isCollapsed && <span>Scrutiny Template</span> }
+          </Link>
         </ul>
       </div>
     </section>
