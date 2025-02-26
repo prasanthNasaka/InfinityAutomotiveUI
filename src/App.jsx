@@ -20,6 +20,7 @@ import Home from "./Screens/Home";
 import Add_Employee from "./Components/Add_Employee";
 import Emp_Login from "./Components/Emp_Login";
 import ScrutineerPage from "./Components/ScrutineerPage";
+import Categorys from "./Components/Category";
 
 const App = () => {
   const [auth, setAuth] = useState(false);
@@ -53,6 +54,7 @@ const App = () => {
           />
 
           <Route path="/events" element={<Events/>} />
+          <Route path="/category/:eventId" element={<Categorys />} />
 
           <Route
             path="/dashboard"
