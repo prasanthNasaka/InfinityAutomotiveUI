@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate to redirect back to events page
-import MainSideBar from "./MainSideBar";
-import Newheader from "./Newheader";
+import MainSideBar from "../Components/MainSideBar";
+import Newheader from "../Components/Newheader";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
