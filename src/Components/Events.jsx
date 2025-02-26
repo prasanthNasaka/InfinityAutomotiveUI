@@ -1,25 +1,27 @@
+
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import DatePicker from "react-datepicker";
-import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parse } from "date-fns";
 import { FaCalendarAlt } from "react-icons/fa";
 
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 
+import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { parse } from "postcss";
+
 const EventForm = () => {
   const [eventData, setEventData] = useState({
-    eventType: "",
+    eventType: 0,
     eventName: "",
     dateRange: { start: null, end: null },
-    status: "inactive",
+    status: 0,
     bannerImage: null, // We will store the File object here
     bankDetails: {
       bankName: "",
@@ -28,12 +30,10 @@ const EventForm = () => {
       ifscCode: "",
       qrCode: "", // Store the File object for QR code here
     },
-    categories: [],
   });
 
-  console.log("jhgtds", EventForm);
+  // console.log("jhgtds", EventForm);
 
-  const [expandedCategories, setExpandedCategories] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [submittedEvents, setSubmittedEvents] = useState([]);
@@ -72,39 +72,6 @@ const EventForm = () => {
       });
     }
     e.target.value = ""; // Reset input to allow re-upload of the same file
-  };
-
-  const handleAddCategory = () => {
-    const newCategory = {
-      id: Date.now().toString(),
-      category: "",
-      laps: 0,
-      entryPrice: 0,
-      participants: 0,
-    };
-    setEventData({
-      ...eventData,
-      categories: [...eventData.categories, newCategory],
-    });
-    setExpandedCategories({ ...expandedCategories, [newCategory.id]: true });
-  };
-
-  const handleCategoryChange = (id, field, value) => {
-    setEventData({
-      ...eventData,
-      categories: eventData.categories.map((cat) =>
-        cat.id === id ? { ...cat, [field]: value } : cat
-      ),
-    });
-  };
-
-  const handleDeleteCategory = (id) => {
-    setEventData({
-      ...eventData,
-      categories: eventData.categories.filter((cat) => cat.id !== id),
-    });
-    const { [id]: _, ...rest } = expandedCategories;
-    setExpandedCategories(rest);
   };
 
   // const handleSubmit = async (e) => {
@@ -277,20 +244,12 @@ const EventForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Create a FormData object
     const formData = new FormData();
-
-    // Append non-file fields to FormData
     formData.append("eventtype", eventData.eventType);
     formData.append("eventname", eventData.eventName);
     formData.append("startdate", eventData.dateRange.start.toISOString());
     formData.append("enddate", eventData.dateRange.end.toISOString());
-    formData.append(
-      "isactive",
-      eventData.status === "active" ? "true" : "false"
-    );
-    formData.append("showdashboard", "true");
+    formData.append("isactive", eventData.status === "active" ? 1 : 0);
     formData.append("eventstatus", 0);
     formData.append("bankname", eventData.bankDetails.bankName);
     formData.append("ifsccode", eventData.bankDetails.ifscCode);
@@ -308,22 +267,7 @@ const EventForm = () => {
       formData.append("qrCode", eventData.bankDetails.qrCode);
     }
 
-    // Loop through categories and append them as JSON strings
-    eventData.categories.forEach((cat) => {
-      formData.append(
-        "lstcat",
-        JSON.stringify({
-          evtCatId: 0,
-          evtCategory: cat.category,
-          noOfVeh: cat.participants,
-          status: "inactive",
-          nooflaps: cat.laps,
-          entryprice: cat.entryPrice,
-          wheelertype: 0,
-          eventId: 0,
-        })
-      );
-    });
+    console.log("form data", formData);
 
     try {
       // Make the POST request with FormData
@@ -337,27 +281,28 @@ const EventForm = () => {
         }
       );
       console.log("Event registered successfully:", response.data);
-
+      const addCategory = response.data;
+      setEditId(addCategory);
       // Reset the form data
       setSubmittedEvents([...submittedEvents, response.data]);
       setEventData({
         eventType: "",
         eventName: "",
         dateRange: { start: null, end: null },
-        status: "active",
+        status: 1,
         bannerImage: null,
         bankDetails: {
           bankName: "",
           accountHolderName: "",
           accountNumber: "",
           ifscCode: "",
-          qrCode: "", // Reset QR code file
+          qrCode: "",
         },
-        categories: [],
       });
     } catch (error) {
       console.error("Failed to register event:", error);
     }
+    setFormSubmitted(true);
   };
 
   const handleEdit = (event) => {
@@ -371,7 +316,7 @@ const EventForm = () => {
         start: new Date(event.startdate),
         end: new Date(event.enddate),
       },
-      status: event.isactive === "true" ? "active" : "inactive",
+      status: event.isactive === 1 ? 1 : 0,
       bannerImage: "", // Assuming you're handling this later
       bankDetails: {
         bankName: event.bankname,
@@ -380,14 +325,6 @@ const EventForm = () => {
         ifscCode: event.ifsccode,
         qrCode: "",
       },
-      categories:
-        event.lstcat?.$values?.map((cat) => ({
-          id: cat.evtCatId,
-          category: cat.evtCategory,
-          laps: cat.nooflaps,
-          entryPrice: cat.entryprice,
-          participants: cat.noOfVeh,
-        })) || [],
     });
 
     // Update the event in the submitted events list
@@ -446,6 +383,14 @@ const EventForm = () => {
       }
     }
   };
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  const navigate = useNavigate(); // Initialize useNavigate to programmatically navigate to the Categorys page
+
+  const handleRedirectToCategory = (eventId) => {
+    console.log("eventID", eventId);
+    const followingData = eventId.navigate(`/category/${eventId}`);
+  };
 
   useEffect(() => {
     axios
@@ -490,10 +435,10 @@ const EventForm = () => {
                     required
                   >
                     <option value="">Select Event Type</option>
-                    <option>Autocross</option>
-                    <option>Drag</option>
-                    <option>Sprint</option>
-                    <option>Rally</option>
+                    <option value={21}>Autocross</option>
+                    <option value={22}>DragRacing</option>
+                    <option value={23}> RallySprint </option>
+                    <option value={24}>StageRally</option>
                   </select>
                 </div>
 
@@ -565,7 +510,7 @@ const EventForm = () => {
                           type="radio"
                           name="status"
                           value="active"
-                          checked={eventData.status === "active"}
+                          checked={eventData.status === 1}
                           onChange={(e) => handleInputChange(e, "status")}
                           className="w-4 h-4 text-cyan-600 border-gray-300"
                         />
@@ -578,7 +523,7 @@ const EventForm = () => {
                           type="radio"
                           name="status"
                           value="inactive"
-                          checked={eventData.status === "inactive"}
+                          checked={eventData.status === 0}
                           onChange={(e) => handleInputChange(e, "status")}
                           className="w-4 h-4 text-cyan-600 border-gray-300"
                         />
@@ -588,14 +533,48 @@ const EventForm = () => {
                       </label>
                     </div>
                   </div>
-                  <div className="w-full border"></div>
+                  <div className="w-full">
+                    <div className="w-full flex gap-2 bg-gray-50 rounded-lg p-1 h-auto">
+                      <div className="flex flex-col gap-2 w-3/4">
+                        <div className="w-full">
+                          <label className="block text-sm font-bold text-gray-700">
+                            Location
+                          </label>
+                          <input
+                            type="text"
+                            value={eventData.location}
+                            onChange={(e) => handleInputChange(e, "location")}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                            placeholder="Enter Event Location"
+                            required
+                          />
+                        </div>
+
+                        <div className="w-full">
+                          <label className="block text-sm font-bold text-gray-700">
+                            Geo Location (URL)
+                          </label>
+                          <input
+                            type="text"
+                            value={eventData.geoLocation}
+                            onChange={(e) =>
+                              handleInputChange(e, "geoLocation")
+                            }
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                            placeholder="Enter Geo Location URL"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="w-1/2">
                   <div className="flex flex-col gap-3">
                     <h3 className="text-lg font-bold">Upload Banner</h3>
                     <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
-                      <label className="cursor-pointer w-full h-full flex items-center justify-center">
+                      {/* <label className="cursor-pointer w-full h-full flex items-center justify-center">
                         {eventData.bannerImage ? (
                           <div className="relative w-full h-full">
                             <img
@@ -646,6 +625,65 @@ const EventForm = () => {
                           type="file"
                           className="hidden"
                           onChange={handleBannerImageChange} // Attach the file handler
+                          accept="image/*"
+                        />
+                      </label> */}
+                      <label className="cursor-pointer w-full h-full flex items-center justify-center">
+                        {eventData.bannerImage ? (
+                          <div className="relative w-full h-full">
+                            {/* Check if the image source is a URL or a File */}
+                            <img
+                              src={
+                                typeof eventData.bannerImage === "string"
+                                  ? eventData.bannerImage // Use URL if it's a string
+                                  : URL.createObjectURL(eventData.bannerImage) // Use object URL if it's a file object
+                              }
+                              alt="Uploaded Banner"
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEventData({
+                                  ...eventData,
+                                  bannerImage: null, // Reset the banner image
+                                })
+                              }
+                              className="absolute bottom-2 right-2 bg-white text-gray-700 px-4 py-2 rounded-md shadow-md hover:bg-gray-200"
+                            >
+                              Re-upload
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <svg
+                              className="w-8 h-8 mb-2 text-gray-500 mx-auto"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 20 16"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                              />
+                            </svg>
+                            <p className="text-sm text-gray-500">
+                              <span className="font-bold">Click to upload</span>{" "}
+                              or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              SVG, PNG, JPG, or GIF (MAX. 800x400px)
+                            </p>
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          className="hidden"
+                          onChange={handleBannerImageChange} // Handle file change here
                           accept="image/*"
                         />
                       </label>
@@ -726,10 +764,9 @@ const EventForm = () => {
                     <div className="flex flex-col gap-3">
                       <h3 className="text-lg font-bold">Upload QR Code</h3>
                       <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
-                        <label className="cursor-pointer w-full h-full flex items-center justify-center">
+                        {/* <label className="cursor-pointer w-full h-full flex items-center justify-center">
                           {eventData.bankDetails.qrCode ? (
                             <div className="relative w-full h-full">
-                              {/* Show QR Code preview */}
                               <img
                                 src={URL.createObjectURL(
                                   eventData.bankDetails.qrCode
@@ -787,6 +824,73 @@ const EventForm = () => {
                             onChange={handleQRCodeChange} // Attach the file handler for QR code
                             accept="image/*"
                           />
+                        </label> */}
+                        <label className="cursor-pointer w-full h-full flex items-center justify-center">
+                          {eventData.bankDetails.qrCode ? (
+                            <div className="relative w-full h-full">
+                              {/* Check if the QR code is a URL or File */}
+                              <img
+                                src={
+                                  typeof eventData.bankDetails.qrCode ===
+                                  "string"
+                                    ? eventData.bankDetails.qrCode // Use URL if it's a string
+                                    : URL.createObjectURL(
+                                        eventData.bankDetails.qrCode
+                                      ) // Use object URL if it's a file object
+                                }
+                                alt="Uploaded QR Code"
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setEventData({
+                                    ...eventData,
+                                    bankDetails: {
+                                      ...eventData.bankDetails,
+                                      qrCode: null, // Reset the QR code
+                                    },
+                                  })
+                                }
+                                className="absolute bottom-2 right-2 bg-white text-gray-700 px-4 py-2 rounded-md shadow-md hover:bg-gray-200"
+                              >
+                                Re-upload
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="text-center">
+                              <svg
+                                className="w-8 h-8 mb-2 text-gray-500 mx-auto"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 20 16"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                                />
+                              </svg>
+                              <p className="text-sm text-gray-500">
+                                <span className="font-bold">
+                                  Click to upload
+                                </span>{" "}
+                                or drag and drop
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                SVG, PNG, JPG, or GIF (MAX. 800x400px)
+                              </p>
+                            </div>
+                          )}
+                          <input
+                            type="file"
+                            className="hidden"
+                            onChange={handleQRCodeChange} // Handle file change for QR code
+                            accept="image/*"
+                          />
                         </label>
                       </div>
                     </div>
@@ -794,133 +898,7 @@ const EventForm = () => {
                 </div>
               </div>
 
-              {eventData.categories.map((category, index) => (
-                <div
-                  key={category.id}
-                  className="border rounded-lg p-4 bg-gray-50"
-                >
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold">Category {index + 1}</h3>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedCategories({
-                            ...expandedCategories,
-                            [category.id]: !expandedCategories[category.id],
-                          })
-                        }
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        {expandedCategories[category.id] ? (
-                          <ChevronUp size={24} />
-                        ) : (
-                          <ChevronDown size={24} />
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteCategory(category.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 size={24} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {expandedCategories[category.id] && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-bold text-gray-700">
-                            Category Name
-                          </label>
-                          <input
-                            type="text"
-                            value={category.category}
-                            onChange={(e) =>
-                              handleCategoryChange(
-                                category.id,
-                                "category",
-                                e.target.value
-                              )
-                            }
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                            required
-                          />
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700">
-                              Participants
-                            </label>
-                            <input
-                              type="number"
-                              value={category.participants}
-                              onChange={(e) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  "participants",
-                                  parseInt(e.target.value)
-                                )
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700">
-                              Laps
-                            </label>
-                            <input
-                              type="number"
-                              value={category.laps}
-                              onChange={(e) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  "laps",
-                                  parseInt(e.target.value)
-                                )
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              required
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700">
-                              Price
-                            </label>
-                            <input
-                              type="number"
-                              value={category.entryPrice}
-                              onChange={(e) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  "entryPrice",
-                                  parseInt(e.target.value)
-                                )
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              required
-                            />
-                          </div>
-                          <div>{/* 2W/4W */}</div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <div className="flex justify-between items-center">
-                <button
-                  type="button"
-                  onClick={handleAddCategory}
-                  className="flex items-center gap-2 bg-cyan-500 text-white py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors"
-                >
-                  <Plus size={20} />
-                  Add Category
-                </button>
+              <div className="flex justify-end p-2">
                 <button
                   type="submit"
                   className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
@@ -928,6 +906,18 @@ const EventForm = () => {
                   {editMode ? "Update Event" : "Submit Event"}
                 </button>
               </div>
+
+              {formSubmitted && (
+                <div className="flex justify-between items-center">
+                  <button
+                    type="button"
+                    onClick={() => handleRedirectToCategory(editId)}
+                    className="flex items-center gap-2 bg-cyan-500 text-white py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors"
+                  >
+                    Add Class
+                  </button>
+                </div>
+              )}
             </form>
           </section>
 
@@ -990,11 +980,6 @@ const EventForm = () => {
                             >
                               <CiEdit className="size-6" />
                             </button>
-                            {/* <button
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Delete
-                            </button> */}
                             <button
                               type="button"
                               onClick={() => handleDelete(event.eventname)}
