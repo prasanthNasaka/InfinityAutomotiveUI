@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate to redirect back to events page
+import { useNavigate, useParams } from "react-router-dom";
 import MainSideBar from "../Components/MainSideBar";
 import Newheader from "../Components/Newheader";
 import { useEffect, useState } from "react";
@@ -8,24 +6,11 @@ import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
 
 const Classes = () => {
-  const { eventId } = useParams(); // Getting eventId from URL params
   const [selectedEvent, setSelectedEvent] = useState("");
-
-  useEffect(() => {
-    console.log("Saad", eventId);
-    const yourAuthToken = localStorage.getItem("authToken");
-    console.log("yourAuthToken", yourAuthToken);
-
-    if (eventId) {
-      setSelectedEvent(eventId.eventname); // Set the selected event from URL param
-    }
-  }, [eventId]); // Run effect when eventId changes
-
-  // Initially, there is one category form by default
   const [eventData, setEventData] = useState({
     categories: [
       {
-        id: Date.now().toString(), // Unique ID for the category
+        id: Date.now().toString(),
         evtCategory: "",
         noOfVeh: 0,
         status: "",
@@ -37,96 +22,11 @@ const Classes = () => {
     ],
   });
 
-  const [expandedCategories, setExpandedCategories] = useState({
-    [Date.now().toString()]: true, // Initially expanded category
-  });
+  const [tableData, setTableData] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [eventCategories, setEventCategories] = useState([]); // New state for event categories
 
-  // Handle adding a new category
-  const handleAddCategory = () => {
-    const newCategory = {
-      id: Date.now().toString(),
-      evtCategory: "",
-      noOfVeh: 0,
-      status: "",
-      nooflaps: 0,
-      entryprice: 0,
-      wheelertype: 0,
-      eventId: 0,
-    };
-    setEventData({
-      ...eventData,
-      categories: [...eventData.categories, newCategory],
-    });
-    setExpandedCategories({ ...expandedCategories, [newCategory.id]: true });
-  };
-
-  // Handle changes within the category fields
-  const handleCategoryChange = (id, field, value) => {
-    setEventData({
-      ...eventData,
-      categories: eventData.categories.map((cat) =>
-        cat.id === id ? { ...cat, [field]: value } : cat
-      ),
-    });
-  };
-
-  // Handle deletion of a category
-  // const handleDeleteCategory = (id) => {
-  //   setEventData({
-  //     ...eventData,
-  //     categories: eventData.categories.filter((cat) => cat.id !== id),
-  //   });
-  //   const { [id]: _, ...rest } = expandedCategories;
-  //   setExpandedCategories(rest);
-  // };
-
-  // Handle redirection to the events page
   const navigate = useNavigate();
-  const handleRedirectToEvent = () => {
-    navigate("/events");
-  };
-
-  // Handle form submission for categories
-  const handleSubmitCategory = async (e) => {
-    e.preventDefault();
-
-    if (!selectedEvent || eventData.categories.length === 0) {
-      alert("Please select an event and fill in the categories!");
-      return;
-    }
-
-    try {
-      // Prepare the data for submission
-      const categoryData = {
-        eventId: selectedEvent,
-        categories: eventData.categories,
-      };
-      // Set appropriate headers (optional, check with backend requirements)
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${yourAuthToken}`, // If authentication is required
-      };
-
-      const response = await axios.post(
-        `${BASE_URL}/api/EventRegistration/addCategories`,
-        categoryData,
-        { headers }
-      );
-
-      if (response.status === 200) {
-        console.log("Categories submitted successfully:", response.data);
-        alert("Categories submitted successfully!");
-      } else {
-        console.error("Error submitting categories:", response);
-        alert("Error submitting categories!");
-      }
-    } catch (error) {
-      console.error("Error during category submission:", error);
-      alert("An error occurred while submitting the categories.");
-    }
-  };
-
-  const [tableData, setTableData] = useState({});
 
   const handleEventChange = (event) => {
     const eventId = event.target.value;
@@ -148,7 +48,6 @@ const Classes = () => {
       setTableData([]);
     }
   };
-  const [events, setEvents] = useState([]);
 
   const handleGetData = async () => {
     try {
@@ -158,6 +57,62 @@ const Classes = () => {
       setEvents(response.data.$values);
     } catch (error) {
       console.error("Error fetching events:", error);
+    }
+  };
+
+  const handleGetEventCategories = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/eventcategories`);
+      if (response.status === 200) {
+        setEventCategories(response.data); // Set event categories data after successful API call
+      } else {
+        console.error("Error fetching event categories:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching event categories:", error);
+    }
+  };
+
+  const handleSubmitCategory = async (e) => {
+    e.preventDefault();
+
+    const yourAuthToken = localStorage.getItem("authToken");
+
+    if (!selectedEvent || eventData.categories.length === 0) {
+      alert("Please select an event and fill in the categories!");
+      return;
+    }
+
+    try {
+      const categoryData = {
+        eventId: selectedEvent,
+        categories: eventData.categories,
+      };
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${yourAuthToken}`, // Assuming you need the Bearer token
+      };
+
+      // Check if you have the correct API URL
+      const response = await axios.post(
+        `${BASE_URL}
+/api/eventcategories`,
+        categoryData,
+        { headers }
+      );
+
+      if (response.status === 200) {
+        console.log("Categories submitted successfully:", response.data);
+        alert("Categories submitted successfully!");
+        handleGetEventCategories(); // Fetch the event categories after submission
+      } else {
+        console.error("Error submitting categories:", response);
+        alert("Error submitting categories!");
+      }
+    } catch (error) {
+      console.error("Error during category submission:", error);
+      alert("An error occurred while submitting the categories.");
     }
   };
 
@@ -174,15 +129,15 @@ const Classes = () => {
         <div className="bg-gray-100">
           <MainSideBar />
         </div>
-        <div className="flex flex-col">
-          <div className="w-full  flex p-4 gap-2  tab:flex-col">
+        <div className="flex w-full flex-col">
+          <div className="w-full flex p-4 gap-2 tab:flex-col">
             <div className="w-1/2 tab:w-full">
               <label className="text-sm font-medium text-white">
                 Event Name
               </label>
               <select
-                value={selectedEvent} // Set the selectedEvent value to the one from the URL
-                onChange={handleEventChange} // Handle event change when user manually selects
+                value={selectedEvent}
+                onChange={handleEventChange}
                 className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
               >
                 <option value="">Choose Event</option>
@@ -194,182 +149,191 @@ const Classes = () => {
               </select>
             </div>
           </div>
+
+          {/* Category Form */}
           <div className="w-full p-4 bg-white">
             <div className="space-y-4">
-              {/* Category Form (Initial + Dynamically Added) */}
               {eventData.categories.map((category, index) => (
                 <div
                   key={category.id}
                   className="border rounded-lg p-4 bg-gray-50 mb-4"
                 >
-                  <div className="flex justify-between items-center mb-4">
-                    {/* <h3 className="text-lg font-bold">Category {index + 1}</h3>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedCategories({
-                          ...expandedCategories,
-                          [category.id]: !expandedCategories[category.id],
-                        })
-                      }
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      {expandedCategories[category.id] ? (
-                        <ChevronUp size={24} />
-                      ) : (
-                        <ChevronDown size={24} />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteCategory(category.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 size={24} />
-                    </button>
-                  </div> */}
+                  <div className="w-full flex gap-2">
+                    <div className="w-3/4 mb-4">
+                      <label className="block text-sm font-bold text-gray-700">
+                        Class Name
+                      </label>
+                      <input
+                        type="text"
+                        value={category.evtCategory}
+                        onChange={(e) =>
+                          setEventData({
+                            ...eventData,
+                            categories: eventData.categories.map((cat) =>
+                              cat.id === category.id
+                                ? { ...cat, evtCategory: e.target.value }
+                                : cat
+                            ),
+                          })
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div className="w-1/2 mb-4">
+                      <label className="block text-sm font-bold text-gray-700">
+                        Category
+                      </label>
+                      <select
+                        value={category.wheelertype}
+                        onChange={(e) =>
+                          setEventData({
+                            ...eventData,
+                            categories: eventData.categories.map((cat) =>
+                              cat.id === category.id
+                                ? { ...cat, wheelertype: e.target.value }
+                                : cat
+                            ),
+                          })
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      >
+                        <option value={0}>Select Category</option>
+                        <option value={51}>TwoWheeler</option>
+                        <option value={52}>FourWheeler</option>
+                        <option value={53}>Karting</option>
+                        <option value={54}>GrassRoots</option>
+                        <option value={75}>ESPORTS</option>
+                      </select>
+                    </div>
                   </div>
 
-                  {/* Expandable Category Fields */}
-                  {expandedCategories[category.id] && (
+                  <div className="grid grid-cols-3 gap-2 mb-4">
                     <div>
-                      <div className="w-full flex gap-2">
-                        <div className=" w-3/4   mb-4">
-                          <label className="block text-sm font-bold text-gray-700">
-                            Class Name
-                          </label>
-                          <input
-                            type="text"
-                            value={category.evtCategory}
-                            onChange={(e) =>
-                              handleCategoryChange(
-                                category.id,
-                                "evtCategory",
-                                e.target.value
-                              )
-                            }
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                          />
-                        </div>
-                        <div className="w-1/2 mb-4">
-                          <label className="block text-sm font-bold text-gray-700">
-                            Category
-                          </label>
-                          <select
-                            value={category.wheelertype}
-                            onChange={(e) =>
-                              handleCategoryChange(
-                                category.id,
-                                "wheelertype",
-                                e.target.value
-                              )
-                            }
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                          >
-                            <option value={0}>Select Category</option>
-                            <option value={51}>TwoWheeler</option>
-                            <option value={52}>FourWheeler</option>
-                            <option value={53}>Karting</option>
-                            <option value={54}>GrassRoots</option>
-                            <option value={75}>ESPORTS</option>
-                          </select>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-2 mb-4">
-                          {/* Vehicle Type Field First */}
-
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700">
-                              Participants
-                            </label>
-                            <input
-                              type="number"
-                              value={category.noOfVeh}
-                              onChange={(e) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  "noOfVeh",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700">
-                              Laps
-                            </label>
-                            <input
-                              type="number"
-                              value={category.nooflaps}
-                              onChange={(e) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  "nooflaps",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-bold text-gray-700">
-                              Price
-                            </label>
-                            <input
-                              type="number"
-                              value={category.entryprice}
-                              onChange={(e) =>
-                                handleCategoryChange(
-                                  category.id,
-                                  "entryprice",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {/* Add Category Button placed above Submit */}
-                      <button
-                        type="button"
-                        onClick={handleAddCategory}
-                        className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
-                      >
-                        Add Category
-                      </button>
-
-                      {/* Participants, Laps, Price */}
+                      <label className="block text-sm font-bold text-gray-700">
+                        Participants
+                      </label>
+                      <input
+                        type="number"
+                        value={category.noOfVeh}
+                        onChange={(e) =>
+                          setEventData({
+                            ...eventData,
+                            categories: eventData.categories.map((cat) =>
+                              cat.id === category.id
+                                ? { ...cat, noOfVeh: e.target.value }
+                                : cat
+                            ),
+                          })
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      />
                     </div>
-                  )}
+
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700">
+                        Laps
+                      </label>
+                      <input
+                        type="number"
+                        value={category.nooflaps}
+                        onChange={(e) =>
+                          setEventData({
+                            ...eventData,
+                            categories: eventData.categories.map((cat) =>
+                              cat.id === category.id
+                                ? { ...cat, nooflaps: e.target.value }
+                                : cat
+                            ),
+                          })
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700">
+                        Price
+                      </label>
+                      <input
+                        type="number"
+                        value={category.entryprice}
+                        onChange={(e) =>
+                          setEventData({
+                            ...eventData,
+                            categories: eventData.categories.map((cat) =>
+                              cat.id === category.id
+                                ? { ...cat, entryprice: e.target.value }
+                                : cat
+                            ),
+                          })
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Buttons */}
-            <div className="flex justify-between items-center mt-6">
-              {/* Back to Events Button */}
-              <button
-                type="button"
-                onClick={handleRedirectToEvent}
-                className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
-              >
-                Back to Events
-              </button>
+            <button
+              type="button"
+              onClick={handleSubmitCategory}
+              className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
+            >
+              Submit Category
+            </button>
+          </div>
 
-              {/* Submit Category Button */}
-              <button
-                type="button" // Use "button" to prevent page reload
-                onClick={handleSubmitCategory} // Trigger the form submission
-                className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
-              >
-                Submit Category
-              </button>
-            </div>
+          {/* Table to display event categories */}
+          <div className="w-full p-4 bg-white mt-6">
+            <h3 className="text-xl font-bold mb-4">Event Categories</h3>
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b">Class Name</th>
+                  <th className="py-2 px-4 border-b">Vehicle Type</th>
+                  <th className="py-2 px-4 border-b">Participants</th>
+                  <th className="py-2 px-4 border-b">Laps</th>
+                  <th className="py-2 px-4 border-b">Entry Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {eventCategories.length > 0 ? (
+                  eventCategories.map((category) => (
+                    <tr key={category.id}>
+                      <td className="py-2 px-4 border-b">
+                        {category.evtCategory}
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        {category.wheelertype === 51
+                          ? "TwoWheeler"
+                          : category.wheelertype === 52
+                          ? "FourWheeler"
+                          : category.wheelertype === 53
+                          ? "Karting"
+                          : category.wheelertype === 54
+                          ? "GrassRoots"
+                          : "ESPORTS"}
+                      </td>
+                      <td className="py-2 px-4 border-b">{category.noOfVeh}</td>
+                      <td className="py-2 px-4 border-b">
+                        {category.nooflaps}
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        {category.entryprice}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="py-2 px-4 text-center">
+                      No categories available
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
