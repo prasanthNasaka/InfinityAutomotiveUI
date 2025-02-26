@@ -23,6 +23,7 @@ import AddCompany from "./Screens/AddCompany";
 import PageNotFound from "./Screens/PageNotFound";
 import ServerNotFound from "./Screens/ServerNotFound";
 import EventsApproved from "./Screens/EventsApproved";
+import Classes from "./Screens/Classes";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem("authToken");
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/registration" element={<Registration />} />
           <Route path="/events" element={<Events />} />
           <Route path="/eventsapproved" element={<EventsApproved/>} />
+          <Route path="/classes" element={<Classes />} />
           <Route path="/terms" element={<TermsAndConditions />} />
 
           <Route
