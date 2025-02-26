@@ -5,17 +5,18 @@ import {
   FaRegCircle,
   FaClipboardList,
   FaTv,
-  FaClock,
   FaUserCheck,
   FaCalendarAlt,
   FaCar,
   FaRegAddressCard,
 } from "react-icons/fa";
+import { Building, CalendarFold, DoorOpen } from "lucide-react";
 
 const MainSideBar = () => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [menuIcon, setMenuIcon] = useState(<FaRegDotCircle />);
+  const [hoverMenu, setHoverMenu] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -51,24 +52,36 @@ const MainSideBar = () => {
 
       <div className="flex-grow">
         <ul className="p-2 flex flex-col font-serif gap-4">
-          <Link
-            to="/registration"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-              isActive("/registration") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
+          <li
+            // to="/registration"
+            onMouseEnter={() => setHoverMenu(true)}
+            onMouseLeave={() => setHoverMenu(false)}
+            className=" relative p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg "
           >
-            <FaRegAddressCard />
-            {!isCollapsed && <span>Racer details</span>}
-          </Link>
-          <Link
-            to="/vehicle_registration"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-              isActive("/vehicle_registration") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            <FaCar />
-            {!isCollapsed && <span>Vehicle Registration</span>}
-          </Link>
+            <DoorOpen />
+            {!isCollapsed && <span>Entry Desk</span>}
+
+            {hoverMenu && (
+              <div className="absolute left-full top-0  w-64 bg-black shadow-lg rounded-md p-2 flex gap-2 flex-col">
+                <Link
+                  to="/registration"
+                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg `}
+                >
+                  <FaRegAddressCard />
+                  {!isCollapsed && <span>Racer details</span>}
+                </Link>
+                <Link
+                  to="/vehicle_registration"
+                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg 
+                    `}
+                >
+                  <FaCar />
+                  {!isCollapsed && <span>Vehicle Registration</span>}
+                </Link>
+              </div>
+            )}
+          </li>
+
           <Link
             to="/events"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
@@ -85,7 +98,7 @@ const MainSideBar = () => {
             }`}
           >
             <FaUserCheck />
-            {!isCollapsed && <span>Mapping</span>}
+            {!isCollapsed && <span>Registration Desk</span>}
           </Link>
           <Link
             to="/addemployee"
@@ -93,8 +106,8 @@ const MainSideBar = () => {
               isActive("/timekeeper") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
-            <FaClock />
-            {!isCollapsed && <span>Add Employee</span>}
+            <Building />
+            {!isCollapsed && <span>Organizing Committee</span>}
           </Link>
           <Link
             to="/emplogin"
@@ -131,6 +144,16 @@ const MainSideBar = () => {
           >
             <FaClipboardList />
             {!isCollapsed && <span>Add Company</span>}
+          </Link>
+
+          <Link
+            to="/eventsapproved"
+            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              isActive("/eventsapproved") ? "bg-cyan-600 rounded-lg" : ""
+            }`}
+          >
+            <CalendarFold />
+            {!isCollapsed && <span>Approve Event</span> }
           </Link>
         </ul>
       </div>
