@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
-import toast from "react-hot-toast";
-// import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const DriverRegistration = ({ closePopup }) => {
   const [name, setName] = useState("");
@@ -19,6 +20,7 @@ const DriverRegistration = ({ closePopup }) => {
   const [error, setError] = useState("");
   const [dlNumb, setDlNumb] = useState("");
   const [fmsciNumb, setFmsciNumb] = useState("");
+  const [isAgreed, setIsAgreed] = useState(false);
 
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -44,7 +46,7 @@ const DriverRegistration = ({ closePopup }) => {
     if (
       !name.trim() ||
       !dob ||
-      !bloodGroup.trim() ||
+      !bloodGroup ||
       !dlNumb.trim() ||
       !dlValidTill ||
       !fmsciNumb.trim() ||
@@ -52,21 +54,23 @@ const DriverRegistration = ({ closePopup }) => {
       !phone.trim() ||
       !email.trim()
     ) {
-      setError("All fields are mandatory.");
+      toast.error("All fields are mandatory.");
       return;
     }
 
     if (!/^\d{10}$/.test(phone)) {
-      setError("Phone number must be exactly 10 digits.");
+      toast.error("Phone number must be exactly 10 digits.");
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Invalid email address.");
+      toast.error("Invalid email address.");
       return;
     }
-
-    setError("");
+    if (!isAgreed) {
+      toast.error("You must agree to the terms and conditions.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("driverName", name);
@@ -134,6 +138,8 @@ const DriverRegistration = ({ closePopup }) => {
   };
   return (
     <>
+      <Toaster position="bottom-center" reverseOrder={false} />
+
       <div className="flex justify-center items-center">
         <div className="fixed border inset-0 bg-black opacity-100 flex justify-center items-center z-50 transition-opacity duration-1000 ease-in-out ">
           <div className="bg-white w-4/6  h-auto lappy:w-5/6 lappy:h-5/6 lappy:overflow-y-scroll rounded-lg shadow-lg p-4">
@@ -160,12 +166,6 @@ const DriverRegistration = ({ closePopup }) => {
             <h2 className="text-3xl font-bold mb-6 text-center">
               Racer Details
             </h2>
-
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {error}
-              </div>
-            )}
 
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="w-full lg:w-1/3">
@@ -260,14 +260,14 @@ const DriverRegistration = ({ closePopup }) => {
                       required
                     >
                       <option value="">Select Blood Group</option>
-                      <option value="A+">A+</option>
-                      <option value="A-">A-</option>
-                      <option value="B+">B+</option>
-                      <option value="B-">B-</option>
-                      <option value="O+">O+</option>
-                      <option value="O-">O-</option>
-                      <option value="AB+">AB+</option>
-                      <option value="AB-">AB-</option>
+                      <option value="76">A+</option>
+                      <option value="77">A-</option>
+                      <option value="78">B+</option>
+                      <option value="79">B-</option>
+                      <option value="80">O+</option>
+                      <option value="81">O-</option>
+                      <option value="82">AB+</option>
+                      <option value="83">AB-</option>
                     </select>
                   </div>
                 </div>
@@ -477,6 +477,29 @@ const DriverRegistration = ({ closePopup }) => {
               </div>
             </div>
 
+            <div className="flex items-center mt-8">
+              <input
+                id="link-checkbox"
+                type="checkbox"
+                className="w-4 h-4  bg-gray-100 border-gray-300 rounded-sm accent-cyan-600"
+                checked={isAgreed}
+                onChange={(e) => setIsAgreed(e.target.checked)}
+                required
+              />
+              <label
+                htmlFor="link-checkbox"
+                className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              >
+                I agree with the{" "}
+                <Link
+                  to="/terms"
+                  className="text-cyan-600 dark:text-blue-500 hover:underline"
+                >
+                  Terms and conditions
+                </Link>
+              </label>
+            </div>
+
             <div className="flex justify-end mt-6 gap-5">
               <button
                 onClick={handleCancel}
@@ -486,7 +509,12 @@ const DriverRegistration = ({ closePopup }) => {
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-3 bg-cyan-600 text-white rounded"
+                className={`px-6 py-3 rounded ${
+                  isAgreed
+                    ? "bg-cyan-600 text-white"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                disabled={!isAgreed}
               >
                 Save
               </button>

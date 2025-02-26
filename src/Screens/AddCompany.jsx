@@ -20,6 +20,8 @@ const AddCompany = () => {
       country: "",
       website: "",
     },
+    companyId: null,
+
     contact: { phone: "", email: "", contactPerson: "" },
     login: { username: "", password: "" },
   });
@@ -29,6 +31,54 @@ const AddCompany = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [companies, setCompanies] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEdit = (company) => {
+    setFormData({
+      name: company.companyName || "",
+      address: {
+        street: company.address?.street || "",
+        city: company.city || "",
+        state: company.state || "",
+        zip: company.zip || "",
+        country: company.country || "",
+        website: company.website || "",
+      },
+      companyId: company.companyId || null,
+
+      contact: {
+        phone: "",
+        email: "",
+        contactPerson: "",
+      },
+      login: {
+        username: "",
+        password: "",
+      },
+    });
+    setIsEditing(true);
+  };
+
+  const updateCompany = async () => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/api/companies/${formData.companyId}`,
+        {
+          companyName: formData.name,
+          street: formData.address.street,
+          city: formData.address.city,
+          state: formData.address.state,
+          zip: formData.address.zip,
+          country: formData.address.country,
+          website: formData.address.website,
+        }
+      );
+
+      toast.success("Update successful:", response.data);
+    } catch (error) {
+      toast.error("Error updating company:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -141,6 +191,7 @@ const AddCompany = () => {
 
     fetchCompanies();
   }, []);
+
   return (
     <div>
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -205,6 +256,22 @@ const AddCompany = () => {
                     )
                   )}
                 </div>
+
+                {isEditing && (
+                  <div className="flex justify-end mt-4">
+                    <button
+                      type="button"
+                      className="px-6 py-3 bg-cyan-600 text-white rounded"
+                      onClick={() => {
+                        const companyId = formData.companyId;
+                        updateCompany(companyId);
+                        setIsEditing(false);
+                      }}
+                    >
+                      Update
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex-1 p-4 border rounded-md shadow">
@@ -345,7 +412,10 @@ const AddCompany = () => {
                               type="button"
                               className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
                             >
-                              <CiEdit className="w-6 h-6" />
+                              <CiEdit
+                                className="w-6 h-6"
+                                onClick={() => handleEdit(company)}
+                              />
                             </button>
                             <button
                               type="button"
