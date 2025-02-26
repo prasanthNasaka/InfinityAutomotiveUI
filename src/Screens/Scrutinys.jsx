@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 function Scrutinys() {
   const [answers, setAnswers] = useState({});
@@ -24,8 +25,10 @@ function Scrutinys() {
       setEvents(response.data.$values);
     } catch (error) {
       console.error("Error fetching data:", error);
+      toast.error("Failed to fetch event names. No Data Found.");
     }
   };
+
   const handleEventChange = (event) => {
     const eventId = event.target.value;
     setSelectedEvent(eventId);
@@ -36,12 +39,20 @@ function Scrutinys() {
         .then((data) => {
           if (Array.isArray(data.$values)) {
             setTableData(data.$values);
+            toast.success("Data fetched successfully.");
+            if (data.$values.length === 0) {
+              toast.warning("No data found for the selected event.");
+            }
           } else {
             console.error("Expected an array of events, but received:", data);
             setTableData([]);
+            toast.error("Invalid data format received from the server.");
           }
         })
-        .catch((error) => console.error("Error fetching events:", error));
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+          toast.error("Failed to fetch event details. Please try again.");
+        });
     } else {
       setTableData([]);
     }
@@ -62,11 +73,57 @@ function Scrutinys() {
             };
           });
           setAnswers(initialAnswers);
+        } else {
+          toast.error("No scrutiny rules found for this event.");
         }
       })
-      .catch((error) => console.error("Error fetching scrutiny data:", error));
+      .catch((error) => {
+        console.error("Error fetching scrutiny data:", error);
+        toast.error("Failed to fetch scrutiny rules. Please try again.");
+      });
   };
 
+  const handleReportSubmit = async () => {
+    const scrutinyData = Object.keys(answers).map((ruleId) => {
+      const answer = answers[ruleId];
+      let status = 15;
+
+      if (answer.value === true) {
+        status = 16;
+      } else if (answer.value === false) {
+        status = 17;
+      } else if (answer.value === null) {
+        status = 18;
+      }
+
+      return {
+        scrutineydetailsId: 0,
+        scrutineyruleId: parseInt(ruleId, 10),
+        scrutineyrule: scrutinyRules.find(
+          (rule) => rule.scrutineyruleId === parseInt(ruleId, 10)
+        ).scrutineyrule,
+        status: status,
+        comment: answer.comment || "",
+        regId: selectedEvent,
+      };
+    });
+
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/api/Scrutiny`,
+        scrutinyData
+      );
+      console.log("Report submitted successfully:", response.data);
+
+      // Show success toast
+      toast.success("Report submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting report:", error);
+
+      // Show error toast
+      toast.error("Error submitting report. Please try again.");
+    }
+  };
   const handleAnswerChange = (ruleId, value, comment = "") => {
     setAnswers((prev) => ({
       ...prev,
@@ -90,29 +147,6 @@ function Scrutinys() {
     setReasonInput("");
     setSelectedQuestion(null);
     setError("");
-  };
-
-  const handleReportSubmit = async () => {
-    const scrutinyData = Object.keys(answers).map((ruleId) => ({
-      scrutineydetailsId: 0, // This can be auto-generated or fetched from the server
-      scrutineyruleId: parseInt(ruleId, 10),
-      scrutineyrule: scrutinyRules.find(
-        (rule) => rule.scrutineyruleId === parseInt(ruleId, 10)
-      ).scrutineyrule,
-      status: answers[ruleId].value ? 1 : 0,
-      comment: answers[ruleId].comment || "",
-      regId: selectedEvent, // Assuming selectedEvent is the registration ID
-    }));
-
-    try {
-      const response = await axios.put(
-        `${BASE_URL}/api/Scrutiny`,
-        scrutinyData
-      );
-      console.log("Report submitted successfully:", response.data);
-    } catch (error) {
-      console.error("Error submitting report:", error);
-    }
   };
 
   useEffect(() => {
@@ -299,30 +333,44 @@ function Scrutinys() {
                     </form>
                   </div>
 
-                  <div className="w-1/3 flex space-x-4 ml-4">
+                  <div className="w-1/3 justify-evenly flex space-x-3">
                     <button
                       onClick={() =>
                         handleAnswerChange(rule.scrutineyruleId, true)
                       }
                       className={`p-2 rounded ${
                         answers[rule.scrutineyruleId]?.value === true
-                          ? "bg-green-300 text-white"
+                          ? "bg-green-500 text-white"
                           : "bg-gray-200"
                       }`}
                     >
                       <CheckCircle2 size={20} />
                     </button>
+
                     <button
                       onClick={() =>
                         handleAnswerChange(rule.scrutineyruleId, false)
                       }
                       className={`p-2 rounded ${
                         answers[rule.scrutineyruleId]?.value === false
-                          ? "bg-red-300 text-white"
+                          ? "bg-red-500 text-white"
                           : "bg-gray-200"
                       }`}
                     >
                       <AlertCircle size={20} />
+                    </button>
+
+                    <button
+                      className={`p-2 rounded ${
+                        answers[rule.scrutineyruleId]?.value === null
+                          ? "bg-yellow-400 text-black"
+                          : "bg-gray-200"
+                      }`}
+                      onClick={() =>
+                        handleAnswerChange(rule.scrutineyruleId, null)
+                      }
+                    >
+                      N/A
                     </button>
                   </div>
                 </div>
@@ -345,6 +393,7 @@ function Scrutinys() {
   return (
     <section className="w-full h-auto">
       <div className="min-h-screen bg-gray-50">
+        <Toaster position="bottom-center" reverseOrder={false} />
         {renderHeader()}
         {renderTable()}
         {renderScrutinyRules()}
