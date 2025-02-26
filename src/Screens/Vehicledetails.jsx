@@ -74,7 +74,7 @@ const Vehicledetails = () => {
     formData.append("VehiclePhoto", file);
     formData.append("RcImage", image);
     formData.append("InsuranceImage", upload);
-    formData.append("Status", true);
+    formData.append("Status", 1);
 
     for (const [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
@@ -586,7 +586,12 @@ const Vehicledetails = () => {
 
                 <button
                   onClick={handleSubmit}
-                  className="px-6 py-3 bg-cyan-600 text-white rounded"
+                  className={`px-6 py-3 rounded ${
+                    isAgreed
+                      ? "bg-cyan-600 text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                  disabled={!isAgreed}
                 >
                   {isEditing ? "Update" : "Save"}
                 </button>

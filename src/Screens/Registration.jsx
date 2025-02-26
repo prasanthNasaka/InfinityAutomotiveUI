@@ -36,7 +36,7 @@ const Registration = () => {
     if (
       !name.trim() ||
       !dob ||
-      !bloodGroup.trim() ||
+      !bloodGroup ||
       !dlNumb.trim() ||
       !dlValidTill ||
       !fmsciNumb.trim() ||
@@ -356,14 +356,14 @@ const Registration = () => {
                       required
                     >
                       <option value="">Select Blood Group</option>
-                      <option value="A+">A+</option>
-                      <option value="A-">A-</option>
-                      <option value="B+">B+</option>
-                      <option value="B-">B-</option>
-                      <option value="O+">O+</option>
-                      <option value="O-">O-</option>
-                      <option value="AB+">AB+</option>
-                      <option value="AB-">AB-</option>
+                      <option value="76">A+</option>
+                      <option value="77">A-</option>
+                      <option value="78">B+</option>
+                      <option value="79">B-</option>
+                      <option value="80">O+</option>
+                      <option value="81">O-</option>
+                      <option value="82">AB+</option>
+                      <option value="83">AB-</option>
                     </select>
                   </div>
                 </div>
@@ -611,7 +611,12 @@ const Registration = () => {
 
               <button
                 onClick={handleSave}
-                className="px-6 py-3 bg-cyan-600 text-white rounded"
+                className={`px-6 py-3 rounded ${
+                  isAgreed
+                    ? "bg-cyan-600 text-white"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+                disabled={!isAgreed}
               >
                 {isEditing ? "Update" : "Save"}
               </button>

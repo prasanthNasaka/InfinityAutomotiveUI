@@ -3,18 +3,8 @@
 import { useState, useEffect } from "react";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import axios from "axios";
-import { X } from "lucide-react";
-
-const Toast = ({ message, onClose }) => {
-  return (
-    <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded shadow-lg">
-      {message}
-      <button onClick={onClose} className="ml-4 text-gray-300 hover:text-white">
-        <X />
-      </button>
-    </div>
-  );
-};
+import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const VehicleRegistration = ({ closePopup }) => {
   const [vehicleData, setVehicleData] = useState([]);
@@ -37,12 +27,7 @@ const VehicleRegistration = ({ closePopup }) => {
   const [insuranceValidTill, setInsuranceValidTill] = useState("");
   const [rcNumb, setRcNumb] = useState("");
   const [insuranceNumb, setInsuranceNumb] = useState("");
-  const [status, setStatus] = useState(1);
-
-  const showToast = (message) => {
-    setToastMessage(message);
-    setTimeout(() => setToastMessage(""), 1000);
-  };
+  const [isAgreed, setIsAgreed] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,11 +47,13 @@ const VehicleRegistration = ({ closePopup }) => {
       !upload ||
       !image
     ) {
-      setError("All fields are mandatory.");
+      toast.error("All fields are mandatory.");
       return;
     }
-
-    setError("");
+    if (!isAgreed) {
+      toast.error("You must agree to the terms and conditions.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("RegNumb", regNo);
@@ -83,7 +70,7 @@ const VehicleRegistration = ({ closePopup }) => {
     formData.append("VehiclePhoto", file);
     formData.append("RcImage", image);
     formData.append("InsuranceImage", upload);
-    formData.append("Status", true);
+    formData.append("Status", 1);
 
     console.log("Data being sent:", Object.fromEntries(formData.entries()));
 
@@ -91,7 +78,7 @@ const VehicleRegistration = ({ closePopup }) => {
       const response = await axios.post(`${BASE_URL}/api/Vehicle`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      showToast(" ✅ Vehicle registered successfully!", response.data);
+      toast.success("  Vehicle registered successfully!", response.data);
     } catch (error) {
       console.error("Error registering vehicle:", error);
       if (error.response && error.response.data) {
@@ -154,12 +141,10 @@ const VehicleRegistration = ({ closePopup }) => {
         );
         console.log("response", response);
         setSelectedDetails(response.data);
-        console.log("dfghgfdf", response.data);
 
         setVehicles(response.data);
       } catch (err) {
         console.error("Error fetching vehicle details:", err);
-        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -168,8 +153,6 @@ const VehicleRegistration = ({ closePopup }) => {
 
   useEffect(() => {
     if (selecteddetails) {
-      console.log("selectedVehicle:", selecteddetails);
-
       setVehicleMake(selecteddetails.make || "");
       setModel(selecteddetails.model || "");
       setCc(selecteddetails.cc || "");
@@ -202,24 +185,23 @@ const VehicleRegistration = ({ closePopup }) => {
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setImage(selectedFile);
-    showToast("✅ Image uploaded successfully!");
+    toast.success("Image uploaded successfully!");
   };
   const handleUploadChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setUpload(selectedFile);
-    showToast("✅ Image uploaded successfully!");
+    toast.success(" Image uploaded successfully!");
   };
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setFile(selectedFile);
-    showToast("✅ Image uploaded successfully!");
+    toast.success(" Image uploaded successfully!");
   };
   return (
     <>
-      {toastMessage && (
-        <Toast message={toastMessage} onClose={() => setToastMessage("")} />
-      )}
+      <Toaster position="bottom-center" reverseOrder={false} />
+
       <div className="flex justify-center items-center">
         <div className="fixed border inset-0 bg-black opacity-100 flex justify-center items-center z-50 transition-opacity duration-1000 ease-in-out ">
           <div className="bg-white w-4/6  h-auto lappy:w-5/6 lappy:h-5/6 lappy:overflow-y-scroll rounded-lg shadow-lg p-4">
@@ -247,7 +229,7 @@ const VehicleRegistration = ({ closePopup }) => {
             </h2>
             <div className="w-full flex gap-8 items-center lappy:flex-col">
               <div className="flex flex-col gap-5 w-1/3 lappy:w-full">
-                <div >
+                <div>
                   <label className="block text-sm font-bold">
                     Vehicle Make
                   </label>
@@ -525,6 +507,30 @@ const VehicleRegistration = ({ closePopup }) => {
               </div>
             </div>
 
+            <div className="flex items-center mt-8">
+              <input
+                id="link-checkbox"
+                type="checkbox"
+                className="w-4 h-4  bg-gray-100 border-gray-300 rounded-sm accent-cyan-600"
+                checked={isAgreed}
+                onChange={(e) => setIsAgreed(e.target.checked)}
+                required
+              />
+              <label
+                htmlFor="link-checkbox"
+                className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              >
+                I agree with the{" "}
+                <Link
+                  to="/terms"
+                  className="text-cyan-600 dark:text-blue-500 hover:underline"
+                >
+                  Terms and conditions
+                </Link>
+                .
+              </label>
+            </div>
+
             <div className="flex justify-end mt-6 gap-5">
               <button
                 onClick={handleCancel}
@@ -533,8 +539,13 @@ const VehicleRegistration = ({ closePopup }) => {
                 Clear
               </button>
               <button
-                className="px-6 py-3 bg-cyan-600 text-white rounded "
+                className={`px-6 py-3 rounded ${
+                  isAgreed
+                    ? "bg-cyan-600 text-white"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
                 onClick={handleSubmit}
+                disabled={!isAgreed}
               >
                 Save
               </button>
