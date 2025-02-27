@@ -65,7 +65,7 @@ const Card = ({ event, type }) => {
               </h2>
               <button
                 onClick={closeModal}
-                className="bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-600 transition"
+                className="bg-cyan-500 text-white p-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -162,7 +162,7 @@ const Card = ({ event, type }) => {
                   target="_blank"
                   to={type === "upcoming" ? "/driverracelink" : "/resultTable"}
                 >
-                  <button className="w-full bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600 transition">
+                  <button className="w-full bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300">
                     {type === "upcoming"
                       ? "Register Now"
                       : type === "completed"

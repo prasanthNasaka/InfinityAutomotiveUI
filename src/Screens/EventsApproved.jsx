@@ -48,7 +48,7 @@ const EventsApproved = () => {
       .get(`${BASE_URL}/api/EventRegistration/EventsToApprove`)
       .then((response) => {
         setEvents(response.data.$values);
-        toast.success("Events loaded successfully");
+        
       })
       .catch((error) => {
         console.error("Error Fetching Events:", error);

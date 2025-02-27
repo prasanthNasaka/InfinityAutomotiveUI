@@ -6,6 +6,8 @@ import { BASE_URL } from "../constants/global-const";
 import { MdOutlineDelete } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import toast, { Toaster } from "react-hot-toast";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const ScrutineerPage = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +16,8 @@ const ScrutineerPage = () => {
     fmsciId: "",
     phoneNumber: "",
   });
+  console.log('formData',formData);
+  
 
   const [tableData, setTableData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -29,47 +33,67 @@ const ScrutineerPage = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (typeof e === "string") {
+      setFormData((prev) => ({
+        ...prev,
+        phoneNumber: e,
+      }));
+    } else {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleAdd = async (e) => {
+    console.log('formData',formData);
+    
     e.preventDefault();
     if (
       !formData.scrutineerName ||
       !formData.email ||
       !formData.fmsciId ||
-      !formData.phoneNumber
+      !formData.phoneNumber ||
+      formData.phoneNumber.startsWith("91") && formData.phoneNumber.length === 12
     ) {
-      toast.error("Please fill all fields!");
+      formData.phoneNumber = formData.phoneNumber.slice(2); 
+    }
+    
+    
+    if (formData.phoneNumber.length !== 10) {
+      // Handle validation error
+    }
+     {
+      toast.error("Please fill all fields correctly");
       return;
     }
+    
 
-    try {
-      if (editIndex !== null) {
-        await axios.put(
-          `${BASE_URL}/api/Scrutineer/${editIndex.scrutineerId}`,
-          formData
-        );
-        toast.success("Scrutineer updated successfully!");
-      } else {
-        await axios.post(`${BASE_URL}/api/Scrutineer`, formData);
-        toast.success("Scrutineer added successfully!");
-      }
-    } catch {
-     
-      toast.error("Failed to save scrutineer");
-    } finally {
-      
-      await fetchScrutineers();
-      setFormData({
-        scrutineerName: "",
-        email: "",
-        fmsciId: "",
-        phoneNumber: "",
-      });
-      setEditIndex(null);
-    }
+    // try {
+    //   if (editIndex !== null) {
+    //     await axios.put(
+    //       `${BASE_URL}/api/Scrutineer/${editIndex.scrutineerId}`,
+    //       formData
+    //     );
+    //     toast.success("Scrutineer updated successfully!");
+    //   } else {
+    //     await axios.post(`${BASE_URL}/api/Scrutineer`, formData);
+    //     toast.success("Scrutineer added successfully!");
+    //   }
+    // } catch {
+    //   toast.error("Failed to save scrutineer");
+    // } finally {
+    //   await fetchScrutineers();
+    //   setFormData({
+    //     scrutineerName: "",
+    //     email: "",
+    //     fmsciId: "",
+    //     phoneNumber: "",
+    //   });
+    //   setEditIndex(null);
+    // }
   };
 
   const handleEdit = (index) => {
@@ -169,15 +193,19 @@ const ScrutineerPage = () => {
                 </div>
                 <div className="w-1/2 p-2 gap-2 flex flex-col">
                   <label className="text-sm font-medium text-gray-900">
-                    Enter Phone Number
+                    Phone Number
                   </label>
-                  <input
-                    type="text"
-                    name="phoneNumber"
+                  <PhoneInput
+                    country={"in"}
                     value={formData.phoneNumber}
                     onChange={handleChange}
-                    placeholder="Enter Phone Number"
-                    className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                    inputProps={{
+                      name: "phoneNumber",
+                      required: true,
+                      autoFocus: true,
+                      className:
+                        "w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 pl-10",
+                    }}
                   />
                 </div>
               </div>

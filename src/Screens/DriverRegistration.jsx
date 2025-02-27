@@ -509,9 +509,9 @@ const DriverRegistration = ({ closePopup }) => {
               </button>
               <button
                 onClick={handleSave}
-                className={`px-6 py-3 rounded ${
+                className={`px-6 py-3 rounded-md ${
                   isAgreed
-                    ? "bg-cyan-600 text-white"
+                    ? "bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
                 disabled={!isAgreed}
