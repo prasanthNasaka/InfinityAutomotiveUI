@@ -537,7 +537,7 @@ const Linkraceanddrive = () => {
                           onClick={handleSubmit}
                           className={`tab:w-full px-6 py-2.5 ${
                             isFormValid() && !isSubmitting
-                              ? "bg-cyan-600 hover:bg-cyan-500"
+                              ? "bg-cyan-600 text-white  hover:bg-cyan-600 hover:text-black transition-all duration-300"
                               : "bg-gray-400 cursor-not-allowed"
                           } text-white font-medium rounded-lg text-sm transition-colors`}
                         >
@@ -617,33 +617,28 @@ const Linkraceanddrive = () => {
                                   />
                                 </td>
                                 <td className="px-6 py-2 whitespace-nowrap">
-                                  {
-                                    amountPaidForSelectedChecked ? (
-                                      <span
-                                        className={`p-2 rounded-full text-xs ${
-                                          event.amountPaid
-                                            ? "bg-green-100 text-green-800"
-                                            : "bg-yellow-100 text-yellow-800"
-                                        }`}
-                                      >
-                                        {event.amountPaid ? "Paid" : "Pending"}
-                                      </span>
-                                    )
-                                    :
-                                    (
-
-                                      // <span >Not Available</span>
-                                      <input
-                                        checked={selectedRows[event.id] || false}
-                                        onChange={(e) =>
-                                          handleChildCheckboxChange(e, event.id)
-                                        }
-                                        className="accent-cyan-600 w-4 h-4 cursor-pointer"
-                                        type="checkbox"
-                                        id={`checkbox-${event.id}`}
-                                      />
-                                    )
-                                  }
+                                  {amountPaidForSelectedChecked ? (
+                                    <span
+                                      className={`p-2 rounded-full text-xs ${
+                                        event.amountPaid
+                                          ? "bg-green-100 text-green-800"
+                                          : "bg-yellow-100 text-yellow-800"
+                                      }`}
+                                    >
+                                      {event.amountPaid ? "Paid" : "Pending"}
+                                    </span>
+                                  ) : (
+                                    // <span >Not Available</span>
+                                    <input
+                                      checked={selectedRows[event.id] || false}
+                                      onChange={(e) =>
+                                        handleChildCheckboxChange(e, event.id)
+                                      }
+                                      className="accent-cyan-600 w-4 h-4 cursor-pointer"
+                                      type="checkbox"
+                                      id={`checkbox-${event.id}`}
+                                    />
+                                  )}
                                 </td>
 
                                 <td className="px-6 py-2 whitespace-nowrap">
@@ -743,11 +738,8 @@ const Linkraceanddrive = () => {
                           <div className="w-1/2 flex justify-end">
                             <button
                               type="button"
-                              className="tab:w-full px-6 py-2.5 
-                          isFormValid() && !isSubmitting
-                          bg-cyan-600 hover:bg-cyan-500
-                            
-                         text-white font-medium rounded-lg text-sm transition-colors"
+                              className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
+                            font-medium rounded-md text-sm "
                             >
                               Update
                             </button>

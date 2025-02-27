@@ -39,7 +39,7 @@ const Forgotpassword = () => {
         <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center  lappy:bg-black lappy:p-3">
           <div className="flex items-center justify-center h-fit mx-auto w-full phone:w-4/5 sm:w-3/4 md:w-2/3 lg:w-1/2 bg-white relative rounded-lg shadow-lg p-1 2xl:w-4/6">
             <div className="w-full p-6 md:mt-0 sm:max-w-md bg-white text-black dark:bg-white dark:text-black">
-              <button className="flex items-center text-gray-600 hover:text-cyan-600 mb-5 gap-2 transition-colors">
+              <button className="flex items-center bg-cyan-500 text-white gap-3 p-2 border-none rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300">
                 <Link
                   to={"/login"}
                   className="flex items-center justify-center gap-2"

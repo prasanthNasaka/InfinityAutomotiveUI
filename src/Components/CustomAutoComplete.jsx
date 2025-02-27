@@ -9,7 +9,7 @@ import { GoPlus } from "react-icons/go";
 import DriverRegistration from "../Screens/DriverRegistration";
 import VehicleRegistration from "../Screens/VehicleRegistration";
 
-const AutoCompleteSearch = ({  searchType , onDataReceived, onSelect, from }) => {
+const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from}) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,6 @@ const AutoCompleteSearch = ({  searchType , onDataReceived, onSelect, from }) =>
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isVehiclePopup, setIsVehiclePopup] = useState(false);
 
-  
   const openPopup = (e) => {
     e.preventDefault();
     if (searchType === "vehicle") {
@@ -126,9 +125,9 @@ const AutoCompleteSearch = ({  searchType , onDataReceived, onSelect, from }) =>
 
   useEffect(() => {
     if (options.length == 0) {
-        setShowDropdown(false);
+      setShowDropdown(false);
     }
-}, [options]); 
+  }, [options]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -168,19 +167,19 @@ const AutoCompleteSearch = ({  searchType , onDataReceived, onSelect, from }) =>
             </>
           )}
         </div>
-  
+
         {/* Button moved outside the dropdown and placed beside input */}
         {from === "myComponent" && (
           <button
             onClick={openPopup}
-            className="ml-2 flex px-2 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white hover:scale-105 transition duration-300 ease-in-out hover:text-white text-lg"
+            className="ml-2 flex px-2 py-3 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white hover:scale-105 transition duration-300 ease-in-out hover:text-white text-lg"
           >
             {searchType === "vehicle" ? <FaCar /> : <FaUser />}
             <GoPlus />
           </button>
         )}
       </div>
-  
+
       {showDropdown && (
         <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-auto">
           {options.length > 0 ? (
@@ -196,11 +195,20 @@ const AutoCompleteSearch = ({  searchType , onDataReceived, onSelect, from }) =>
           ) : (
             <div className="flex flex-col items-center p-2 text-gray-500">
               <p>No Results Found</p>
+              {from === "myComponent" && (
+                <button
+                  onClick={openPopup}
+                  className="ml-2 flex px-2 py-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white hover:scale-105 transition duration-300 ease-in-out hover:text-white text-lg"
+                >
+                  {searchType === "vehicle" ? <FaCar /> : <FaUser />}
+                  <GoPlus />
+                </button>
+              )}
             </div>
           )}
         </div>
       )}
-  
+
       {isPopupVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
           <div className="relative overflow-auto rounded-lg shadow-lg w-full h-full">
@@ -208,7 +216,7 @@ const AutoCompleteSearch = ({  searchType , onDataReceived, onSelect, from }) =>
           </div>
         </div>
       )}
-  
+
       {isVehiclePopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
           <div className="relative rounded-lg shadow-lg w-full h-full">
@@ -218,7 +226,6 @@ const AutoCompleteSearch = ({  searchType , onDataReceived, onSelect, from }) =>
       )}
     </div>
   );
-  
 };
 
 export default AutoCompleteSearch;

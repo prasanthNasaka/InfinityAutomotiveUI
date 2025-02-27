@@ -565,7 +565,7 @@ const Add_Employee = () => {
               </button>
               <button
                 onClick={formData.empId ? handleUpdateEmployee : handleAddEmployee}
-                className="w-1/2 py-3 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-700 transition duration-300"
+                className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
                 disabled={loading}
               >
                 {loading ? "Processing..." : formData.empId ? "Update" : "Submit"}

@@ -251,7 +251,7 @@ const LandingPage = () => {
             <div className="w-full flex items-center justify-end mb-4">
               <Link
                 to="/login"
-                className="flex items-center bg-cyan-500 text-white gap-3 p-2 border rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                className="flex items-center bg-cyan-500 text-white gap-3 p-2 border-none rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
               >
                 Login
                 <FaArrowRightLong className="size-5" />
