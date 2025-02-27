@@ -10,7 +10,14 @@ import {
   FaCar,
   FaRegAddressCard,
 } from "react-icons/fa";
-import { Building, CalendarFold, DoorOpen } from "lucide-react";
+import {
+  Building,
+  CalendarFold,
+  DoorOpen,
+  FlagTriangleRight,
+  LayoutTemplate,
+  ShieldBan,
+} from "lucide-react";
 
 const MainSideBar = () => {
   const location = useLocation();
@@ -162,7 +169,7 @@ const MainSideBar = () => {
             }`}
           >
             <CalendarFold />
-            {!isCollapsed && <span>Approve Event</span> }
+            {!isCollapsed && <span>Approve Event</span>}
           </Link>
           <Link
             to="/template"
@@ -170,8 +177,25 @@ const MainSideBar = () => {
               isActive("/template") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
-            <CalendarFold />
-            {!isCollapsed && <span>Scrutiny Template</span> }
+            <LayoutTemplate />
+            {!isCollapsed && <span>Scrutiny Template</span>}
+          </Link>
+          <Link
+            to="/status"
+            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              isActive("/status") ? "bg-cyan-600 rounded-lg" : ""
+            }`}
+          >
+            <ShieldBan /> {!isCollapsed && <span>Status</span>}
+          </Link>
+          <Link
+            to="/report"
+            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              isActive("/report") ? "bg-cyan-600 rounded-lg" : ""
+            }`}
+          >
+            <FlagTriangleRight />
+            {!isCollapsed && <span>Report</span>}
           </Link>
         </ul>
       </div>
