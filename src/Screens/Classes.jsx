@@ -1,16 +1,17 @@
-import { useNavigate, useParams } from "react-router-dom";
+/* eslint-disable no-unused-vars */
 import MainSideBar from "../Components/MainSideBar";
 import Newheader from "../Components/Newheader";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
+import { MdOutlineDelete } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
 
 const Classes = () => {
-  const [selectedEvent, setSelectedEvent] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventData, setEventData] = useState({
     categories: [
       {
-        id: Date.now().toString(),
         evtCategory: "",
         noOfVeh: 0,
         status: "",
@@ -22,30 +23,90 @@ const Classes = () => {
     ],
   });
 
-  const [tableData, setTableData] = useState([]);
   const [events, setEvents] = useState([]);
-  const [eventCategories, setEventCategories] = useState([]); // New state for event categories
-
-  const navigate = useNavigate();
+  const [eventCategories, setEventCategories] = useState([]);
 
   const handleEventChange = (event) => {
     const eventId = event.target.value;
+    console.log("eventId", eventId);
+
     setSelectedEvent(eventId);
 
     if (eventId) {
-      fetch(`${BASE_URL}/api/Registration/event/${eventId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (Array.isArray(data.$values)) {
-            setTableData(data.$values);
-          } else {
-            console.error("Expected an array of events, but received:", data);
-            setTableData([]);
+      fetch(`${BASE_URL}/api/eventcategories/${eventId}`)
+        .then((response) => {
+          if (!response.ok) {
+            // If the response status is not OK (e.g., 404), handle the error
+            if (response.status === 404) {
+              throw new Error(
+                `No registration data found for event ID: ${eventId}`
+              );
+            }
+            throw new Error(
+              `Error fetching event registration data: ${response.statusText}`
+            );
           }
+          return response.json();
         })
-        .catch((error) => console.error("Error fetching events:", error));
+        .then((data) => {
+          console.log("Data", data);
+
+          setEventCategories([data]);
+        })
+        .catch((error) => {
+          console.error("Error fetching event registration data:", error);
+          alert(
+            "There was an error fetching the event registration data. Please try again later."
+          );
+        });
     } else {
-      setTableData([]);
+      setEventCategories([]);
+    }
+  };
+
+  const handleSubmitCategory = async (e) => {
+    e.preventDefault();
+
+    const yourAuthToken = localStorage.getItem("authToken");
+
+    if (!selectedEvent || eventData.categories.length === 0) {
+      alert("Please select an event and fill in the categories!");
+      return;
+    }
+
+    try {
+      // Ensure all numeric fields are numbers
+      const categoryData = {
+        categories: eventData.categories.map((cat) => ({
+          ...cat,
+          eventId: selectedEvent,
+          noOfVeh: Number(cat.noOfVeh), // Convert to number
+          nooflaps: Number(cat.nooflaps), // Convert to number
+          entryprice: Number(cat.entryprice), // Convert to number
+        })),
+      };
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${yourAuthToken}`,
+      };
+
+      const response = await axios.post(
+        `${BASE_URL}/api/eventcategories`,
+        categoryData,
+        { headers }
+      );
+
+      if (response.status === 201) {
+        alert("Categories submitted successfully!");
+        handleGetEventCategories(); 
+      } else {
+        console.error("Error submitting categories:", response);
+        alert("Error submitting categories!");
+      }
+    } catch (error) {
+      console.error("Error during category submission:", error);
+      alert("An error occurred while submitting the categories.");
     }
   };
 
@@ -63,8 +124,9 @@ const Classes = () => {
   const handleGetEventCategories = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/eventcategories`);
+      console.log("response",response)
       if (response.status === 200) {
-        setEventCategories(response.data); // Set event categories data after successful API call
+        setEventCategories(response.data.$values); 
       } else {
         console.error("Error fetching event categories:", response);
       }
@@ -73,51 +135,53 @@ const Classes = () => {
     }
   };
 
-  const handleSubmitCategory = async (e) => {
-    e.preventDefault();
+  // Handle edit category
+  const handleEditCategory = (id) => {
+    const categoryToEdit = eventCategories.find(
+      (category) => category.id === id
+    );
+    if (categoryToEdit) {
+      setEventData({
+        ...eventData,
+        categories: eventData.categories.map((cat) =>
+          cat.id === categoryToEdit.id ? { ...cat, ...categoryToEdit } : cat
+        ),
+      });
+    }
+  };
 
+  // Handle delete category
+  const handleDeleteCategory = async (id) => {
     const yourAuthToken = localStorage.getItem("authToken");
 
-    if (!selectedEvent || eventData.categories.length === 0) {
-      alert("Please select an event and fill in the categories!");
-      return;
-    }
-
     try {
-      const categoryData = {
-        eventId: selectedEvent,
-        categories: eventData.categories,
-      };
-
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${yourAuthToken}`, // Assuming you need the Bearer token
-      };
-
-      // Check if you have the correct API URL
-      const response = await axios.post(
-        `${BASE_URL}
-/api/eventcategories`,
-        categoryData,
-        { headers }
+      const response = await axios.delete(
+        `${BASE_URL}/api/eventcategories/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${yourAuthToken}`,
+          },
+        }
       );
 
       if (response.status === 200) {
-        console.log("Categories submitted successfully:", response.data);
-        alert("Categories submitted successfully!");
-        handleGetEventCategories(); // Fetch the event categories after submission
+        alert("Category deleted successfully!");
+        setEventCategories(
+          eventCategories.filter((category) => category.id !== id)
+        ); // Remove the deleted category from the list
       } else {
-        console.error("Error submitting categories:", response);
-        alert("Error submitting categories!");
+        console.error("Error deleting category:", response);
+        alert("Error deleting category!");
       }
     } catch (error) {
-      console.error("Error during category submission:", error);
-      alert("An error occurred while submitting the categories.");
+      console.error("Error during category deletion:", error);
+      alert("An error occurred while deleting the category.");
     }
   };
 
   useEffect(() => {
     handleGetData();
+    // handleGetEventCategories();
   }, []);
 
   return (
@@ -296,38 +360,57 @@ const Classes = () => {
                   <th className="py-2 px-4 border-b">Participants</th>
                   <th className="py-2 px-4 border-b">Laps</th>
                   <th className="py-2 px-4 border-b">Entry Price</th>
+                  <th className="py-2 px-4 border-b">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {eventCategories.length > 0 ? (
-                  eventCategories.map((category) => (
-                    <tr key={category.id}>
-                      <td className="py-2 px-4 border-b">
-                        {category.evtCategory}
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        {category.wheelertype === 51
-                          ? "TwoWheeler"
-                          : category.wheelertype === 52
-                          ? "FourWheeler"
-                          : category.wheelertype === 53
-                          ? "Karting"
-                          : category.wheelertype === 54
-                          ? "GrassRoots"
-                          : "ESPORTS"}
-                      </td>
-                      <td className="py-2 px-4 border-b">{category.noOfVeh}</td>
-                      <td className="py-2 px-4 border-b">
-                        {category.nooflaps}
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        {category.entryprice}
-                      </td>
-                    </tr>
-                  ))
+                  eventCategories
+                    .filter((category) => category.eventId === selectedEvent) // Filter by selected event
+                    .map((category) => (
+                      <tr key={category.id}>
+                        <td className="py-2 px-4 border-b">
+                          {category.evtCategory}
+                        </td>
+                        <td className="py-2 px-4 border-b">
+                          {category.wheelertype === 51
+                            ? "TwoWheeler"
+                            : category.wheelertype === 52
+                            ? "FourWheeler"
+                            : category.wheelertype === 53
+                            ? "Karting"
+                            : category.wheelertype === 54
+                            ? "GrassRoots"
+                            : "ESPORTS"}
+                        </td>
+                        <td className="py-2 px-4 border-b">
+                          {category.noOfVeh}
+                        </td>
+                        <td className="py-2 px-4 border-b">
+                          {category.nooflaps}
+                        </td>
+                        <td className="py-2 px-4 border-b">
+                          {category.entryprice}
+                        </td>
+                        <td className="py-2 px-4 border-b">
+                          <button
+                            onClick={() => handleEditCategory(category.id)}
+                            className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                          >
+                            <CiEdit className="size-6" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(category.id)}
+                            className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                          >
+                            <MdOutlineDelete className="size-6" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="py-2 px-4 text-center">
+                    <td colSpan="6" className="py-2 px-4 text-center">
                       No categories available
                     </td>
                   </tr>
