@@ -37,7 +37,7 @@ const AddCompany = () => {
     setFormData({
       name: company.companyName || "",
       address: {
-        street: company.address?.street || "",
+        street: company.street || "",
         city: company.city || "",
         state: company.state || "",
         zip: company.zip || "",
@@ -117,10 +117,12 @@ const AddCompany = () => {
       Zip: formData.address.zip,
       Country: formData.address.country,
       Website: formData.address.website,
+
       Employees: {
         EmpName: formData.contact.contactPerson,
         Email: formData.contact.email,
         Phone: formData.contact.phone,
+        Otherinfo: "Admin user for the company",
       },
 
       userInfo: {
@@ -165,30 +167,30 @@ const AddCompany = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${BASE_URL}/api/companies`);
+  const fetchCompanies = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${BASE_URL}/api/companies`);
 
-        if (
-          response.data &&
-          response.data.$values &&
-          Array.isArray(response.data.$values)
-        ) {
-          setCompanies(response.data.$values);
-        } else {
-          setCompanies([]);
-          console.error("Unexpected response format:", response.data);
-        }
-      } catch (err) {
-        console.error("Error fetching companies:", err);
-        setError("Failed to fetch companies.");
-      } finally {
-        setLoading(false);
+      if (
+        response.data &&
+        response.data.$values &&
+        Array.isArray(response.data.$values)
+      ) {
+        setCompanies(response.data.$values);
+      } else {
+        setCompanies([]);
+        console.error("Unexpected response format:", response.data);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching companies:", err);
+      setError("Failed to fetch companies.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchCompanies();
   }, []);
 

@@ -25,6 +25,8 @@ import ServerNotFound from "./Screens/ServerNotFound";
 import EventsApproved from "./Screens/EventsApproved";
 import Classes from "./Screens/Classes";
 import ScrutinyTemplate from "./Screens/ScrutinyTemplate";
+import Status from "./Screens/Status";
+import Report from "./Screens/Report";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem("authToken");
@@ -47,6 +49,8 @@ const App = () => {
           <Route path="/classes" element={<Classes />} />
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/template" element={<ScrutinyTemplate />} />
+          <Route path="/status" element={<Status />} />
+          <Route path="/report" element={<Report />} />
 
           <Route
             path="/dashboard"

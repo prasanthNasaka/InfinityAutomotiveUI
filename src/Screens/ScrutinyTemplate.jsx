@@ -10,6 +10,7 @@ const ScrutinyTemplate = () => {
   const [newRule, setNewRule] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedRules, setSelectedRules] = useState(new Set());
 
   const fetchScrutinyRules = async () => {
     setLoading(true);
@@ -42,13 +43,61 @@ const ScrutinyTemplate = () => {
       scrutinyDescription: newRule,
     };
     setScrutinyRules([...scrutinyRules, newScrutinyRule]);
+
+    setSelectedRules((prev) =>
+      new Set(prev).add(newScrutinyRule.scrutinyrulesId)
+    );
+
     setNewTemplate("");
     setNewRule("");
   };
 
+  const toggleSelection = (id) => {
+    setSelectedRules((prev) => {
+      const updatedSelection = new Set(prev);
+      if (updatedSelection.has(id)) {
+        updatedSelection.delete(id);
+      } else {
+        updatedSelection.add(id);
+      }
+      return updatedSelection;
+    });
+  };
+
+  const addTemplate = async () => {
+    try {
+      const selectedScrutinyRules = Array.from(selectedRules)
+        .map((ruleId) => {
+          const rule = scrutinyRules.find((r) => r.scrutinyrulesId === ruleId);
+          return rule ? rule.scrutinyDescription : null;
+        })
+        .filter(Boolean);
+
+      const requestBody = {
+        template: newTemplate,
+        scrutineyrule: selectedScrutinyRules,
+      };
+
+      console.log("Request Body:", requestBody);
+
+      const response = await axios.post(
+        `${BASE_URL}/api/Scrutiny/Template`,
+        requestBody
+      );
+
+      console.log("Added Template Response:", response.data);
+      fetchScrutinyRules();
+      setNewTemplate("");
+      setSelectedRules(new Set());
+    } catch (error) {
+      console.error("Error adding scrutiny template:", error);
+      alert("Failed to add scrutiny template.");
+    }
+  };
   useEffect(() => {
     fetchScrutinyRules();
   }, []);
+
   return (
     <>
       <div className="h-24 w-full shadow-md p-1">
@@ -70,11 +119,10 @@ const ScrutinyTemplate = () => {
                 </label>
                 <input
                   type="text"
-                  className="w-4/5 p-2 border rounded"
-                  placeholder="Enter template"
                   value={newTemplate}
                   onChange={(e) => setNewTemplate(e.target.value)}
-                  required
+                  placeholder="Enter template"
+                  className="p-2 w-4/5 border rounded"
                 />
               </div>
               <div className="mb-4 w-1/2">
@@ -110,7 +158,7 @@ const ScrutinyTemplate = () => {
               ) : error ? (
                 <p className="text-red-500">{error}</p>
               ) : (
-                <table className="w-full border-collapse border border-gray-300">
+                <table className="w-full border-collapse border border-gray-300 mt-4">
                   <thead>
                     <tr className="bg-gray-200">
                       <th className="border p-2">Select</th>
@@ -124,7 +172,13 @@ const ScrutinyTemplate = () => {
                           <td className="border p-2 text-center">
                             <input
                               type="checkbox"
-                              value={rule.scrutinyrulesId}
+                              checked={selectedRules.has(rule.scrutinyrulesId)}
+                              onChange={() =>
+                                toggleSelection(
+                                  rule.scrutinyrulesId,
+                                  rule.scrutinyDescription
+                                )
+                              }
                               className="w-4 h-4 text-black border-gray-300 rounded focus:ring-blue-500 hover:cursor-pointer accent-cyan-600"
                             />
                           </td>
@@ -148,6 +202,7 @@ const ScrutinyTemplate = () => {
                 <button
                   type="submit"
                   className="px-6 py-3 bg-cyan-600 text-white rounded"
+                  onClick={addTemplate}
                 >
                   Submit
                 </button>
