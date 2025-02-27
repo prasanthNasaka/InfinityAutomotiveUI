@@ -221,7 +221,9 @@ const Linkraceanddrive = () => {
   };
 
   const handleEdit = (eventId) => {
-    fetch(`${BASE_URL}/api/EventRegistration/${eventId}`, {
+    console.log("eventid",eventId);
+    const event_id = eventId.eventId
+    fetch(`${BASE_URL}/api/EventRegistration/${event_id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -260,7 +262,7 @@ const Linkraceanddrive = () => {
   };
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/EventRegistration`)
+    fetch(`${BASE_URL}/api/EventRegistration/ActiveEvents`)
       .then((response) => response.json())
       .then((data) => {
         if (Array.isArray(data.$values)) {
@@ -617,7 +619,18 @@ const Linkraceanddrive = () => {
                                   />
                                 </td>
                                 <td className="px-6 py-2 whitespace-nowrap">
-                                  {amountPaidForSelectedChecked ? (
+                                   
+                                <span
+                                      className={`p-2 rounded-full text-xs ${
+                                        event.amountPaid
+                                          ? "bg-green-100 text-green-800"
+                                          : "bg-yellow-100 text-yellow-800"
+                                      }`}
+                                    >
+                                      {event.amountPaid ? "Paid--" : "Pending"}
+                                    </span>
+
+                                  {/* {amountPaidForSelectedChecked ? (
                                     <span
                                       className={`p-2 rounded-full text-xs ${
                                         event.amountPaid
@@ -628,7 +641,7 @@ const Linkraceanddrive = () => {
                                       {event.amountPaid ? "Paid" : "Pending"}
                                     </span>
                                   ) : (
-                                    // <span >Not Available</span>
+                                    <span >Not Available</span>
                                     <input
                                       checked={selectedRows[event.id] || false}
                                       onChange={(e) =>
@@ -638,7 +651,7 @@ const Linkraceanddrive = () => {
                                       type="checkbox"
                                       id={`checkbox-${event.id}`}
                                     />
-                                  )}
+                                  )} */}
                                 </td>
 
                                 <td className="px-6 py-2 whitespace-nowrap">
@@ -650,7 +663,7 @@ const Linkraceanddrive = () => {
                                     }`}
                                   >
                                     {event.documentStatus === "0"
-                                      ? "Pending"
+                                      ? "Pending "
                                       : "Verified"}
                                   </span>
                                 </td>
@@ -739,7 +752,8 @@ const Linkraceanddrive = () => {
                             <button
                               type="button"
                               className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
-                            font-medium rounded-md text-sm "
+                            
+font-medium rounded-md text-sm "
                             >
                               Update
                             </button>
@@ -851,14 +865,14 @@ const Linkraceanddrive = () => {
                               <div className="flex gap-2 justify-center">
                                 <button
                                   type="button"
-                                  onClick={() => handleEdit(event.eventid)}
+                                  onClick={() => handleEdit(event)}
                                   className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
                                 >
                                   <CiEdit className="w-6 h-6" />
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => handleDelete(event.eventid)}
+                                  onClick={() => handleDelete(event)}
                                   className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
                                 >
                                   <MdOutlineDelete className="w-6 h-6" />
