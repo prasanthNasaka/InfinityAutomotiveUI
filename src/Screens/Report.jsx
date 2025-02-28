@@ -3,8 +3,11 @@ import MainSideBar from "../Components/MainSideBar";
 import { useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
+import { useParams } from "react-router-dom";
 
 const Report = () => {
+  const { eventId } = useParams();
+
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
 
@@ -15,7 +18,7 @@ const Report = () => {
       {
         name,
         role,
-        eventid: 93,
+        eventid: eventId,
       },
     ];
 
@@ -82,7 +85,7 @@ const Report = () => {
             </div>
           </form>
 
-          <div className="flex w-full p-8 h-auto">
+          <div className="flex w-full p-8 h-fit">
             <table className="w-full border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-200">

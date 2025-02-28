@@ -372,9 +372,9 @@ const AddCompany = () => {
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="border p-2">Company Name</th>
-                    <th className="border p-2">Contact Person</th>
-                    <th className="border p-2">Email</th>
-                    <th className="border p-2">Phone</th>
+                    <th className="border p-2">State</th>
+                    <th className="border p-2">street</th>
+                    <th className="border p-2">website</th>
                     <th className="border p-2">City</th>
                     <th className="border p-2">Status</th>
                     <th className="border p-2">Actions</th>
@@ -388,20 +388,15 @@ const AddCompany = () => {
                           {company.companyName}
                         </td>
                         <td className="border p-2 text-center">
-                          {company.employees?.$values?.length > 0
-                            ? company.employees.$values[0].empName
-                            : "N/A"}
+                          {company.state}
                         </td>
                         <td className="border p-2 text-center">
-                          {company.employees?.$values?.length > 0
-                            ? company.employees.$values[0].email
-                            : "N/A"}
+                          {company.street}
                         </td>
                         <td className="border p-2 text-center">
-                          {company.employees?.$values?.length > 0
-                            ? company.employees.$values[0].phone
-                            : "N/A"}
+                          {company.website}
                         </td>
+
                         <td className="border p-2 text-center">
                           {company.city}, {company.country}
                         </td>

@@ -17,41 +17,6 @@ const Status = () => {
   const [driverData, setDriverData] = useState([]);
   const [vehicleData, setVehicleData] = useState([]);
 
-  //   const handleSelect = (type, item) => {
-  //     if (type === "driver") {
-  //       const FilteredDrvData = tableData.filter(
-  //         (d) => d.driverId == item.driverId
-  //       );
-  //       console.log("FilteredDrvData", FilteredDrvData);
-  //       setDrvTableData(FilteredDrvData);
-  //       setSelectedDriver(item);
-
-  //       if (item) {
-  //         setDriverImageUrl(
-  //           item.driverPhoto ? `${IMAGE_URL}${item.driverPhoto}` : null
-  //         );
-  //       } else {
-  //         setDriverImageUrl("");
-  //       }
-  //     } else if (type === "vehicle") {
-  //       setSelectedVehicle(item);
-
-  //       if (item) {
-  //         setVehicleImageUrl(
-  //           item.vehiclePhoto ? `${IMAGE_URL}${item.vehiclePhoto}` : null
-  //         );
-  //       } else {
-  //         setVehicleImageUrl("");
-  //       }
-  //     }
-  //   };
-  //   const handleDataReceived = (type, data) => {
-  //     if (type === "driver") {
-  //       setDriverData(data);
-  //     } else if (type === "vehicle") {
-  //       setVehicleData(data);
-  //     }
-  //   };
   return (
     <>
       <div className="h-24 w-full shadow-md p-1">
@@ -63,44 +28,8 @@ const Status = () => {
           <MainSideBar />
         </div>
 
-        <div className="flex w-full p-8 h-auto flex-col">
+        <div className="flex w-full p-8 h-fit flex-col">
           <form className="w-full mx-auto p-3 rounded-md shadow-lg h-fit">
-            {/* <div className="w-full flex h-auto p-2 gap-5 tab:flex-col ">
-              <div className="w-1/2 flex flex-col gap-2 tab:w-full">
-                <form className="w-full">
-                  <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
-                    Search
-                  </label>
-                  <AutoCompleteSearch
-                    from="myComponent"
-                    searchType="Driver"
-                    onDataReceived={(data) =>
-                      handleDataReceived("driver", data)
-                    }
-                    onSelect={(driver) => handleSelect("driver", driver)}
-                  />
-                </form>
-              </div>
-
-              <div className="w-1/2 flex flex-col gap-2 tab:w-full">
-                <div className="w-full">
-                  <form className="w-full">
-                    <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
-                      Search
-                    </label>
-                    <AutoCompleteSearch
-                      from="myComponent"
-                      searchType="vehicle"
-                      onDataReceived={(data) =>
-                        handleDataReceived("vehicle", data)
-                      }
-                      onSelect={(vehicle) => handleSelect("vehicle", vehicle)}
-                    />
-                  </form>
-                </div>
-              </div>
-            </div> */}
-
             <div className="flex w-full gap-5">
               <div className="w-1/2">
                 <h1 className="flex justify-center  text-3xl font-bold w-full ">

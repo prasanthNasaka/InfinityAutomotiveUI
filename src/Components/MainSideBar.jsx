@@ -195,7 +195,7 @@ const MainSideBar = () => {
             }`}
           >
             <FlagTriangleRight />
-            {!isCollapsed && <span>Report</span>}
+            {!isCollapsed && <span>Managing Org Committee</span>}
           </Link>
         </ul>
       </div>
