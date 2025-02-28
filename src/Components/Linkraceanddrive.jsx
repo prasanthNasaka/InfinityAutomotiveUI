@@ -9,13 +9,14 @@ import MainSideBar from "./MainSideBar";
 import AutoCompleteSearch from "./CustomAutoComplete";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
+import { HandCoins, Trash } from "lucide-react";
 
 const Linkraceanddrive = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
   const [amountPaidForSelectedChecked, setAmountPaidForSelectedChecked] =
     useState(false);
   const [childCheckboxChecked, setChildCheckboxChecked] = useState(false);
-  const [selectedReferenceNumber, setSelectedReferenceNumber] = useState("");
+  // const [selectedReferenceNumber, setSelectedReferenceNumber] = useState("");
   const [driverData, setDriverData] = useState([]);
   const [vehicleData, setVehicleData] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
@@ -33,6 +34,8 @@ const Linkraceanddrive = () => {
   const [tableData, setTableData] = useState([]);
   const [DrvtableData, setDrvTableData] = useState([]);
   const [selectedRows, setSelectedRows] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
+
 
   const handleAmountPaidChange = (e) => {
     setAmountPaidChecked(e.target.checked);
@@ -126,17 +129,20 @@ const Linkraceanddrive = () => {
       }
     }
   };
-  const handleAmountPaidForSelectedChange = (e) => {
-    const isChecked = e.target.checked;
-    if (e.target.checked) {
+  const handleAmountPaidForSelectedClick = () => {
+    setAmountPaidForSelectedChecked((prevChecked) => {
+      const newCheckedState = !prevChecked;
+
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
-          selectedRows[event.id] ? { ...event, amountPaid: true } : event
+          selectedRows[event.id]
+            ? { ...event, amountPaid: newCheckedState }
+            : event
         )
       );
-    }
-    setAmountPaidForSelectedChecked(isChecked);
-    setChildCheckboxChecked(isChecked);
+
+      return newCheckedState;
+    });
   };
 
   const numberInput = (e) => {
@@ -221,8 +227,8 @@ const Linkraceanddrive = () => {
   };
 
   const handleEdit = (eventId) => {
-    console.log("eventid",eventId);
-    const event_id = eventId.eventId
+    console.log("eventid", eventId);
+    const event_id = eventId.eventId;
     fetch(`${BASE_URL}/api/EventRegistration/${event_id}`, {
       method: "PUT",
       headers: {
@@ -467,81 +473,103 @@ const Linkraceanddrive = () => {
                   </div>
 
                   <div className="w-full flex p-2 gap-2 tab:flex-col items-center">
-                    <div className="w-1/2 tab:w-full flex justify-between px-2">
-                      <div className="w-1/2">
+                    <div className="w-1/2 tab:w-full flex items-end  justify-around px-2">
+                      <div className="w-1/3 ">
                         <div className="relative">
                           <input
                             value={value}
                             onChange={numberInput}
                             type="text"
-                            className="peer block w-full appearance-auto border-b-2  border-gray-100 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-200 dark:text-black dark:focus:border-blue-500"
+                            className="peer block w-full appearance-auto border-b-2 border-gray-100 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 
+                     focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-200 dark:text-black dark:focus:border-blue-500"
                             pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                             placeholder=" "
                           />
                           <label
-                            htmlFor="Contestent Nuumber"
-                            className="absolute left-2 top-3 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:scale-100 peer-focus:top-1 peer-focus:scale-75 peer-focus:text-cyan-600"
+                            htmlFor="Contestent Number"
+                            className="absolute left-2 top-3 text-sm text-gray-500 transition-all 
+                     peer-placeholder-shown:top-4 peer-placeholder-shown:scale-100 
+                     peer-focus:top-1 peer-focus:scale-75 peer-focus:text-cyan-600"
                           >
-                            Contestent Number
+                            Contestant Number
                           </label>
                         </div>
-
                         {error && (
                           <span className="text-sm text-red-500">{error}</span>
                         )}
                       </div>
 
-                      <div className="flex w-1/2 justify-end items-center gap-1">
+                      <div className="w-1/3 flex justify-end ">
+                        <button
+                        onClick={() => setIsOpen(true)}
+                          type="button"
+                          className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
+                            
+font-medium rounded-md text-sm "
+                        >
+                          Show List
+                        </button>
+                      </div>
+
+                      <div className="w-1/3 flex ml-8 items-center  p-2 rounded">
+                        <input
+                          type="checkbox"
+                          id="documentVerified"
+                          className="accent-cyan-600 w-4 h-4 border-gray-100 hover:cursor-pointer"
+                        />
+                        <label
+                          htmlFor="documentVerified"
+                          className="text-md text-black ml-2 hover:cursor-pointer"
+                        >
+                          Document Verified
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="w-1/2  tab:w-full flex items-center justify-around px-2">
+                      <div className="flex w-1/3 items-center gap-1">
                         <input
                           id="amountPaid"
                           type="checkbox"
                           checked={amountPaidChecked}
                           onChange={handleAmountPaidChange}
-                          className="accent-cyan-600 w-4 h-4 text-black border border-gray-100 rounded hover:cursor-pointer"
+                          className="accent-cyan-600 w-4 h-4 border-gray-100 rounded hover:cursor-pointer"
                           required
                         />
                         <label
                           htmlFor="amountPaid"
-                          className="text-md items-end text-black hover:cursor-pointer"
+                          className="text-md text-black hover:cursor-pointer"
                         >
                           Amount Paid
                         </label>
                       </div>
-                    </div>
 
-                    <div className="w-1/2 tab:w-full flex items-end justify-between px-2">
-                      <div className="w-1/2 flex items-end justify-between gap-2">
-                        {amountPaidChecked && (
-                          <div className="flex justify-center items-center gap-2 mt-2">
-                            <label
-                              className="text-md"
-                              htmlFor="referenceNumber"
-                            >
-                              Number:
-                            </label>
-                            <input
-                              value={referenceNumber}
-                              onChange={(e) =>
-                                setReferenceNumber(e.target.value)
-                              }
-                              placeholder="Enter Ref Number"
-                              className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
-                              type="text"
-                            />
-                          </div>
-                        )}
-                      </div>
+                      {amountPaidChecked && (
+                        <div className="w-1/3 flex items-center mr-24">
+                          <label className="text-md" htmlFor="referenceNumber">
+                            Number:
+                          </label>
+                          <input
+                            value={referenceNumber}
+                            onChange={(e) => setReferenceNumber(e.target.value)}
+                            placeholder="Enter Ref Number"
+                            className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
+                            type="text"
+                          />
+                        </div>
+                      )}
 
-                      <div className="w-1/2 flex justify-end">
+                      <div className="w-1/3 flex justify-end">
                         <button
                           type="button"
                           disabled={!isFormValid() || isSubmitting}
                           onClick={handleSubmit}
-                          className={`tab:w-full px-6 py-2.5 ${
-                            isFormValid() && !isSubmitting
-                              ? "bg-cyan-600 text-white  hover:bg-cyan-600 hover:text-black transition-all duration-300"
-                              : "bg-gray-400 cursor-not-allowed"
-                          } text-white font-medium rounded-lg text-sm transition-colors`}
+                          className={`tab:w-full px-6 py-2.5 text-white font-medium rounded-lg text-sm transition-all 
+          ${
+            isFormValid() && !isSubmitting
+              ? "bg-cyan-600 hover:bg-cyan-700 hover:text-white transition-all duration-300"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
                         >
                           {isSubmitting ? "Submitting..." : "Add Contestant"}
                         </button>
@@ -550,17 +578,37 @@ const Linkraceanddrive = () => {
                   </div>
                 </div>
 
+                {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          {/* Modal Content */}
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold text-gray-800">Popup Modal</h2>
+            <p className="mt-2 text-gray-600">Blocked Contest</p>
+
+            <span></span>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="mt-4 w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
                 {DrvtableData.length > 0 && (
-                  <div className="min-h-auto">
-                    <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+                  <div className="min-h-auto ">
+                    <div className="border rounded-lg p-2  overflow-hidden bg-white shadow-md">
                       <div className="overflow-x-auto border-b-2">
                         <table className="w-full text-sm text-left text-gray-500">
                           <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
                             <tr>
                               <th className="px-6 py-3 whitespace-nowrap">
-                                <button className="p-2 bg-cyan-600 hover:bg-cyan-500 border  text-white rounded-lg transition-colors">
-                                  Select All
-                                </button>
+                                {/* <button className="p-2 bg-cyan-500 hover:bg-cyan-600 border  text-white rounded-lg transition-colors"> */}
+                                  Select
+                                {/* </button> */}
                               </th>
                               <th className="px-6 py-3 whitespace-nowrap">
                                 SL.No
@@ -619,39 +667,17 @@ const Linkraceanddrive = () => {
                                   />
                                 </td>
                                 <td className="px-6 py-2 whitespace-nowrap">
-                                   
-                                <span
-                                      className={`p-2 rounded-full text-xs ${
-                                        event.amountPaid
-                                          ? "bg-green-100 text-green-800"
-                                          : "bg-yellow-100 text-yellow-800"
-                                      }`}
-                                    >
-                                      {event.amountPaid ? "Paid--" : "Pending"}
-                                    </span>
+                                  <span
+                                    className={`p-2 rounded-full text-xs ${
+                                      event.amountPaid
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-yellow-100 text-yellow-800"
+                                    }`}
+                                  >
+                                    {event.amountPaid ? "Paid" : "Pending"}
+                                  </span>
 
-                                  {/* {amountPaidForSelectedChecked ? (
-                                    <span
-                                      className={`p-2 rounded-full text-xs ${
-                                        event.amountPaid
-                                          ? "bg-green-100 text-green-800"
-                                          : "bg-yellow-100 text-yellow-800"
-                                      }`}
-                                    >
-                                      {event.amountPaid ? "Paid" : "Pending"}
-                                    </span>
-                                  ) : (
-                                    <span >Not Available</span>
-                                    <input
-                                      checked={selectedRows[event.id] || false}
-                                      onChange={(e) =>
-                                        handleChildCheckboxChange(e, event.id)
-                                      }
-                                      className="accent-cyan-600 w-4 h-4 cursor-pointer"
-                                      type="checkbox"
-                                      id={`checkbox-${event.id}`}
-                                    />
-                                  )} */}
+                                 
                                 </td>
 
                                 <td className="px-6 py-2 whitespace-nowrap">
@@ -689,73 +715,73 @@ const Linkraceanddrive = () => {
                           </tbody>
                         </table>
                       </div>
-                      <div className="w-full flex p-6 gap-2 tab:flex-col items-center">
-                        <div className="w-1/2 tab:w-full flex justify-between px-2   ">
+                      <div className="w-full flex p-6 gap-2 tab:flex-col border-b-2 mt-2 rounded-lg   items-center">
+                        <div className="w-1/2 tab:w-full flex items-center justify-between px-2   ">
                           <div className="flex w-1/2 justify-end items-center gap-1">
-                            <input
-                              id=""
-                              type="checkbox"
-                              className="accent-cyan-600 w-4 h-4 text-black border border-gray-100 rounded hover:cursor-pointer"
-                              required
-                            />
-                            <label
-                              htmlFor="remember"
-                              className="text-md items-end text-black hover:cursor-pointer"
+                            <button
+                              type="button"
+                              className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300 font-medium rounded-md text-sm "
                             >
                               Document Verified for Selected
-                            </label>
+                            </button>
+                           
                           </div>
 
-                          <div className="flex w-1/2 justify-end items-center gap-1 mt-4">
-                            <input
-                              id="amountPaidForSelected"
-                              type="checkbox"
-                              checked={amountPaidForSelectedChecked}
-                              onChange={() =>
-                                setAmountPaidForSelectedChecked((prev) => !prev)
-                              }
-                              className="accent-cyan-600 w-4 h-4 text-black border border-gray-100 rounded hover:cursor-pointer"
-                            />
-                            <label
-                              htmlFor="amountPaidForSelected"
-                              className="text-md items-end text-black hover:cursor-pointer"
+                          <div className="flex w-1/2 justify-end items-center gap-1 ">
+                            <button
+                              onClick={handleAmountPaidForSelectedClick}
+                              type="button"
+                              className={`tab:w-full px-6 py-2.5 font-medium rounded-md text-sm transition-all duration-300 ${
+                                amountPaidForSelectedChecked
+                                  ? "bg-cyan-500 text-white"
+                                  : "bg-gray-500 text-white hover:bg-gray-600 hover:text-white"
+                              }`}
                             >
-                              Amount Paid for Selected
-                            </label>
+                              {amountPaidForSelectedChecked
+                                ? "Amount Paid Selected"
+                                : "Select Amount Paid"}
+                            </button>
+                           
                           </div>
                         </div>
 
-                        <div className="w-1/2 tab:w-full flex items-end justify-between px-2">
-                          <div className="w-1/2 flex items-end justify-between gap-2">
-                            {amountPaidForSelectedChecked && (
-                              <div className="flex justify-center items-center gap-2 mt-2">
-                                <label
-                                  className="text-md"
-                                  htmlFor="selectedReferenceNumber"
-                                >
-                                  Number:
-                                </label>
-                                <input
-                                  value={selectedReferenceNumber}
-                                  onChange={(e) =>
-                                    setSelectedReferenceNumber(e.target.value)
-                                  }
-                                  placeholder="Enter Ref Number"
-                                  className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
-                                  type="text"
-                                />
-                              </div>
-                            )}
+                        <div className="w-1/2 tab:w-full flex items-center justify-between px-2 gap-2">
+                          <div className=" flex items-end justify-between">
+                            <div className="flex justify-center items-center gap-2">
+                              <label
+                                className="text-md"
+                                htmlFor="selectedReferenceNumber"
+                              >
+                                Number:
+                              </label>
+                              <input
+                                placeholder="Enter Ref Number"
+                                className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
+                                type="text"
+                              />
+                            </div>
                           </div>
 
-                          <div className="w-1/2 flex justify-end">
+                          <div className="w-1/3 flex justify-end">
                             <button
                               type="button"
-                              className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
+                              className="tab:w-full px-6 flex py-2.5 items-center bg-yellow-600 text-white hover:bg-yellow-600 hover:text-black transition-all duration-300
+                            font-medium rounded-md text-sm "
+                            >
+                              refund
+                              <HandCoins />
+                            </button>
+                          </div>
+
+                          <div className=" flex justify-end">
+                            <button
+                              type="button"
+                              className="tab:w-full flex px-6 py-2.5 gap-2 items-center bg-red-600 text-white hover:bg-red-600 hover:text-black transition-all duration-300
                             
 font-medium rounded-md text-sm "
                             >
-                              Update
+                              Delete
+                              <Trash />
                             </button>
                           </div>
                         </div>
@@ -780,21 +806,19 @@ font-medium rounded-md text-sm "
                             Vehicle
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">Class</th>
-                          {/* <th className="px-6 py-3 whitespace-nowrap">
+                          <th className="px-6 py-3 whitespace-nowrap">
                             Contestant Number
-                          </th> */}
-                          {/* <th className="px-6 py-3 whitespace-nowrap">
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
                             Payment Status
-                          </th> */}
+                          </th>
                           <th className="px-6 py-3 whitespace-nowrap">
                             Documents
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">
                             Scrutiny
                           </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Action
-                          </th>
+                          
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 text-center uppercase">
@@ -815,10 +839,10 @@ font-medium rounded-md text-sm "
                             <td className="px-6 py-2 whitespace-nowrap">
                               {event.evtCategory}
                             </td>
-                            {/* <td className="px-6 py-2 whitespace-nowrap">
+                            <td className="px-6 py-2 whitespace-nowrap">
                               {event.contestantNo}
-                            </td> */}
-                            {/* <td className="px-6 py-2 whitespace-nowrap">
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap">
                               <span
                                 className={`p-2 rounded-full text-xs ${
                                   event.amountPaid === true
@@ -828,7 +852,7 @@ font-medium rounded-md text-sm "
                               >
                                 {event.amountPaid === true ? "Paid" : "Pending"}
                               </span>
-                            </td> */}
+                            </td>
 
                             <td className="px-6 py-2 whitespace-nowrap">
                               <span
@@ -861,24 +885,7 @@ font-medium rounded-md text-sm "
                               </span>
                             </td>
 
-                            <td className="px-6 py-2 whitespace-nowrap ">
-                              <div className="flex gap-2 justify-center">
-                                <button
-                                  type="button"
-                                  onClick={() => handleEdit(event)}
-                                  className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                                >
-                                  <CiEdit className="w-6 h-6" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDelete(event)}
-                                  className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
-                                >
-                                  <MdOutlineDelete className="w-6 h-6" />
-                                </button>
-                              </div>
-                            </td>
+                            
                           </tr>
                         ))}
                       </tbody>

@@ -43,7 +43,7 @@ const Header = () => {
       </div>
 
       <div className="h-full w-1/5 flex items-center phone:hidden iphone:hidden">
-        <div className="w-full h-full flex justify-around items-center lappy:flex-col tab:whitespace-nowrap lappy:text-wrap">
+        <div className="w-full h-full flex justify-around items-center flex-col tab:whitespace-nowrap ">
           <span className="text-lg text-wrap text-gray-700 tab:text-lg font-bold hover:underline hover:decoration-blue-500 cursor-pointer">
             Date: {currentTime.toLocaleDateString()}
           </span>
@@ -54,28 +54,8 @@ const Header = () => {
       </div>
 
       <div className="h-full w-1/5 flex justify-center items-center">
-        <div className="w-full h-full flex justify-around items-center  p-1 ">
-          {/* <div className="flex items-center  2xl:block tab:hidden   w-1/2">
-            <form className="relative w-full">
-              <label className="sr-only" htmlFor="underline_select">
-                Underline select
-              </label>
-              <div className="relative group flex justify-center items-center lappydesk:w-32  w-36">
-                <select
-                  id="underline_select"
-                  className="font-serif tab:block lappy:block py-2.5 px-4 w-full text-black bg-transparent appearance-none focus:outline-none focus:ring-0 text-xl cursor-pointer"
-                >
-                  <option defaultValue>Login</option>
-                  <option value="Register">Register</option>
-                  <option value="Scrutiny">Scrutiny</option>
-                  <option value="Accounts">Accounts</option>
-                  <option value="Settings">Settings</option>
-                </select>
-                <FaAngleDown className="absolute right-2 pointer-events-none text-black" />
-                <span className="absolute left-0 bottom-0 h-[4px] bg-blue-500 w-full origin-left scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
-              </div>
-            </form>
-          </div> */}
+        <div className="w-full h-full flex justify-end items-center  p-1 ">
+          
 
           <div className="2xl:w-1/2  tab:hidden h-full flex 2xl:justify-end 2xl:items-center">
             <button
@@ -83,20 +63,7 @@ const Header = () => {
               type="button"
               className=" text-white font-bold bg-red-700 hover:bg-red-800 border rounded-md text-sm p-2 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 "
             >
-              {/* <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              className="size-6 lappydesk:size-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9"
-              />
-            </svg> */}
+              
               Logout
             </button>
           </div>
