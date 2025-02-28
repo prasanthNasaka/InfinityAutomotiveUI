@@ -175,7 +175,7 @@ function Scrutinys() {
     <div className="mt-6 h-auto m-auto flex flex-col items-center justify-center">
       {!selectedEvent ? (
         <div
-          className="w-3/4 h-20 shadow-lg flex justify-center items-center rounded-lg"
+          className="w-3/4 h-20 shadow-lg flex justify-center items-center rounded-lg transition-all duration-1000"
           style={{ color: bgColor }}
         >
           <p className="font-bold text-center text-xl animate-bounce">
