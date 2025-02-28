@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
@@ -34,7 +33,6 @@ const EventForm = () => {
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [submittedEvents, setSubmittedEvents] = useState([]);
-  const [formSubmitted, setFormSubmitted] = useState(false);
   const recordsPerPage = 5;
   const startIndex = (currentPage - 1) * recordsPerPage;
   const endIndex = startIndex + recordsPerPage;
@@ -156,7 +154,6 @@ const EventForm = () => {
       setEditId(addCategory);
       setSubmittedEvents([...submittedEvents, response.data]);
       resetForm();
-      setFormSubmitted(true);
       refreshEvents();
     } catch (error) {
       console.error("Failed to register event:", error);
@@ -277,7 +274,6 @@ const EventForm = () => {
       resetForm();
       setEditMode(false);
       setEditId(null);
-      setFormSubmitted(true);
       refreshEvents();
     } catch (error) {
       console.error("Failed to update event:", error);
