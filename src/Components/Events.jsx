@@ -878,7 +878,7 @@ const EventForm = () => {
                     className={`px-3 py-2 rounded-md ${
                       currentPage === 1
                         ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-700"
+                        : "bg-cyan-500 text-white hover:bg-cyan-700"
                     }`}
                   >
                     Prev
@@ -894,7 +894,7 @@ const EventForm = () => {
                         onClick={() => setCurrentPage(page)}
                         className={`px-3 py-2 rounded-md ${
                           currentPage === page
-                            ? "bg-blue-700 text-white"
+                            ? "bg-cyan-700 text-white"
                             : "bg-gray-200 hover:bg-gray-400"
                         }`}
                       >
@@ -910,7 +910,7 @@ const EventForm = () => {
                     className={`px-3 py-2 rounded-md ${
                       currentPage === totalPages
                         ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-700"
+                        : "bg-cyan-500 text-white hover:bg-cyan-700"
                     }`}
                   >
                     Next
