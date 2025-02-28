@@ -29,6 +29,8 @@ const Classes = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/EventRegistration/names`);
       setEvents(response.data.$values);
+      console.log(response.data.$values);
+      
     } catch (error) {
       console.error("Error fetching events:", error);
     }
