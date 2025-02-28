@@ -10,13 +10,14 @@ import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 import { parse } from "date-fns";
 import { IMAGE_URL } from "../constants/global-const";
+import { useNavigate } from "react-router-dom";
 
 const EventForm = () => {
   const [eventData, setEventData] = useState({
     eventType: "",
     eventName: "",
     dateRange: { start: null, end: null },
-    status: 8,
+    status: 9,
     location: "",
     geoLocation: "",
     bannerImage: null,
@@ -39,6 +40,8 @@ const EventForm = () => {
   const currentEvents = submittedEvents.slice(startIndex, endIndex);
   const totalRecords = submittedEvents.length;
   const totalPages = Math.ceil(totalRecords / recordsPerPage);
+  const [eventId, setEventId] = useState(null);
+  const navigate = useNavigate();
 
   const handleInputChange = (e, field) => {
     setEventData({ ...eventData, [field]: e.target.value });
@@ -172,7 +175,7 @@ const EventForm = () => {
       eventType: "",
       eventName: "",
       dateRange: { start: null, end: null },
-      status: 8,
+      status: 9,
       location: "",
       geoLocation: "",
       bannerImage: null,
@@ -187,15 +190,12 @@ const EventForm = () => {
   };
 
   const handleEdit = (event) => {
-    console.log("Event being edited:", event);
-
+    setEventId(event.eventid);
     const eventId = event.eventid;
-
     if (!eventId) {
       console.error("No event ID found for editing:", event);
       return;
     }
-
     setEditMode(true);
     setEditId(eventId);
 
@@ -218,6 +218,12 @@ const EventForm = () => {
         Qrpath: event.qrpath ? `${IMAGE_URL}${event.qrpath}` : null,
       },
     });
+  };
+
+  const handleNavigate = () => {
+    console.log("Hello");
+    navigate("/report", { state: { eventId } });
+    console.log("World", eventId);
   };
 
   const handleUpdate = async (e) => {
@@ -748,20 +754,34 @@ const EventForm = () => {
                 </div>
               </div>
 
+              
               <div className="flex justify-end p-2 gap-2">
                 {editMode && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditMode(false);
-                      setEditId(null);
-                      resetForm();
-                    }}
-                    className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition-colors"
-                  >
-                    Cancel
-                  </button>
+                  <>
+                    {/* Go to Event Page button */}
+                    <button
+                      type="button"
+                      onClick={handleNavigate} // Trigger navigate with eventId
+                      className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
+                    >
+                      Managing Organizer Committee
+                    </button>
+
+                    {/* Cancel button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditMode(false);
+                        setEditId(null);
+                        resetForm();
+                      }}
+                      className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </>
                 )}
+
                 <button
                   type="submit"
                   className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
@@ -839,6 +859,7 @@ const EventForm = () => {
                               >
                                 <CiEdit className="size-6" />
                               </button>
+
                               <button
                                 type="button"
                                 onClick={() => {
