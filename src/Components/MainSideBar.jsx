@@ -49,7 +49,7 @@ const MainSideBar = () => {
     <section
       className={`h-full bg-black transition-all transform ease-in-out duration-700 ${
         isCollapsed ? "w-16" : "w-56"
-      }`}
+      } flex flex-col`}
     >
       <div className="p-2 flex justify-end">
         <button onClick={toggleSidebar} className="text-white text-xl">
@@ -57,7 +57,7 @@ const MainSideBar = () => {
         </button>
       </div>
 
-      <div className="flex-grow">
+      <div className="flex-1 overflow-auto">
         <ul className="p-2 flex flex-col font-serif gap-4">
           <li
             // to="/registration"
