@@ -48,7 +48,6 @@ const ScrutinyTemplate = () => {
       new Set(prev).add(newScrutinyRule.scrutinyrulesId)
     );
 
-    setNewTemplate("");
     setNewRule("");
   };
 
