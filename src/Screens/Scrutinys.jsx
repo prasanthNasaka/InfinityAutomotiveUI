@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,12 +8,13 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
 function Scrutinys() {
-  const [answers, setAnswers] = useState({});
   const [events, setEvents] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
+  const [selectdregId, setSelectdRegId] = useState("");
   const [scrutinyRules, setScrutinyRules] = useState([]);
   const [bgColor, setBgColor] = useState(getRandomColor());
+  const [answers, setAnswers] = useState({});
 
   function getRandomColor() {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -25,7 +27,6 @@ function Scrutinys() {
       );
       setEvents(response.data.$values);
     } catch (error) {
-      console.error("Error fetching data:", error);
       toast.error("Failed to fetch event names. No Data Found.");
     }
   };
@@ -47,11 +48,12 @@ function Scrutinys() {
             toast.warning("No data found for the selected event.");
           }
         } else {
-          console.error("Expected an array of events, but received:", data);
           setTableData([]);
           toast.error("Invalid data format received from the server.");
         }
       } catch (error) {
+        setScrutinyRules([]);
+        setTableData([]);
         console.error("Error fetching events:", error);
         toast.error("No registrations found for the specified event.");
       }
@@ -66,6 +68,8 @@ function Scrutinys() {
         `${BASE_URL}/api/Scrutiny?RegId=${eventData.regId}`
       );
       const data = response.data.$values;
+      console.log("data", data);
+
       if (data) {
         setScrutinyRules(data);
         const initialAnswers = {};
@@ -75,6 +79,7 @@ function Scrutinys() {
             reason: rule.comment || "",
           };
         });
+        setSelectdRegId(eventData.regId);
         setAnswers(initialAnswers);
       } else {
         toast.error("No scrutiny rules found for this event.");
@@ -84,17 +89,24 @@ function Scrutinys() {
       toast.error("Failed to fetch scrutiny rules. Please try again.");
     }
   };
+  const handleAnswerChange = (ruleId, value) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [ruleId]: { ...prev[ruleId], value },
+    }));
+  };
 
   const handleReportSubmit = async () => {
     const scrutinyData = Object.keys(answers).map((ruleId) => {
       const answer = answers[ruleId];
       let status = 15;
+
       if (answer.value === true) {
-        status = 16;
-      } else if (answer.value === false) {
         status = 17;
-      } else if (answer.value === null) {
+      } else if (answer.value === false) {
         status = 18;
+      } else if (answer.value === null) {
+        status = 16;
       }
 
       return {
@@ -105,7 +117,7 @@ function Scrutinys() {
         ).scrutineyrule,
         status: status,
         comment: answer.reason || "",
-        regId: selectedEvent,
+        regId: selectdregId,
       };
     });
 
@@ -114,20 +126,26 @@ function Scrutinys() {
         `${BASE_URL}/api/Scrutiny`,
         scrutinyData
       );
-      console.log("Report submitted successfully:", response.data);
       toast.success("Report submitted successfully!");
+      setScrutinyRules([]);
     } catch (error) {
-      console.error("Error submitting report:", error);
       toast.error("Error submitting report. Please try again.");
     }
   };
 
-  const handleAnswerChange = (ruleId, value) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [ruleId]: { ...prev[ruleId], value },
-    }));
-  };
+  useEffect(() => {
+    if (scrutinyRules.length > 0) {
+      const initialAnswers = scrutinyRules.reduce((acc, rule) => {
+        acc[rule.scrutineyruleId] = {
+          value: rule.status === 17 ? true : rule.status === 18 ? false : null,
+          reason: rule.comment || "",
+        };
+        return acc;
+      }, {});
+
+      setAnswers(initialAnswers);
+    }
+  }, [scrutinyRules]);
 
   useEffect(() => {
     handleGetData();
@@ -282,72 +300,77 @@ function Scrutinys() {
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16 h-screen overflow-auto">
         <div className="bg-white w-full p-4 rounded-lg shadow-sm mt-2">
           <h2 className="text-xl font-semibold mb-4">Scrutiny Rules</h2>
-          {scrutinyRules.map((rule) => (
-            <div key={rule.scrutineyruleId} className="mb-4 p-2 border rounded">
-              <div className="flex items-center w-full gap-3 justify-between">
-                <div className="w-1/2">
-                  <span className="text-gray-700">{rule.scrutineyrule}</span>
-                </div>
-                <div className="bg-white rounded w-1/2 items-center justify-between gap-3 flex">
-                  <div className="w-2/3">
-                    <input
-                      type="text"
-                      value={answers[rule.scrutineyruleId]?.reason || ""}
-                      onChange={(e) =>
-                        setAnswers((prev) => ({
-                          ...prev,
-                          [rule.scrutineyruleId]: {
-                            ...prev[rule.scrutineyruleId],
-                            reason: e.target.value,
-                          },
-                        }))
-                      }
-                      className="w-full p-3 border border-gray-300 rounded"
-                      placeholder="Comments"
-                    />
+          {scrutinyRules.map((rule) => {
+            const status = answers[rule.scrutineyruleId]?.value;
+            const isPass = status === true;
+            const isFail = status === false;
+            const isNA = status === null;
+
+            return (
+              <div
+                key={rule.scrutineyruleId}
+                className="mb-4 p-2 border rounded"
+              >
+                <div className="flex items-center w-full gap-3 justify-between">
+                  <div className="w-1/2">
+                    <span className="text-gray-700">{rule.scrutineyrule}</span>
                   </div>
-                  <div className="w-1/3 justify-evenly flex space-x-3">
-                    <button
-                      onClick={() =>
-                        handleAnswerChange(rule.scrutineyruleId, true)
-                      }
-                      className={`p-2 rounded ${
-                        answers[rule.scrutineyruleId]?.value === true
-                          ? "bg-green-500 text-white"
-                          : "bg-gray-200"
-                      }`}
-                    >
-                      <CheckCircle2 size={20} />
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleAnswerChange(rule.scrutineyruleId, false)
-                      }
-                      className={`p-2 rounded ${
-                        answers[rule.scrutineyruleId]?.value === false
-                          ? "bg-red-500 text-white"
-                          : "bg-gray-200"
-                      }`}
-                    >
-                      <AlertCircle size={20} />
-                    </button>
-                    <button
-                      className={`p-2 rounded ${
-                        answers[rule.scrutineyruleId]?.value === null
-                          ? "bg-yellow-400 text-black"
-                          : "bg-gray-200"
-                      }`}
-                      onClick={() =>
-                        handleAnswerChange(rule.scrutineyruleId, null)
-                      }
-                    >
-                      N/A
-                    </button>
+                  <div className="bg-white rounded w-1/2 items-center justify-between gap-3 flex">
+                    <div className="w-2/3">
+                      <input
+                        type="text"
+                        value={answers[rule.scrutineyruleId]?.reason || ""}
+                        onChange={(e) =>
+                          setAnswers((prev) => ({
+                            ...prev,
+                            [rule.scrutineyruleId]: {
+                              ...prev[rule.scrutineyruleId],
+                              reason: e.target.value,
+                            },
+                          }))
+                        }
+                        className="w-full p-3 border border-gray-300 rounded"
+                        placeholder="Comments"
+                      />
+                    </div>
+                    <div className="w-1/3 justify-evenly flex space-x-3">
+                      <button
+                        onClick={() =>
+                          handleAnswerChange(rule.scrutineyruleId, true)
+                        }
+                        className={`p-2 rounded ${
+                          isPass ? "bg-green-500 text-white" : "bg-gray-200"
+                        }`}
+                      >
+                        <CheckCircle2 size={20} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleAnswerChange(rule.scrutineyruleId, false)
+                        }
+                        className={`p-2 rounded ${
+                          isFail ? "bg-red-500 text-white" : "bg-gray-200"
+                        }`}
+                      >
+                        <AlertCircle size={20} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleAnswerChange(rule.scrutineyruleId, null)
+                        }
+                        className={`p-2 rounded ${
+                          isNA ? "bg-yellow-400 text-black" : "bg-gray-200"
+                        }`}
+                      >
+                        N/A
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
+
           <div className="flex w-full justify-end font-bold text-lg">
             <button
               className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded"

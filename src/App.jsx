@@ -50,7 +50,7 @@ const App = () => {
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/template" element={<ScrutinyTemplate />} />
           <Route path="/status" element={<Status />} />
-          <Route path="/report" element={<Report />} />
+          <Route path="/report/:eventId" element={<Report />} />
 
           <Route
             path="/dashboard"

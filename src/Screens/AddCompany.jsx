@@ -12,6 +12,7 @@ import { MdOutlineDelete } from "react-icons/md";
 const AddCompany = () => {
   const [formData, setFormData] = useState({
     name: "",
+    abbr: "",
     address: {
       street: "",
       city: "",
@@ -36,6 +37,8 @@ const AddCompany = () => {
   const handleEdit = (company) => {
     setFormData({
       name: company.companyName || "",
+      abbr: company.abbr || "", // Ensure 'abbr' is set
+
       address: {
         street: company.street || "",
         city: company.city || "",
@@ -100,6 +103,10 @@ const AddCompany = () => {
       ...prevErrors,
       [name]: undefined,
     }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // This now works for 'abbr'
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -111,6 +118,7 @@ const AddCompany = () => {
 
     const formattedData = {
       CompanyName: formData.name,
+      Abbr: formData.abbr,
       Street: formData.address.street,
       City: formData.address.city,
       State: formData.address.state,
@@ -143,6 +151,8 @@ const AddCompany = () => {
       setSuccess(true);
       setFormData({
         name: "",
+        abbr: "",
+
         address: {
           street: "",
           city: "",
@@ -226,6 +236,22 @@ const AddCompany = () => {
                 onChange={handleChange}
                 className="w-1/2 p-2 border rounded"
                 placeholder="Enter company name"
+                required
+              />
+
+              <div className="mt-2">
+                <label className=" text-sm font-bold mb-1 flex">
+                  Abbrivation
+                </label>
+              </div>
+              <input
+                type="text"
+                name="abbr"
+                value={formData.abbr}
+                onChange={handleChange}
+                className="w-1/2 p-2 border rounded"
+                placeholder="Enter Abbr name"
+                maxLength={3}
                 required
               />
               {validationErrors.CompanyName && (
