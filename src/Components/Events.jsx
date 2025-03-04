@@ -220,10 +220,9 @@ const EventForm = () => {
     });
   };
 
-  const handleNavigate = () => {
-    console.log("Hello");
-    navigate("/report", { state: { eventId } });
-    console.log("World", eventId);
+  const handleNavigate = (eventId) => {
+    navigate(`/report/${eventId}`); // ✅ Correctly replace :eventId with actual ID
+    console.log("World", eventId); // ✅ Log the event ID to confirm it's correct
   };
 
   const handleUpdate = async (e) => {
@@ -754,17 +753,16 @@ const EventForm = () => {
                 </div>
               </div>
 
-              
               <div className="flex justify-end p-2 gap-2">
                 {editMode && (
                   <>
                     {/* Go to Event Page button */}
                     <button
                       type="button"
-                      onClick={handleNavigate} // Trigger navigate with eventId
+                      onClick={() => handleNavigate(eventId)}
                       className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
                     >
-                      Managing Organizer Committee
+                      Manage Organizer Committee
                     </button>
 
                     {/* Cancel button */}

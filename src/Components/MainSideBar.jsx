@@ -13,8 +13,8 @@ import {
 import {
   Building,
   CalendarFold,
+  Crown,
   DoorOpen,
-  FlagTriangleRight,
   LayoutTemplate,
   ShieldBan,
 } from "lucide-react";
@@ -23,7 +23,8 @@ const MainSideBar = () => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [menuIcon, setMenuIcon] = useState(<FaRegDotCircle />);
-  const [hoverMenu, setHoverMenu] = useState(false);
+  const [isEntryDeskOpen, setIsEntryDeskOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -57,41 +58,48 @@ const MainSideBar = () => {
         </button>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto ">
         <ul className="p-2 flex flex-col font-serif gap-4">
-          <li
-            // to="/registration"
-            onMouseEnter={() => setHoverMenu(true)}
-            onMouseLeave={() => setHoverMenu(false)}
-            className=" relative p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg "
+          <div
+            className="p-2 rounded-lg relative flex-col flex  gap-3 cursor-pointer"
+            onMouseEnter={() => setIsEntryDeskOpen(true)}
+            onMouseLeave={() => setIsEntryDeskOpen(false)}
           >
-            <DoorOpen />
-            {!isCollapsed && <span>Entry Desk</span>}
-
-            {hoverMenu && (
-              <div className="absolute left-full top-0  w-64 bg-black shadow-lg rounded-md p-2 flex gap-2 flex-col">
+            <div className="flex gap-2">
+              <DoorOpen className="text-white" />
+              {!isCollapsed && (
+                <span className="text-xl text-white">Entry Desk</span>
+              )}
+            </div>
+            {isEntryDeskOpen && (
+              <div className=" rounded-lg shadow-lg z-10 right-0 top-full bg-black">
                 <Link
                   to="/registration"
-                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg `}
+                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                    isActive("/registration") ? "bg-cyan-600 rounded-lg" : ""
+                  }`}
                 >
                   <FaRegAddressCard />
-                  {!isCollapsed && <span>Racer details</span>}
+                  {!isCollapsed && <span>Racer Details</span>}
                 </Link>
                 <Link
                   to="/vehicle_registration"
-                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg 
-                    `}
+                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                    isActive("/vehicle_registration")
+                      ? "bg-cyan-600 rounded-lg"
+                      : ""
+                  }`}
                 >
                   <FaCar />
                   {!isCollapsed && <span>Vehicle Registration</span>}
                 </Link>
               </div>
             )}
-          </li>
+          </div>
 
           <Link
             to="/events"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+            className={`p-2  text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
               isActive("/events") ? "bg-cyan-600 rounded-lg" : ""
             }`}
           >
@@ -152,25 +160,7 @@ const MainSideBar = () => {
             <FaClipboardList />
             {!isCollapsed && <span>Scrutiny</span>}
           </Link>
-          <Link
-            to="/addcompany"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-              isActive("/addcompany") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            <FaClipboardList />
-            {!isCollapsed && <span>Add Company</span>}
-          </Link>
 
-          <Link
-            to="/eventsapproved"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-              isActive("/eventsapproved") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            <CalendarFold />
-            {!isCollapsed && <span>Approve Event</span>}
-          </Link>
           <Link
             to="/template"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
@@ -180,23 +170,50 @@ const MainSideBar = () => {
             <LayoutTemplate />
             {!isCollapsed && <span>Scrutiny Template</span>}
           </Link>
-          <Link
-            to="/status"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-              isActive("/status") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
+
+          <div
+            className="p-2 rounded-lg relative text-white flex items-center gap-3"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
-            <ShieldBan /> {!isCollapsed && <span>Status</span>}
-          </Link>
-          <Link
-            to="/report"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-              isActive("/report") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            <FlagTriangleRight />
-            {!isCollapsed && <span>Managing Org Committee</span>}
-          </Link>
+            <Crown />
+
+            {!isCollapsed && (
+              <span className="text-xl text-white">SuperAdmin</span>
+            )}
+
+            {isHovered && (
+              <div className="absolute right-0 top-full rounded-lg shadow-lg z-10">
+                <Link
+                  to="/addcompany"
+                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-5 hover:rounded-lg ${
+                    isActive("/addcompany") ? "bg-cyan-600 rounded-lg" : ""
+                  }`}
+                >
+                  <FaClipboardList />
+                  {!isCollapsed && <span>Add Company</span>}
+                </Link>
+                <Link
+                  to="/eventsapproved"
+                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                    isActive("/eventsapproved") ? "bg-cyan-600 rounded-lg" : ""
+                  }`}
+                >
+                  <CalendarFold />
+                  {!isCollapsed && <span>Approve Event</span>}
+                </Link>
+                <Link
+                  to="/status"
+                  className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                    isActive("/status") ? "bg-cyan-600 rounded-lg" : ""
+                  }`}
+                >
+                  <ShieldBan />
+                  {!isCollapsed && <span>Manage Entry Desk</span>}
+                </Link>
+              </div>
+            )}
+          </div>
         </ul>
       </div>
     </section>

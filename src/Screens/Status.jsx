@@ -1,21 +1,42 @@
 /* eslint-disable no-unused-vars */
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
-import { useState } from "react";
-import { IMAGE_URL } from "../constants/global-const";
-import AutoCompleteSearch from "../Components/CustomAutoComplete";
-import { IoPerson } from "react-icons/io5";
-import { LuBike } from "react-icons/lu";
+import { useEffect, useState } from "react";
+import { BASE_URL, IMAGE_URL } from "../constants/global-const";
+
+import axios from "axios";
 
 const Status = () => {
-  const [driverimageUrl, setDriverImageUrl] = useState("");
-  const [vehicleimageUrl, setVehicleImageUrl] = useState("");
-  const [selectedDriver, setSelectedDriver] = useState(null);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [DrvtableData, setDrvTableData] = useState([]);
-  const [tableData, setTableData] = useState([]);
-  const [driverData, setDriverData] = useState([]);
-  const [vehicleData, setVehicleData] = useState([]);
+  const [drivers, setDrivers] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
+
+  const fetchDrivers = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/drivers`);
+
+      const driverData = response.data.$values || [];
+      setDrivers(driverData);
+    } catch (error) {
+      console.error("Error fetching drivers:", error);
+    }
+  };
+
+  const fetchVehicles = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/Vehicle`);
+
+      console.log("API Response:", response.data);
+      const vehicledata = response.data.$values || [];
+      setVehicles(vehicledata);
+    } catch (error) {
+      console.error("Error fetching drivers:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDrivers();
+    fetchVehicles();
+  }, []);
 
   return (
     <>
@@ -30,54 +51,64 @@ const Status = () => {
 
         <div className="flex w-full p-8 h-fit flex-col">
           <form className="w-full mx-auto p-3 rounded-md shadow-lg h-fit">
-            <div className="flex w-full gap-5">
+            <div className="flex w-full gap-5 ">
               <div className="w-1/2">
-                <h1 className="flex justify-center  text-3xl font-bold w-full ">
-                  Racer details
+                <h1 className="flex justify-center text-3xl font-bold w-full">
+                  Racer Details
                 </h1>
 
-                <table className="w-full border-collapse border border-gray-300 mt-10">
+                <table className="w-full border-collapse border border-gray-300 mt-10  ">
                   <thead>
                     <tr className="bg-gray-200">
                       <th className="border p-2">Driver Name</th>
-                      <th className="border p-2">Driver phone No</th>
-                      <th className="border p-2"> Driver Email</th>
+                      <th className="border p-2">Phone No</th>
+                      <th className="border p-2">Email</th>
                       <th className="border p-2">DL No</th>
-
                       <th className="border p-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border p-2 text-center">Max</td>
-                      <td className="border p-2 text-center">9876543210</td>
-                      <td className="border p-2 text-center">max@gmail.com</td>
-                      <td className="border p-2 text-center">Ap2727277272</td>
-
-                      <td className="border p-2 text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            type="button"
-                            className="p-2 bg-orange-300 border  text-black rounded-md transition-colors  "
-                          >
-                            Inactive
-                          </button>
-                          <button
-                            type="button"
-                            className="p-2 bg-red-400 border  text-black rounded-md transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    {drivers.length > 0 ? (
+                      drivers.map((driver) => (
+                        <tr key={driver.driverId}>
+                          <td className="border p-2 text-center">
+                            {driver.drivername || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {driver.phone || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {driver.email || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {driver.dlNumb || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            <div className="flex gap-2 justify-center">
+                              <button className="p-2 bg-orange-300 border text-black rounded-md hover:bg-orange-400 transition duration-200">
+                                Inactive
+                              </button>
+                              <button className="p-2 bg-red-400 border text-black rounded-md hover:bg-red-500 transition duration-200">
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="text-center p-3">
+                          No drivers found
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
 
               <div className="w-1/2">
-                <h1 className="flex justify-center  text-3xl font-bold w-full ">
-                  Vehicle details
+                <h1 className="flex justify-center text-3xl font-bold w-full">
+                  Vehicle Details
                 </h1>
 
                 <table className="w-full border-collapse border border-gray-300 mt-10">
@@ -85,36 +116,52 @@ const Status = () => {
                     <tr className="bg-gray-200">
                       <th className="border p-2">Vehicle Make</th>
                       <th className="border p-2">Vehicle Model</th>
-                      <th className="border p-2">Reg No </th>
+                      <th className="border p-2">Reg No</th>
                       <th className="border p-2">Cc</th>
-
                       <th className="border p-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border p-2 text-center">TVS</td>
-                      <td className="border p-2 text-center">XL Super</td>
-                      <td className="border p-2 text-center">KA03ER9990</td>
-                      <td className="border p-2 text-center">100cc</td>
-
-                      <td className="border p-2 text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            type="button"
-                            className="p-2 bg-orange-300 border  text-black rounded-md transition-colors  "
-                          >
-                            Inactive
-                          </button>
-                          <button
-                            type="button"
-                            className="p-2 bg-red-400 border  text-black rounded-md transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    {vehicles.length > 0 ? (
+                      vehicles.map((vehicle) => (
+                        <tr key={vehicle.id}>
+                          <td className="border p-2 text-center">
+                            {vehicle.make || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {vehicle.model || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {vehicle.regNumb || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {vehicle.cc || "N/A"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                type="button"
+                                className="p-2 bg-orange-300 border text-black rounded-md transition-colors"
+                              >
+                                Inactive
+                              </button>
+                              <button
+                                type="button"
+                                className="p-2 bg-red-400 border text-black rounded-md transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="text-center p-3">
+                          No vehicles found
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

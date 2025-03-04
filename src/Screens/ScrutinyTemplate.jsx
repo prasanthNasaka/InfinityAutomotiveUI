@@ -15,7 +15,7 @@ const ScrutinyTemplate = () => {
   const fetchScrutinyRules = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/Scrutiny/Template`);
+      const response = await axios.get(`${BASE_URL}/api/Scrutiny/DefaultTemplate`);
       console.log("API Response:", response.data);
 
       if (
