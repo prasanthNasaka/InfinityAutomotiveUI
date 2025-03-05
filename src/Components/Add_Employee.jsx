@@ -6,17 +6,23 @@ import { BASE_URL } from "../constants/global-const";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 
+const EmployeeTypes = {
+  OTHERS: 0,
+  EMPLOYEE: 86,
+  ORGANISER: 87,
+  SCRUTINEER: 88,
+};
+
 const Add_Employee = () => {
   const [formData, setFormData] = useState({
     empId: null,
     empName: "",
     phone: "",
     email: "",
-    role: "Others", // Default role is "Others"
-    otherInfo: "", // New field for other information
-    employeeType: 0,
-    status: 0,
+    role: EmployeeTypes.OTHERS,
+    otherInfo: "",
   });
+
   const [employeeList, setEmployeeList] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -26,7 +32,6 @@ const Add_Employee = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors({ ...errors, [name]: null });
     }
@@ -35,13 +40,11 @@ const Add_Employee = () => {
   // Validate Form
   const validateForm = () => {
     let formErrors = {};
-    if (!formData.empName.trim())
-      formErrors.empName = "Employee Name is required";
+    if (!formData.empName.trim()) formErrors.empName = "Employee Name is required";
     if (!formData.phone.trim()) formErrors.phone = "Phone number is required";
     if (!formData.email.trim()) formErrors.email = "Email is required";
-    if (!formData.otherInfo.trim())
-      formErrors.otherInfo = "Other info is required";
-    if (formData.role === "Others") formErrors.role = "Please select a role";
+    if (!formData.otherInfo.trim()) formErrors.otherInfo = "Other info is required";
+    if (formData.role === EmployeeTypes.OTHERS) formErrors.role = "Please select a role";
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (formData.email && !emailRegex.test(formData.email)) {
@@ -51,8 +54,6 @@ const Add_Employee = () => {
     const phoneRegex = /^[0-9]{10}$/;
     if (formData.phone && !phoneRegex.test(formData.phone)) {
       formErrors.phone = "Phone number must be 10 digits";
-    } else if (isNaN(parseInt(formData.phone))) {
-      formErrors.phone = "Phone must be a valid number";
     }
 
     setErrors(formErrors);
@@ -73,45 +74,30 @@ const Add_Employee = () => {
 
     try {
       setLoading(true);
-
-      // Direct payload structure without the employeeDto wrapper
       const payload = {
         empName: formData.empName.trim(),
         email: formData.email.trim(),
-        phone: parseInt(formData.phone.trim()), // Convert to number
-        role: formData.role,
+        phone: formData.phone.trim(),
         otherInfo: formData.otherInfo.trim(),
-        employeeType:
-          formData.role === "Organiser"
-            ? 1
-            : formData.role === "Scrutineer"
-            ? 2
-            : 0,
-        status: 1, // Active status
-        comId: 0,
+        employeeType: formData.role,
+        status: 0, // Updated to match API
+        comId: 0, // Updated to match API
       };
 
-      console.log("Sending payload:", payload);
-
       const response = await axios.post(`${BASE_URL}/api/Employee`, payload);
-      console.log("Response data:", response.data);
-
-      // Add the new employee to the list
-      const newEmployee = response.data;
-      setEmployeeList((prev) => [...prev, newEmployee]);
-
-      // Reset the form
-      resetForm();
-      showSuccessMessage("Employee added successfully!");
+      if (response.status === 201) { // Check for successful creation
+        const newEmployee = response.data; // Adjust based on API response
+        setEmployeeList((prev) => [...prev, newEmployee]);
+        resetForm();
+        showSuccessMessage("Employee added successfully!");
+      }
     } catch (error) {
       console.error("Error adding employee:", error);
-      setErrors({
-        submit:
-          "Error: " +
-          (error.response?.data?.title ||
-            error.response?.statusText ||
-            "Failed to add employee"),
-      });
+      if (error.response && error.response.data) {
+        setErrors({ submit: error.response.data.message || "Failed to add employee" });
+      } else {
+        setErrors({ submit: "Failed to add employee" });
+      }
     } finally {
       setLoading(false);
     }
@@ -122,12 +108,10 @@ const Add_Employee = () => {
     setFormData({
       empId: employee.empId,
       empName: employee.empName || "",
-      phone: employee.phone ? employee.phone.toString() : "",
+      phone: employee.phone || "",
       email: employee.email || "",
-      role: employee.role || "Others",
+      role: employee.employeeType || EmployeeTypes.OTHERS,
       otherInfo: employee.otherInfo || "",
-      employeeType: employee.employeeType || 0,
-      status: employee.status || 0,
     });
   };
 
@@ -137,52 +121,36 @@ const Add_Employee = () => {
 
     try {
       setLoading(true);
-
-      // Direct payload structure - matching the Add request
       const payload = {
-        empId: formData.empId,
         empName: formData.empName.trim(),
         email: formData.email.trim(),
-        phone: parseInt(formData.phone.trim()), // Convert to number
-        role: formData.role,
+        phone: formData.phone.trim(),
         otherInfo: formData.otherInfo.trim(),
-        employeeType:
-          formData.role === "Organiser"
-            ? 1
-            : formData.role === "Scrutineer"
-            ? 2
-            : 0,
-        status: 1,
-        comId: 0,
+        employeeType: formData.role,
+        status: 0, // Updated to match API
+        comId: 0, // Updated to match API
       };
-
-      console.log("Update payload:", payload);
 
       const response = await axios.put(
         `${BASE_URL}/api/Employee/${formData.empId}`,
         payload
       );
 
-      console.log("Update response:", response.data);
-
-      // Update the list with the updated employee
-      const updatedEmployeeList = employeeList.map((emp) =>
-        emp.empId === response.data.empId ? response.data : emp
-      );
-      setEmployeeList(updatedEmployeeList);
-
-      // Reset form
-      resetForm();
-      showSuccessMessage("Employee updated successfully!");
+      if (response.status === 200) { // Check for successful update
+        const updatedEmployeeList = employeeList.map((emp) =>
+          emp.empId === response.data.empId ? response.data : emp
+        );
+        setEmployeeList(updatedEmployeeList);
+        resetForm();
+        showSuccessMessage("Employee updated successfully!");
+      }
     } catch (error) {
       console.error("Error updating employee:", error);
-      setErrors({
-        submit:
-          "Error: " +
-          (error.response?.data?.title ||
-            error.response?.statusText ||
-            "Failed to update employee"),
-      });
+      if (error.response && error.response.data) {
+        setErrors({ submit: error.response.data.message || "Failed to update employee" });
+      } else {
+        setErrors({ submit: "Failed to update employee" });
+      }
     } finally {
       setLoading(false);
     }
@@ -197,13 +165,7 @@ const Add_Employee = () => {
       showSuccessMessage("Employee deleted successfully!");
     } catch (error) {
       console.error("Error deleting employee:", error);
-      setErrors({
-        submit:
-          "Error: " +
-          (error.response?.data?.title ||
-            error.response?.statusText ||
-            "Failed to delete employee"),
-      });
+      setErrors({ submit: "Failed to delete employee" });
     } finally {
       setLoading(false);
     }
@@ -234,10 +196,8 @@ const Add_Employee = () => {
       empName: "",
       phone: "",
       email: "",
-      role: "Others",
+      role: EmployeeTypes.OTHERS,
       otherInfo: "",
-      employeeType: 0,
-      status: 0,
     });
     setErrors({});
   };
@@ -264,34 +224,24 @@ const Add_Employee = () => {
 
           <div className="bg-white p-6 flex flex-col rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold mb-4 text-cyan-700">
-              {formData.empId ? "Edit Employee" : "Organizing Committee"}
+              {formData.empId ? "Edit Employee" : "Organizing Committee Member"}
             </h3>
-            <div className="space-y-4 w-1/2">
+            <div className="space-y-4 w-1/2 ">
               {["empName", "phone", "email"].map((field) => (
                 <div key={field}>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    {field === "empName"
-                      ? "Employee Name"
-                      : field.charAt(0).toUpperCase() + field.slice(1)}
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
                   </label>
 
                   <input
-                    type={
-                      field === "email"
-                        ? "email"
-                        : field === "phone"
-                        ? "tel"
-                        : "text"
-                    }
+                    type={field === "email" ? "email" : "text"}
                     name={field}
                     value={formData[field]}
                     onChange={handleChange}
                     className={`w-full p-3 border-2 rounded-md ${
                       errors[field] ? "border-red-500" : "border-gray-300"
                     } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                    placeholder={`Enter ${
-                      field === "empName" ? "employee name" : field
-                    }`}
+                    placeholder={`Enter ${field.charAt(0).toUpperCase() + field.slice(1)}`}
                   />
 
                   {errors[field] && (
@@ -302,26 +252,25 @@ const Add_Employee = () => {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Role
+                  Type
                 </label>
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className={`w-full p-3 border-2 rounded-md ${
-                    errors.role ? "border-red-500" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                  className={`w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400`}
                 >
-                  <option value="Others">Select Role</option>
-                  <option value="Employee">Employee</option>
-                  <option value="Organiser">Organiser</option>
-                  <option value="Scrutineer">Scrutineer</option>
+                  <option value={EmployeeTypes.OTHERS}>Select Type</option>
+                  <option value={EmployeeTypes.EMPLOYEE}>Employee</option>
+                  <option value={EmployeeTypes.ORGANISER}>Organiser</option>
+                  <option value={EmployeeTypes.SCRUTINEER}>Scrutineer</option>
                 </select>
                 {errors.role && (
                   <p className="text-red-500 text-sm mt-1">{errors.role}</p>
                 )}
               </div>
 
+              {/* Other Info Field */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Other Info
@@ -337,9 +286,7 @@ const Add_Employee = () => {
                   placeholder="Enter Other Info"
                 />
                 {errors.otherInfo && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.otherInfo}
-                  </p>
+                  <p className="text-red-500 text-sm mt-1">{errors.otherInfo}</p>
                 )}
               </div>
             </div>
@@ -352,25 +299,17 @@ const Add_Employee = () => {
                 Cancel
               </button>
               <button
-                onClick={
-                  formData.empId ? handleUpdateEmployee : handleAddEmployee
-                }
+                onClick={formData.empId ? handleUpdateEmployee : handleAddEmployee}
                 className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
                 disabled={loading}
               >
-                {loading
-                  ? "Processing..."
-                  : formData.empId
-                  ? "Update"
-                  : "Submit"}
+                {loading ? "Processing..." : formData.empId ? "Update" : "Submit"}
               </button>
             </div>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-lg mt-6">
-            <h3 className="text-xl font-semibold text-cyan-700 mb-4">
-              Employee List
-            </h3>
+            <h3 className="text-xl font-semibold text-cyan-700 mb-4">Employee List</h3>
             {employeeList.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-gray-700 border-collapse">
@@ -379,7 +318,7 @@ const Add_Employee = () => {
                       <th className="py-3 px-4 text-left">Name</th>
                       <th className="py-3 px-4 text-left">Phone</th>
                       <th className="py-3 px-4 text-left">Email</th>
-                      <th className="py-3 px-4 text-left">Role</th>
+                      <th className="py-3 px-4 text-left">Employee Type</th>
                       <th className="py-3 px-4 text-left">Actions</th>
                     </tr>
                   </thead>
@@ -389,7 +328,15 @@ const Add_Employee = () => {
                         <td className="py-3 px-4">{emp.empName}</td>
                         <td className="py-3 px-4">{emp.phone}</td>
                         <td className="py-3 px-4">{emp.email}</td>
-                        <td className="py-3 px-4">{emp.role}</td>
+                        <td className="py-3 px-4 text-center">
+                          {emp.employeeType === EmployeeTypes.EMPLOYEE
+                            ? "Employee"
+                            : emp.employeeType === EmployeeTypes.ORGANISER
+                            ? "Organiser"
+                            : emp.employeeType === EmployeeTypes.SCRUTINEER
+                            ? "Scrutineer"
+                            : "Others"}
+                        </td>
                         <td className="py-3 px-4">
                           <button
                             onClick={() => handleEdit(emp)}
@@ -421,4 +368,4 @@ const Add_Employee = () => {
   );
 };
 
-export default Add_Employee;
+export default Add_Employee;g
