@@ -9,18 +9,16 @@ import MainSideBar from "./MainSideBar";
 import AutoCompleteSearch from "./CustomAutoComplete";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
-import { HandCoins, Trash } from "lucide-react";
+import { HandCoins, Trash, X } from "lucide-react";
+import axios from "axios";
 
 const Linkraceanddrive = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
-  const [amountPaidForSelectedChecked, setAmountPaidForSelectedChecked] =
-    useState(false);
-  const [childCheckboxChecked, setChildCheckboxChecked] = useState(false);
-  // const [selectedReferenceNumber, setSelectedReferenceNumber] = useState("");
+
   const [driverData, setDriverData] = useState([]);
   const [vehicleData, setVehicleData] = useState([]);
-  const [selectedDriver, setSelectedDriver] = useState(null);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [selectedDriver, setSelectedDriver] = useState([]);
+  const [selectedVehicle, setSelectedVehicle] = useState([]);
   const [driverimageUrl, setDriverImageUrl] = useState("");
   const [vehicleimageUrl, setVehicleImageUrl] = useState("");
   const [events, setEvents] = useState([]);
@@ -33,34 +31,43 @@ const Linkraceanddrive = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [DrvtableData, setDrvTableData] = useState([]);
-  const [selectedRows, setSelectedRows] = useState({});
   const [isOpen, setIsOpen] = useState(false);
+  const [eventId, setEventId] = useState(false);
+  const [regId, setRegId] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [paymentReference, setPaymentReference] = useState("");
+  const [selectAll, setSelectAll] = useState(false);
+  const [addDocVerify, setAddDocVerify] = useState(97);
+  const [deletePop, setDeletePop] = useState(false);
 
+  const [updatedContestantNumbers, setUpdatedContestantNumbers] = useState("");
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(DrvtableData.map((event) => event.regId)); // Select all
+    }
+    setSelectAll(!selectAll);
+  };
 
   const handleAmountPaidChange = (e) => {
     setAmountPaidChecked(e.target.checked);
-  };
-
-  const handleChildCheckboxChange = (e, id) => {
-    setChildCheckboxChecked(e.target.checked);
-    setSelectedRows((prev) => ({
-      ...prev,
-      [id]: e.target.checked,
-    }));
-  };
-
-  const onInpuChange = () => {
-    console.log("uytrertyhgfgv");
+    if (!e.target.checked) {
+      setReferenceNumber("");
+    }
   };
 
   const handleEventChange = (event) => {
-    const eventId = event.target.value;
-    setSelectedEvent(eventId);
+    const selectedEventId = event.target.value;
+
+    setEventId(selectedEventId);
+    setSelectedEvent(selectedEventId);
     setSelectedCategory("");
     setTableData([]);
 
-    if (eventId) {
-      fetch(`${BASE_URL}/api/eventcategories?event_id=${eventId}`)
+    if (selectedEventId) {
+      fetch(`${BASE_URL}/api/eventcategories?event_id=${selectedEventId}`)
         .then((response) => response.json())
         .then((data) => {
           if (data && Array.isArray(data.$values)) {
@@ -70,10 +77,11 @@ const Linkraceanddrive = () => {
           }
         })
         .catch((error) => {
+          console.error("Error fetching event categories:", error);
           setCategories([]);
         });
 
-      fetch(`${BASE_URL}/api/Registration/event/${eventId}`)
+      fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data.$values)) {
@@ -87,6 +95,26 @@ const Linkraceanddrive = () => {
       setCategories([]);
       setTableData([]);
     }
+  };
+
+  const deletePopup = () => {
+    setDeletePop(true);
+  };
+
+  const deletePopClose = () => {
+    setDeletePop(false);
+  };
+
+  const Popup = () => {
+    setIsOpen(true);
+    console.log("eventId", eventId);
+    localStorage.setItem("regId", eventId);
+    handlePopUp(eventId);
+  };
+
+  const Close = () => {
+    setIsOpen(false);
+    localStorage.removeItem("regId");
   };
 
   const handleCategoryChange = (e) => {
@@ -104,45 +132,28 @@ const Linkraceanddrive = () => {
   const handleSelect = (type, item) => {
     if (type === "driver") {
       const FilteredDrvData = tableData.filter(
-        (d) => d.driverId == item.driverId
+        (d) => d.driverId === item.driverId
       );
-      console.log("FilteredDrvData", FilteredDrvData);
+      console.log("Filtered Table Data:", FilteredDrvData);
+
       setDrvTableData(FilteredDrvData);
       setSelectedDriver(item);
 
-      if (item) {
-        setDriverImageUrl(
-          item.driverPhoto ? `${IMAGE_URL}${item.driverPhoto}` : null
-        );
-      } else {
-        setDriverImageUrl("");
-      }
+      const selectedIdsFromStatus = FilteredDrvData.filter(
+        (d) => d.documentStatus === 98
+      ).map((d) => d.regId);
+
+      setSelectedIds(selectedIdsFromStatus);
+
+      setDriverImageUrl(
+        item.driverPhoto ? `${IMAGE_URL}${item.driverPhoto}` : null
+      );
     } else if (type === "vehicle") {
       setSelectedVehicle(item);
-
-      if (item) {
-        setVehicleImageUrl(
-          item.vehiclePhoto ? `${IMAGE_URL}${item.vehiclePhoto}` : null
-        );
-      } else {
-        setVehicleImageUrl("");
-      }
-    }
-  };
-  const handleAmountPaidForSelectedClick = () => {
-    setAmountPaidForSelectedChecked((prevChecked) => {
-      const newCheckedState = !prevChecked;
-
-      setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          selectedRows[event.id]
-            ? { ...event, amountPaid: newCheckedState }
-            : event
-        )
+      setVehicleImageUrl(
+        item.vehiclePhoto ? `${IMAGE_URL}${item.vehiclePhoto}` : null
       );
-
-      return newCheckedState;
-    });
+    }
   };
 
   const numberInput = (e) => {
@@ -164,52 +175,194 @@ const Linkraceanddrive = () => {
       selectedCategory &&
       selectedDriver &&
       selectedVehicle &&
-      (!amountPaidChecked || (amountPaidChecked && referenceNumber)) &&
+      // addDocVerify &&
+      amountPaidChecked&&
+      (!amountPaidChecked || (amountPaidChecked && referenceNumber)) && // Only need ref number if checked
       !error
     );
   };
 
-  const handleSubmit = async () => {
-    if (!isFormValid()) {
-      toast.success("Successfully added");
+  const handleCheckboxChange = (regId) => {
+    setSelectedIds((prev) =>
+      prev.includes(regId)
+        ? prev.filter((id) => id !== regId)
+        : [...prev, regId]
+    );
+
+    setSelectAll(false);
+  };
+
+  const AmountRefund = async () => {
+    if (selectedIds.length === 0) {
+      toast.error("Please select at least one record.");
       return;
     }
-    setIsSubmitting(true);
+
+    const payload = selectedIds;
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/Registration/AmountRefund`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Refund successful!");
+        setSelectedIds([]);
+        setDrvTableData([]);
+        await fetchUpdatedData();
+      } else {
+        throw new Error("Refund failed.");
+      }
+    } catch (error) {
+      console.error("Error at Refund:", error);
+      toast.error("Refund failed!");
+    }
+  };
+
+  const AmountPaidForSelected = async () => {
+    if (selectedIds.length === 0) {
+      toast.error("Please select at least one record.");
+      return;
+    }
+
+    const payload = {
+      refNumb: paymentReference || "",
+      regId: selectedIds,
+    };
+
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/api/Registration/AmountPaid`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      toast.success("Amount status updated successfully!");
+      setSelectedIds([]);
+      setPaymentReference("");
+      setDrvTableData([]);
+      await fetchUpdatedData();
+    } catch (error) {
+      toast.error(
+        `Failed to update amount status! ${
+          error.response?.data?.message || error.message
+        }`
+      );
+    }
+  };
+
+  const DeleteTable = async () => {
+    if (selectedIds.length === 0) {
+      toast.error("Please select at least one record to delete.");
+      return;
+    }
+
+    const payload = selectedIds;
+
     try {
       const response = await fetch(`${BASE_URL}/api/Registration`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          vechId: parseInt(selectedVehicle?.vehicleId) || 0,
-          driverId: parseInt(selectedDriver?.driverId) || 0,
-          eventId: parseInt(selectedEvent) || 0,
-          eventcategoryId: parseInt(selectedCategory) || 0,
-          contestantNo: parseInt(value) || 0,
-          amountPaid: amountPaidChecked,
-          referenceNo: referenceNumber || "",
-        }),
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-      if (response.code === 201) {
-        handleGetData();
-      }
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
 
-      setSelectedEvent("");
-      setSelectedCategory("");
-      setSelectedDriver(null);
-      setSelectedVehicle(null);
-      setValue("");
-      setAmountPaidChecked(false);
-      setReferenceNumber("");
-      setVehicleImageUrl("");
+      if (response.ok) {
+        toast.success("Records deleted successfully!");
+        setSelectedIds([]);
+        setDrvTableData([]);
+        await fetchUpdatedData();
+      } else {
+        throw new Error("Failed to delete records.");
+      }
     } catch (error) {
-      toast.error("Failed to register. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error deleting records:", error);
+      toast.error("Delete failed!");
+    }
+  };
+
+  const ContestentUpdate = async () => {
+    if (selectedIds.length === 0) {
+      toast.error("Please select at least one record.");
+      return;
+    }
+
+    const payload = selectedIds.map((id) => ({
+      regId: id,
+      contestNo: updatedContestantNumbers[id] ?? "",
+    }));
+
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/api/Registration/ContestNo`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      toast.success("Contestant number updated successfully!");
+
+      // Reset state
+      setSelectedIds([]);
+      setDrvTableData([]);
+      setUpdatedContestantNumbers((prev) => {
+        const updatedState = { ...prev };
+        selectedIds.forEach((id) => {
+          updatedState[id] = "";
+        });
+        return updatedState;
+      });
+      await fetchUpdatedData();
+    } catch (error) {
+      toast.error(
+        `Failed to update contestant number! ${
+          error.response?.data?.message || error.message
+        }`
+      );
+    }
+  };
+
+  const handleContestantChange = (regId, value) => {
+    setUpdatedContestantNumbers((prev) => ({
+      ...prev,
+      [regId]: value,
+    }));
+    console.log("handleContestantChange", handleContestantChange);
+  };
+
+  const DocumentVerify = async () => {
+    if (selectedIds.length === 0) {
+      toast.error("Please select at least one record.");
+      return;
+    }
+
+    const payload = selectedIds;
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/Registration/DocVerified`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        toast.success("Documents verified successfully!");
+        setSelectedIds([]);
+        setDrvTableData([]);
+        await fetchUpdatedData();
+      } else {
+        throw new Error("Document verification failed.");
+      }
+    } catch (error) {
+      console.error("Error verifying documents:", error);
+      toast.error("Document verification failed!");
     }
   };
 
@@ -226,48 +379,73 @@ const Linkraceanddrive = () => {
       .catch((error) => console.error("Error fetching events:", error));
   };
 
-  const handleEdit = (eventId) => {
-    console.log("eventid", eventId);
-    const event_id = eventId.eventId;
-    fetch(`${BASE_URL}/api/EventRegistration/${event_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+  const handlePopUp = () => {
+    const storedRegId = localStorage.getItem("regId");
+    console.log("Stored regId:", storedRegId);
+
+    if (storedRegId) {
+      fetch(`${BASE_URL}/api/Registration/ContestentNo?EventId=${storedRegId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("API Response:", data);
+          setRegId(data.$values);
+        })
+        .catch((error) => console.error("Fetch error:", error));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
         vechId: parseInt(selectedVehicle?.vehicleId) || 0,
         driverId: parseInt(selectedDriver?.driverId) || 0,
         eventId: parseInt(selectedEvent) || 0,
         eventcategoryId: parseInt(selectedCategory) || 0,
         contestantNo: parseInt(value) || 0,
-        amountPaid: amountPaidChecked,
+        amountPaid: amountPaidChecked ? 92 : 91, // Map to 92 for paid, 91 for pending
         referenceNo: referenceNumber || "",
-      }),
-    })
-      .then((response) => response.json())
-      .then(() => {
-        handleGetData();
-      })
-      .catch((error) => console.error("Error editing event:", error));
-  };
+        scrutinyStatus: 15, //15 pending 16 approved 17 rejected 18 N/A
+        documentStatus: parseInt(addDocVerify) || 97, //97 pending 98 verified
+      };
+      console.log("payload", payload);
 
-  const handleDelete = (eventId) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      fetch(`${BASE_URL}/api/EventRegistration/${eventId}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (response.ok) {
-            handleGetData();
-          } else {
-            throw new Error("Failed to delete event");
-          }
-        })
-        .catch((error) => console.error("Error deleting event:", error));
+      const response = await axios.post(
+        `${BASE_URL}/api/Registration`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        toast.success("Successfully added");
+        console.log("response",response);
+        
+        // await setTableData(response);
+      }
+
+      setSelectedCategory("");
+      setSelectedDriver([]);
+      setSelectedVehicle([]);
+      setValue("");
+      setAmountPaidChecked(false);
+      setAddDocVerify(0);
+      setReferenceNumber();
+      setVehicleImageUrl("");
+      setDriverImageUrl("");
+    } catch (error) {
+      toast.error("Failed to register. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  useEffect(() => {
+  const fetchUpdatedData = async () => {
     fetch(`${BASE_URL}/api/EventRegistration/ActiveEvents`)
       .then((response) => response.json())
       .then((data) => {
@@ -279,7 +457,11 @@ const Linkraceanddrive = () => {
         }
       })
       .catch((error) => console.error("Error fetching events:", error));
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchUpdatedData();
+  }, [regId, selectedIds, updatedContestantNumbers]);
 
   return (
     <section className="w-full h-screen flex flex-col">
@@ -296,7 +478,7 @@ const Linkraceanddrive = () => {
 
         <div className="flex-1 p-3 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg border mb-6">
+            <div className="bg-white rounded-lg  border mb-6">
               <div className="p-2">
                 <h3 className="text-2xl font-semibold text-center text-gray-900">
                   Registration
@@ -501,11 +683,10 @@ const Linkraceanddrive = () => {
 
                       <div className="w-1/3 flex justify-end ">
                         <button
-                        onClick={() => setIsOpen(true)}
+                          onClick={Popup}
                           type="button"
                           className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
-                            
-font-medium rounded-md text-sm "
+                            font-medium rounded-md text-sm "
                         >
                           Show List
                         </button>
@@ -513,6 +694,8 @@ font-medium rounded-md text-sm "
 
                       <div className="w-1/3 flex ml-8 items-center  p-2 rounded">
                         <input
+                          checked={addDocVerify}
+                          onChange={(e) => setAddDocVerify(e.target.checked)}
                           type="checkbox"
                           id="documentVerified"
                           className="accent-cyan-600 w-4 h-4 border-gray-100 hover:cursor-pointer"
@@ -564,12 +747,11 @@ font-medium rounded-md text-sm "
                           type="button"
                           disabled={!isFormValid() || isSubmitting}
                           onClick={handleSubmit}
-                          className={`tab:w-full px-6 py-2.5 text-white font-medium rounded-lg text-sm transition-all 
-          ${
-            isFormValid() && !isSubmitting
-              ? "bg-cyan-600 hover:bg-cyan-700 hover:text-white transition-all duration-300"
-              : "bg-gray-400 cursor-not-allowed"
-          }`}
+                          className={`tab:w-full px-6 py-2.5 text-white font-medium rounded-lg text-sm transition-all ${
+                            isFormValid() && !isSubmitting
+                              ? "tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300 font-medium rounded-md text-sm "
+                              : "bg-gray-400 cursor-not-allowed"
+                          }`}
                         >
                           {isSubmitting ? "Submitting..." : "Add Contestant"}
                         </button>
@@ -579,26 +761,45 @@ font-medium rounded-md text-sm "
                 </div>
 
                 {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          {/* Modal Content */}
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-lg font-bold text-gray-800">Popup Modal</h2>
-            <p className="mt-2 text-gray-600">Blocked Contest</p>
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-auto h-fit">
+                      <div className="w-full h-fit">
+                        <div className="w-full h-auto flex justify-center flex-col items-center">
+                          <h2 className="text-lg font-bold text-gray-800">
+                            Contestant Numbers
+                          </h2>
+                          {regId.length > 0 ? (
+                            <div className="w-full overflow-scroll flex gap-4 p-2">
+                              {regId.map((num, index) => (
+                                <span
+                                  key={index}
+                                  className="px-4 py-2 bg-red-200 text-red-800 rounded-lg text-lg"
+                                >
+                                  {num} ✘
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <h3 className="text-lg text-gray-800">
+                              Numbers unavailable
+                            </h3>
+                          )}
+                        </div>
+                      </div>
 
-            <span></span>
+                      <div className="w-full h-fit flex justify-center items-center">
+                        <button
+                          onClick={Close}
+                          className="mt-4 w-full h-12 bg-red-600 text-white hover:bg-red-600 hover:text-black transition-all duration-300 font-medium rounded-md text-lg"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-            {/* Close Button */}
-            <button
-              onClick={() => setIsOpen(false)}
-              className="mt-4 w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
-                {DrvtableData.length > 0 && (
+                {DrvtableData && DrvtableData.length > 0 && (
                   <div className="min-h-auto ">
                     <div className="border rounded-lg p-2  overflow-hidden bg-white shadow-md">
                       <div className="overflow-x-auto border-b-2">
@@ -606,9 +807,17 @@ font-medium rounded-md text-sm "
                           <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
                             <tr>
                               <th className="px-6 py-3 whitespace-nowrap">
-                                {/* <button className="p-2 bg-cyan-500 hover:bg-cyan-600 border  text-white rounded-lg transition-colors"> */}
-                                  Select
-                                {/* </button> */}
+                                <button
+                                  onClick={handleSelectAll}
+                                  className={` py-3 p-2 rounded-md text-white ${
+                                    selectAll
+                                      ? "bg-red-600 hover:bg-red-700 "
+                                      : "bg-blue-500 "
+                                  }
+                                  `}
+                                >
+                                  {selectAll ? "Deselect All" : "Select All"}
+                                </button>
                               </th>
                               <th className="px-6 py-3 whitespace-nowrap">
                                 SL.No
@@ -643,10 +852,13 @@ font-medium rounded-md text-sm "
                                   <input
                                     className="accent-cyan-600 w-4 h-4 cursor-pointer"
                                     type="checkbox"
-                                    name=""
-                                    id=""
+                                    checked={selectedIds.includes(event.regId)}
+                                    onChange={() =>
+                                      handleCheckboxChange(event.regId)
+                                    }
                                   />
                                 </td>
+
                                 <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
                                   {index + 1}
                                 </td>
@@ -657,38 +869,56 @@ font-medium rounded-md text-sm "
                                 <td className="px-6 py-2 whitespace-nowrap">
                                   {event.evtCategory}
                                 </td>
-                                <td className="px-6 py-2 whitespace-nowrap flex gap-2">
-                                  {/* {event.contestantNo} */}
-                                  <input
-                                    className="border border-gary-100 rounded-lg p-2"
-                                    value={event.contestantNo}
-                                    onChange={onInpuChange}
-                                    type="text"
-                                  />
+                                <td className="px-6 py-2 whitespace-nowrap flex gap-2 justify-center relative ">
+                                  <div className="relative w-32 ">
+                                    <input
+                                      className="w-full border border-gray-100 rounded-lg p-2 pr-12" // Added padding-right to avoid text overlap
+                                      value={
+                                        updatedContestantNumbers[event.regId] ??
+                                        event.contestantNo
+                                      }
+                                      onChange={(e) =>
+                                        handleContestantChange(
+                                          event.regId,
+                                          e.target.value
+                                        )
+                                      }
+                                      type="text"
+                                    />
+                                    <button
+                                      onClick={() =>
+                                        ContestentUpdate(event.regId)
+                                      }
+                                      className="absolute top-1/2 right-2 transform -translate-y-1/2 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    >
+                                      Update
+                                    </button>
+                                  </div>
                                 </td>
+
                                 <td className="px-6 py-2 whitespace-nowrap">
                                   <span
                                     className={`p-2 rounded-full text-xs ${
-                                      event.amountPaid
+                                      event.amountPaid === 92
                                         ? "bg-green-100 text-green-800"
                                         : "bg-yellow-100 text-yellow-800"
                                     }`}
                                   >
-                                    {event.amountPaid ? "Paid" : "Pending"}
+                                    {event.amountPaid === 92
+                                      ? "Paid"
+                                      : "Pending"}
                                   </span>
-
-                                 
                                 </td>
 
                                 <td className="px-6 py-2 whitespace-nowrap">
                                   <span
                                     className={`p-2 rounded-full text-xs ${
-                                      event.documentStatus === "0"
+                                      event.documentStatus === 97
                                         ? "bg-yellow-100 text-yellow-800"
                                         : "bg-green-100 text-green-800"
                                     }`}
                                   >
-                                    {event.documentStatus === "0"
+                                    {event.documentStatus === 97
                                       ? "Pending "
                                       : "Verified"}
                                   </span>
@@ -696,16 +926,16 @@ font-medium rounded-md text-sm "
                                 <td className="px-6 py-2 whitespace-nowrap">
                                   <span
                                     className={`p-2 rounded-full text-xs ${
-                                      event.scrutinyStatus === "0"
+                                      event.scrutinyStatus === 15
                                         ? "bg-yellow-100 text-yellow-800"
-                                        : event.scrutinyStatus === "1"
+                                        : event.scrutinyStatus === 16
                                         ? "bg-green-100 text-green-800"
                                         : "bg-red-100 text-red-800"
                                     }`}
                                   >
-                                    {event.scrutinyStatus === "0"
+                                    {event.scrutinyStatus === 15
                                       ? "Pending"
-                                      : event.scrutinyStatus === "1"
+                                      : event.scrutinyStatus === 16
                                       ? "Verified"
                                       : "Rejected"}
                                   </span>
@@ -719,29 +949,23 @@ font-medium rounded-md text-sm "
                         <div className="w-1/2 tab:w-full flex items-center justify-between px-2   ">
                           <div className="flex w-1/2 justify-end items-center gap-1">
                             <button
-                              type="button"
-                              className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300 font-medium rounded-md text-sm "
+                              onClick={DocumentVerify}
+                              className="tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
+                            font-medium rounded-md text-sm "
                             >
                               Document Verified for Selected
                             </button>
-                           
                           </div>
 
                           <div className="flex w-1/2 justify-end items-center gap-1 ">
                             <button
-                              onClick={handleAmountPaidForSelectedClick}
+                              onClick={AmountPaidForSelected}
                               type="button"
-                              className={`tab:w-full px-6 py-2.5 font-medium rounded-md text-sm transition-all duration-300 ${
-                                amountPaidForSelectedChecked
-                                  ? "bg-cyan-500 text-white"
-                                  : "bg-gray-500 text-white hover:bg-gray-600 hover:text-white"
-                              }`}
+                              className="tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
+                            font-medium rounded-md text-sm "
                             >
-                              {amountPaidForSelectedChecked
-                                ? "Amount Paid Selected"
-                                : "Select Amount Paid"}
+                              AmountPaid
                             </button>
-                           
                           </div>
                         </div>
 
@@ -752,9 +976,14 @@ font-medium rounded-md text-sm "
                                 className="text-md"
                                 htmlFor="selectedReferenceNumber"
                               >
-                                Number:
+                                Ref Number:
                               </label>
                               <input
+                                id="selectedReferenceNumber"
+                                value={paymentReference}
+                                onChange={(e) =>
+                                  setPaymentReference(e.target.value)
+                                }
                                 placeholder="Enter Ref Number"
                                 className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
                                 type="text"
@@ -764,6 +993,7 @@ font-medium rounded-md text-sm "
 
                           <div className="w-1/3 flex justify-end">
                             <button
+                              onClick={AmountRefund}
                               type="button"
                               className="tab:w-full px-6 flex py-2.5 items-center bg-yellow-600 text-white hover:bg-yellow-600 hover:text-black transition-all duration-300
                             font-medium rounded-md text-sm "
@@ -775,10 +1005,10 @@ font-medium rounded-md text-sm "
 
                           <div className=" flex justify-end">
                             <button
+                              onClick={deletePopup}
                               type="button"
                               className="tab:w-full flex px-6 py-2.5 gap-2 items-center bg-red-600 text-white hover:bg-red-600 hover:text-black transition-all duration-300
-                            
-font-medium rounded-md text-sm "
+                              font-medium rounded-md text-sm "
                             >
                               Delete
                               <Trash />
@@ -786,12 +1016,38 @@ font-medium rounded-md text-sm "
                           </div>
                         </div>
                       </div>
+                      {deletePop && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                          <div className="bg-white p-6 rounded-lg shadow-lg w-auto h-fit">
+                            <div className="w-full h-fit">
+                              <div className="w-full h-fit flex justify-end ">
+                                <X
+                                  className="text-lg cursor-pointer"
+                                  onClick={deletePopClose}
+                                />
+                              </div>
+                              <div className="w-full h-auto flex justify-center flex-col items-center">
+                                <h4>Are You Sure</h4>
+                              </div>
+                            </div>
+
+                            <div className="w-full h-fit flex justify-center items-center">
+                              <button
+                                onClick={DeleteTable}
+                                className="mt-4 w-full h-12 bg-red-600 text-white hover:bg-red-600 hover:text-black transition-all duration-300 font-medium rounded-md text-lg"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
             </div>
-            {tableData.length > 0 && (
+            {tableData && tableData.length > 0 && (
               <div className="min-h-auto">
                 <div className="border rounded-lg overflow-hidden bg-white shadow-md">
                   <div className="overflow-x-auto">
@@ -818,7 +1074,6 @@ font-medium rounded-md text-sm "
                           <th className="px-6 py-3 whitespace-nowrap">
                             Scrutiny
                           </th>
-                          
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 text-center uppercase">
@@ -845,24 +1100,24 @@ font-medium rounded-md text-sm "
                             <td className="px-6 py-2 whitespace-nowrap">
                               <span
                                 className={`p-2 rounded-full text-xs ${
-                                  event.amountPaid === true
+                                  event.amountPaid === 92
                                     ? "bg-green-100 text-green-800"
                                     : "bg-yellow-100 text-yellow-800"
                                 }`}
                               >
-                                {event.amountPaid === true ? "Paid" : "Pending"}
+                                {event.amountPaid === 92 ? "Paid" : "Pending"}
                               </span>
                             </td>
 
                             <td className="px-6 py-2 whitespace-nowrap">
                               <span
                                 className={`p-2 rounded-full text-xs ${
-                                  event.documentStatus === "0"
+                                  event.documentStatus === 97
                                     ? "bg-yellow-100 text-yellow-800"
                                     : "bg-green-100 text-green-800"
                                 }`}
                               >
-                                {event.documentStatus === "0"
+                                {event.documentStatus === 97
                                   ? "Pending"
                                   : "Verified"}
                               </span>
@@ -870,22 +1125,20 @@ font-medium rounded-md text-sm "
                             <td className="px-6 py-2 whitespace-nowrap">
                               <span
                                 className={`p-2 rounded-full text-xs ${
-                                  event.scrutinyStatus === "0"
+                                  event.scrutinyStatus === 15
                                     ? "bg-yellow-100 text-yellow-800"
-                                    : event.scrutinyStatus === "1"
+                                    : event.scrutinyStatus === 16
                                     ? "bg-green-100 text-green-800"
                                     : "bg-red-100 text-red-800"
                                 }`}
                               >
-                                {event.scrutinyStatus === "0"
+                                {event.scrutinyStatus === 15
                                   ? "Pending"
-                                  : event.scrutinyStatus === "1"
+                                  : event.scrutinyStatus === 16
                                   ? "Verified"
                                   : "Rejected"}
                               </span>
                             </td>
-
-                            
                           </tr>
                         ))}
                       </tbody>
@@ -897,7 +1150,7 @@ font-medium rounded-md text-sm "
           </div>
         </div>
       </div>
-      <Toaster position="bottom-center" reverseOrder={false} />
+      <Toaster position="bottom-center" reverseOrder={true} />
     </section>
   );
 };

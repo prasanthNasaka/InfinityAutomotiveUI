@@ -10,7 +10,7 @@ const EventsApproved = () => {
   const [events, setEvents] = useState([]);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-GB"); 
+    return new Date(dateString).toLocaleDateString("en-GB");
   };
 
   const eventTypeMapping = {
@@ -23,9 +23,12 @@ const EventsApproved = () => {
   const handleApprove = (event) => {
     const eventId = event.eventid;
     axios
-      .put(`${BASE_URL}/api/EventRegistration/ApproveEvents?EventId=${eventId}`, {
-        approved: true,
-      })
+      .put(
+        `${BASE_URL}/api/EventRegistration/ApproveEvents?EventId=${eventId}`,
+        {
+          approved: true,
+        }
+      )
       .then((response) => {
         if (response.status === 200) {
           setEvents((prevEvents) =>
@@ -34,7 +37,7 @@ const EventsApproved = () => {
             )
           );
           toast.success("Event approved successfully 🎉");
-          fetchEvents(); 
+          fetchEvents();
         }
       })
       .catch((error) => {
@@ -42,24 +45,22 @@ const EventsApproved = () => {
         toast.error("Failed to approve the event. Please try again");
       });
   };
-  
+
   const fetchEvents = () => {
     axios
       .get(`${BASE_URL}/api/EventRegistration/EventsToApprove`)
       .then((response) => {
         setEvents(response.data.$values);
-        
       })
       .catch((error) => {
         console.error("Error Fetching Events:", error);
         toast.error("Failed to load events. Please check your connection 🔄");
       });
   };
-  
+
   useEffect(() => {
     fetchEvents();
   }, []);
-  
 
   return (
     <section className="w-full h-screen flex flex-col">
@@ -127,7 +128,7 @@ const EventsApproved = () => {
                             </td>
 
                             <td className="px-6 py-2 whitespace-nowrap ">
-                            {eventTypeMapping[event.eventtype] || "Unknown"}
+                              {eventTypeMapping[event.eventtype] || "Unknown"}
                             </td>
 
                             <td className="px-6 py-2 whitespace-nowrap ">
@@ -135,11 +136,11 @@ const EventsApproved = () => {
                             </td>
 
                             <td className="px-6 py-2 whitespace-nowrap ">
-                              {formatDate ( event.startdate)}
+                              {formatDate(event.startdate)}
                             </td>
 
                             <td className="px-6 py-2 whitespace-nowrap ">
-                              {formatDate ( event.enddate)}
+                              {formatDate(event.enddate)}
                             </td>
 
                             <td className="px-6 py-2 whitespace-nowrap ">
