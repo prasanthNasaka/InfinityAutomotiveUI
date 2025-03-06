@@ -19,23 +19,23 @@ const Card = ({ event, type }) => {
   return (
     <>
       <div
-        className="border rounded-lg overflow-hidden shadow-lg cursor-pointer bg-white"
+        className="border-4 border-red-800 rounded-lg overflow-hidden shadow-lg cursor-pointer bg-white"
         onClick={handleClick}
       >
         <img
           src={event.image}
           alt={event.title}
-          className="w-full h-48 object-cover"
+          className="w-full h-48 object-cover border-4 border-yellow-500"
         />
         <div className="p-4">
           <h3 className="text-xl font-bold">{event.title}</h3>
           <p className="text-gray-600 flex items-center">
-            <MapPin className="mr-2" size={16} />
+            <MapPin className="mr-2 border-4 border-green-800" size={16} />
             {event.location}
           </p>
           {type === "live" && (
             <p className="text-gray-600 flex items-center">
-              <Timer className="mr-2" size={16} />
+              <Timer className="mr-2 border-4 border-blue-800" size={16} />
               Lap {event.currentLap} of {event.totalLaps}
             </p>
           )}
@@ -87,11 +87,11 @@ const Card = ({ event, type }) => {
             <img
               src={event.image}
               alt={event.title}
-              className="w-full h-48 object-cover mb-4"
+              className="w-full h-48 object-cover mb-4 border-4 border-red-800"
             />
 
             <p className="text-gray-600 mb-2">
-              <MapPin className="inline mr-2" size={16} /> {event.location}
+              <MapPin className="inline mr-2 border-4 border-red-800" size={16} /> {event.location}
             </p>
 
             {type === "live" && (
@@ -160,7 +160,7 @@ const Card = ({ event, type }) => {
                 <Link
                   className="w-1/2"
                   target="_blank"
-                  to={type === "upcoming" ? "/driverracelink" : "/resultTable"}
+                  to={type === "upcoming" ? "/registrationdesk" : "/resultTable"}
                 >
                   <button className="w-full bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300">
                     {type === "upcoming"
