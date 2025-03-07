@@ -27,6 +27,7 @@ import Classes from "./Screens/Classes";
 import ScrutinyTemplate from "./Screens/ScrutinyTemplate";
 import Status from "./Screens/Status";
 import Report from "./Screens/Report";
+import RegistrationDeskPopUp from "./Screens/RegistrationDeskPopUp";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem("authToken");
@@ -51,6 +52,7 @@ const App = () => {
           <Route path="/template" element={<ScrutinyTemplate />} />
           <Route path="/status" element={<Status />} />
           <Route path="/report/:eventId" element={<Report />} />
+          <Route path="/registrationdesk" element={<RegistrationDeskPopUp />} />
 
           <Route
             path="/dashboard"

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
@@ -11,6 +12,7 @@ import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
 import { HandCoins, Trash, X } from "lucide-react";
 import axios from "axios";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 
 const Linkraceanddrive = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
@@ -37,16 +39,102 @@ const Linkraceanddrive = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [paymentReference, setPaymentReference] = useState("");
   const [selectAll, setSelectAll] = useState(false);
-  const [addDocVerify, setAddDocVerify] = useState(97);
+  const [addDocVerify, setAddDocVerify] = useState(98);
   const [deletePop, setDeletePop] = useState(false);
-
   const [updatedContestantNumbers, setUpdatedContestantNumbers] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: null, 
+    direction: "none", 
+  });
+  const filteredData = tableData.filter((event) =>
+    Object.values(event).some((value) =>
+      String(value).toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortConfig.direction === "none") return 0; // No sorting
+
+    const key = sortConfig.key;
+    if (a[key] < b[key]) return sortConfig.direction === "asc" ? -1 : 1;
+    if (a[key] > b[key]) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // const requestSort = (key) => {
+  //   let direction = "asc";
+  //   if (sortConfig.key === key && sortConfig.direction === "asc") {
+  //     direction = "desc";
+  //   }
+  //   setSortConfig({ key, direction });
+  // };
+
+  const SortingIcon = ({ direction }) => {
+    if (direction === "none") {
+      return <FaSort className="w-4 h-4 ms-1" />;
+    } else if (direction === "asc") {
+      return <FaSortUp className="w-4 h-4 ms-1" />;
+    } else if (direction === "desc") {
+      return <FaSortDown className="w-4 h-4 ms-1" />;
+    }
+  };
+
+  const totalPages = Math.ceil(sortedData.length / recordsPerPage);
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const endIndex = startIndex + recordsPerPage;
+  const currentData = sortedData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      if (sortConfig.direction === "asc") direction = "desc";
+      else if (sortConfig.direction === "desc") direction = "none";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getPageNumbers = () => {
+    let pages = [];
+    const maxVisiblePages = 2; // Number of pages to show around the current page
+
+    if (totalPages <= 5) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      pages = [1];
+
+      let start = Math.max(2, currentPage - maxVisiblePages);
+      let end = Math.min(totalPages - 1, currentPage + maxVisiblePages);
+
+      if (start > 2) {
+        pages.push("...");
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (end < totalPages - 1) {
+        pages.push("...");
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
 
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(DrvtableData.map((event) => event.regId)); // Select all
+      setSelectedIds(DrvtableData.map((event) => event.regId));
     }
     setSelectAll(!selectAll);
   };
@@ -176,7 +264,7 @@ const Linkraceanddrive = () => {
       selectedDriver &&
       selectedVehicle &&
       // addDocVerify &&
-      amountPaidChecked&&
+      amountPaidChecked &&
       (!amountPaidChecked || (amountPaidChecked && referenceNumber)) && // Only need ref number if checked
       !error
     );
@@ -231,7 +319,7 @@ const Linkraceanddrive = () => {
     }
 
     const payload = {
-      refNumb: paymentReference || "",
+      refNumb: paymentReference,
       regId: selectedIds,
     };
 
@@ -424,8 +512,8 @@ const Linkraceanddrive = () => {
 
       if (response.status === 201) {
         toast.success("Successfully added");
-        console.log("response",response);
-        
+        console.log("response", response);
+
         // await setTableData(response);
       }
 
@@ -1048,103 +1136,244 @@ const Linkraceanddrive = () => {
               </div>
             </div>
             {tableData && tableData.length > 0 && (
-              <div className="min-h-auto">
-                <div className="border rounded-lg overflow-hidden bg-white shadow-md">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-500">
-                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
-                        <tr>
-                          <th className="px-6 py-3 whitespace-nowrap">SL.No</th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Driver Name
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Vehicle
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">Class</th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Contestant Number
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Payment Status
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Documents
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Scrutiny
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 text-center uppercase">
-                        {tableData.map((event, index) => (
-                          <tr
-                            key={event.eventid}
-                            className="bg-white hover:bg-gray-50"
-                          >
-                            <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
-                              {index + 1}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap text-gray-900">
-                              {event.drivername}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              {event.regNumb}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              {event.evtCategory}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              {event.contestantNo}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              <span
-                                className={`p-2 rounded-full text-xs ${
-                                  event.amountPaid === 92
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-yellow-100 text-yellow-800"
-                                }`}
-                              >
-                                {event.amountPaid === 92 ? "Paid" : "Pending"}
-                              </span>
-                            </td>
-
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              <span
-                                className={`p-2 rounded-full text-xs ${
-                                  event.documentStatus === 97
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : "bg-green-100 text-green-800"
-                                }`}
-                              >
-                                {event.documentStatus === 97
-                                  ? "Pending"
-                                  : "Verified"}
-                              </span>
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              <span
-                                className={`p-2 rounded-full text-xs ${
-                                  event.scrutinyStatus === 15
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : event.scrutinyStatus === 16
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {event.scrutinyStatus === 15
-                                  ? "Pending"
-                                  : event.scrutinyStatus === 16
-                                  ? "Verified"
-                                  : "Rejected"}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <div className="min-h-auto border">
+                <div className="w-full h-14 flex justify-between items-center px-5">
+                  <input
+                    className="w-1/3 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1); // Reset to the first page on search
+                    }}
+                  />
+                  <div className="flex items-center space-x-2">
+                    <label htmlFor="pageType" className="font-medium">
+                      Page Type:
+                    </label>
+                    <select
+                      id="pageType"
+                      className="border p-2 rounded-md"
+                      value={recordsPerPage}
+                      onChange={(e) => {
+                        setRecordsPerPage(Number(e.target.value));
+                        setCurrentPage(1); // Reset to the first page on records per page change
+                      }}
+                    >
+                      <option value="5">5 per page</option>
+                      <option value="10">10 per page</option>
+                      <option value="15">15 per page</option>
+                      <option value="20">20 per page</option>
+                    </select>
                   </div>
                 </div>
+
+                {/* Display "No data found" message if filteredData is empty */}
+                {filteredData.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500">
+                    No data found for your search query.
+                  </div>
+                ) : (
+                  <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm text-left text-gray-500">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                          <tr>
+                            <th className="px-6 py-3 whitespace-nowrap">
+                              SL.No
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("drivername")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Driver Name
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "drivername"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("regNumb")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Vehicle
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "regNumb"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("evtCategory")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Class
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "evtCategory"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("contestantNo")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Contestant Number
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "contestantNo"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th className="px-6 py-3 whitespace-nowrap">
+                              Payment Status
+                            </th>
+                            <th className="px-6 py-3 whitespace-nowrap">
+                              Documents
+                            </th>
+                            <th className="px-6 py-3 whitespace-nowrap">
+                              Scrutiny
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 text-center uppercase">
+                          {currentData.map((event, index) => (
+                            <tr
+                              key={event.eventid}
+                              className="bg-white hover:bg-gray-50"
+                            >
+                              <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
+                                {startIndex + index + 1}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap text-gray-900">
+                                {event.drivername}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                {event.regNumb}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                {event.evtCategory}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                {event.contestantNo}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                <span
+                                  className={`p-2 rounded-full text-xs ${
+                                    event.amountPaid === 92
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-yellow-100 text-yellow-800"
+                                  }`}
+                                >
+                                  {event.amountPaid === 92 ? "Paid" : "Pending"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                <span
+                                  className={`p-2 rounded-full text-xs ${
+                                    event.documentStatus === 97
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-green-100 text-green-800"
+                                  }`}
+                                >
+                                  {event.documentStatus === 97
+                                    ? "Pending"
+                                    : "Verified"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                <span
+                                  className={`p-2 rounded-full text-xs ${
+                                    event.scrutinyStatus === 15
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : event.scrutinyStatus === 16
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-red-100 text-red-800"
+                                  }`}
+                                >
+                                  {event.scrutinyStatus === 15
+                                    ? "Pending"
+                                    : event.scrutinyStatus === 16
+                                    ? "Verified"
+                                    : "Rejected"}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pagination Controls */}
+                {filteredData.length > 0 && (
+                  <div className="flex justify-end px-2 items-center space-x-2 m-4">
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={currentPage === 1}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === 1
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-cyan-500 text-white hover:bg-cyan-700"
+                      }`}
+                    >
+                      Prev
+                    </button>
+                    {getPageNumbers().map((page, index) =>
+                      page === "..." ? (
+                        <span key={index} className="px-3 py-2">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={index}
+                          onClick={() => handlePageChange(page)}
+                          className={`px-3 py-2 rounded-md ${
+                            currentPage === page
+                              ? "bg-cyan-700 text-white"
+                              : "bg-gray-200 hover:bg-gray-400"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === totalPages
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-cyan-500 text-white hover:bg-cyan-700"
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
