@@ -23,7 +23,7 @@ function Scrutinys() {
   const handleGetData = async () => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/EventRegistration/names`
+        `${BASE_URL}/api/EventRegistration/ActiveEvents`
       );
       setEvents(response.data.$values);
     } catch (error) {
@@ -156,47 +156,51 @@ function Scrutinys() {
   }, []);
 
   const renderHeader = () => (
-    <div className="bg-cyan-600 text-white py-4 px-4 w-full">
-      <div className="w-full mx-auto">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Technical Scrutiny Checklist</h1>
-          <Link
-            to="/dashboard"
-            className="w-32 flex items-center gap-2 p-2 border text-center hover:bg-white hover:text-black transform ease-in-out duration-1000 rounded-md"
-          >
-            <IoMdArrowRoundBack className="w-6 h-6" />
-            Dashboard
-          </Link>
-        </div>
-        <div className="w-full flex p-2 gap-2 tab:flex-col">
-          <div className="w-1/2 tab:w-full">
-            <label className="text-sm font-medium text-white">Event Name</label>
-            <select
-              value={selectedEvent}
-              onChange={handleEventChange}
-              className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+    <>
+      <div className="bg-cyan-600 text-white py-4 px-4 w-full">
+        <div className="w-full mx-auto">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">Technical Scrutiny Checklist</h1>
+            <Link
+              to="/dashboard"
+              className="w-32 flex items-center gap-2 p-2 border text-center hover:bg-white hover:text-black transform ease-in-out duration-1000 rounded-md"
             >
-              <option value="">Choose Event</option>
-              {events.map((event) => (
-                <option key={event.eventid} value={event.eventid}>
-                  {event.eventname}
-                </option>
-              ))}
-            </select>
+              <IoMdArrowRoundBack className="w-6 h-6" />
+              Dashboard
+            </Link>
           </div>
         </div>
       </div>
-    </div>
+      <div className="w-full flex p-2 gap-2 tab:flex-col">
+        <div className="w-1/3 tab:w-full mt-3 ">
+          <label className="text-l font-bold text-black flex w-full pl-2 ">
+            Event Name
+          </label>
+          <select
+            value={selectedEvent}
+            onChange={handleEventChange}
+            className="w-full h-10 bg-gray-50 border border-l-2 text-gray-900 text-sm rounded-lg p-2 "
+          >
+            <option value="">Choose Event</option>
+            {events.map((event) => (
+              <option key={event.eventid} value={event.eventid}>
+                {event.eventname}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </>
   );
 
   const renderTable = () => (
     <div className="mt-6 h-auto m-auto flex flex-col items-center justify-center">
       {!selectedEvent ? (
         <div
-          className="w-3/4 h-20 shadow-lg flex justify-center items-center rounded-lg transition-all duration-1000"
+          className="w-3/4 h-20 shadow-lg flex justify-center items-center rounded-lg transition-all duration-1000 mt-10"
           style={{ color: bgColor }}
         >
-          <p className="font-bold text-center text-xl animate-bounce">
+          <p className="font-bold text-center text-xl ">
             Please select the Event name to get the checklist.
           </p>
         </div>
