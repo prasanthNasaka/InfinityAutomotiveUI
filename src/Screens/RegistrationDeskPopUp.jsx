@@ -54,8 +54,17 @@ const RegistrationDeskPopUp = () => {
       fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
         .then((response) => response.json())
         .then((data) => {
-          if (Array.isArray(data.$values)) {
-            setTableData(data.$values);
+          if (data && Array.isArray(data.$values)) {
+            const updatedData = data.$values.map((item) => ({
+              ...item,
+              driverPhotoUrl: item.driverPhoto
+                ? `${IMAGE_URL}${item.driverPhoto}`
+                : null,
+              hasPhoto: !!item.driverPhoto,
+            }));
+
+            console.log("Updated Data:", updatedData);
+            setTableData(updatedData);
           } else {
             setTableData([]);
           }
@@ -88,12 +97,6 @@ const RegistrationDeskPopUp = () => {
 
       setDrvTableData(FilteredDrvData);
       setSelectedDriver(item);
-
-      // const selectedIdsFromStatus = FilteredDrvData.filter(
-      //   (d) => d.documentStatus === 98
-      // ).map((d) => d.regId);
-
-      // setSelectedIds(selectedIdsFromStatus);
 
       setDriverImageUrl(
         item.driverPhoto ? `${IMAGE_URL}${item.driverPhoto}` : null
@@ -129,19 +132,6 @@ const RegistrationDeskPopUp = () => {
       !error
     );
   };
-
-  // const handleGetData = () => {
-  //   fetch(`${BASE_URL}/api/EventRegistration`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (Array.isArray(data.$values)) {
-  //         setEvents(data.$values);
-  //       } else {
-  //         setEvents([]);
-  //       }
-  //     })
-  //     .catch((error) => console.error("Error fetching events:", error));
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -452,45 +442,6 @@ const RegistrationDeskPopUp = () => {
                   </div>
                 </div>
 
-                {/* {isOpen && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-auto h-fit">
-                          <div className="w-full h-fit">
-                            <div className="w-full h-auto flex justify-center flex-col items-center">
-                              <h2 className="text-lg font-bold text-gray-800">
-                                Contestant Numbers
-                              </h2>
-                              {regId.length > 0 ? (
-                                <div className="w-full overflow-scroll flex gap-4 p-2">
-                                  {regId.map((num, index) => (
-                                    <span
-                                      key={index}
-                                      className="px-4 py-2 bg-red-200 text-red-800 rounded-lg text-lg"
-                                    >
-                                      {num} ✘
-                                    </span>
-                                  ))}
-                                </div>
-                              ) : (
-                                <h3 className="text-lg text-gray-800">
-                                  Numbers unavailable
-                                </h3>
-                              )}
-                            </div>
-                          </div>
-    
-                          <div className="w-full h-fit flex justify-center items-center">
-                            <button
-                              onClick={Close}
-                              className="mt-4 w-full h-12 bg-red-600 text-white hover:bg-red-600 hover:text-black transition-all duration-300 font-medium rounded-md text-lg"
-                            >
-                              Close
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )} */}
-
                 {DrvtableData && DrvtableData.length > 0 && (
                   <div className="min-h-auto ">
                     <div className="border rounded-lg p-2  overflow-hidden bg-white shadow-md">
@@ -498,19 +449,6 @@ const RegistrationDeskPopUp = () => {
                         <table className="w-full text-sm text-left text-gray-500">
                           <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
                             <tr>
-                              {/* <th className="px-6 py-3 whitespace-nowrap">
-                                    <button
-                                      onClick={handleSelectAll}
-                                      className={` py-3 p-2 rounded-md text-white ${
-                                        selectAll
-                                          ? "bg-red-600 hover:bg-red-700 "
-                                          : "bg-blue-500 "
-                                      }
-                                      `}
-                                    >
-                                      {selectAll ? "Deselect All" : "Select All"}
-                                    </button>
-                                  </th> */}
                               <th className="px-6 py-3 whitespace-nowrap">
                                 SL.No
                               </th>
@@ -523,9 +461,7 @@ const RegistrationDeskPopUp = () => {
                               <th className="px-6 py-3 whitespace-nowrap">
                                 Contestant Number
                               </th>
-                              <th className="px-6 py-3 whitespace-nowrap">
-                                Driver Photo
-                              </th>
+
                               <th className="px-6 py-3 whitespace-nowrap">
                                 Payment Status
                               </th>
@@ -543,17 +479,6 @@ const RegistrationDeskPopUp = () => {
                                 key={event.eventid}
                                 className="bg-white hover:bg-gray-50"
                               >
-                                {/* <td className="px-6 py-2 whitespace-nowrap">
-                                      <input
-                                        className="accent-cyan-600 w-4 h-4 cursor-pointer"
-                                        type="checkbox"
-                                        checked={selectedIds.includes(event.regId)}
-                                        onChange={() =>
-                                          handleCheckboxChange(event.regId)
-                                        }
-                                      />
-                                    </td> */}
-
                                 <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
                                   {index + 1}
                                 </td>
@@ -566,38 +491,6 @@ const RegistrationDeskPopUp = () => {
                                 </td>
                                 <td className="px-6 py-2 whitespace-nowrap flex gap-2 justify-center  ">
                                   {event.contestantNo}
-                                  {/* <div className="relative w-32 ">
-                                        <input
-                                          className="w-full border border-gray-100 rounded-lg p-2 pr-12" // Added padding-right to avoid text overlap
-                                          value={
-                                            updatedContestantNumbers[event.regId] ??
-                                            event.contestantNo
-                                          }
-                                          onChange={(e) =>
-                                            handleContestantChange(
-                                              event.regId,
-                                              e.target.value
-                                            )
-                                          }
-                                          type="text"
-                                        />
-                                        <button
-                                          onClick={() =>
-                                            ContestentUpdate(event.regId)
-                                          }
-                                          className="absolute top-1/2 right-2 transform -translate-y-1/2 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                                        >
-                                          Update
-                                        </button>
-                                      </div> */}
-                                </td>
-
-                                <td className="px-6 py-2 whitespace-nowrap">
-                                  <img
-                                    className="border w-10 h-10 rounded-full"
-                                    src={`/images/${event.driverPhoto}`}
-                                    alt="Driver Photo"
-                                  />
                                 </td>
 
                                 <td className="px-6 py-2 whitespace-nowrap">
@@ -649,103 +542,6 @@ const RegistrationDeskPopUp = () => {
                           </tbody>
                         </table>
                       </div>
-                      {/* <div className="w-full flex p-6 gap-2 tab:flex-col border-b-2 mt-2 rounded-lg   items-center">
-                            <div className="w-1/2 tab:w-full flex items-center justify-between px-2   ">
-                              <div className="flex w-1/2 justify-end items-center gap-1">
-                                <button
-                                  onClick={DocumentVerify}
-                                  className="tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
-                                font-medium rounded-md text-sm "
-                                >
-                                  Document Verified for Selected
-                                </button>
-                              </div>
-    
-                              <div className="flex w-1/2 justify-end items-center gap-1 ">
-                                <button
-                                  onClick={AmountPaidForSelected}
-                                  type="button"
-                                  className="tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
-                                font-medium rounded-md text-sm "
-                                >
-                                  AmountPaid
-                                </button>
-                              </div>
-                            </div>
-    
-                            <div className="w-1/2 tab:w-full flex items-center justify-between px-2 gap-2">
-                              <div className=" flex items-end justify-between">
-                                <div className="flex justify-center items-center gap-2">
-                                  <label
-                                    className="text-md"
-                                    htmlFor="selectedReferenceNumber"
-                                  >
-                                    Ref Number:
-                                  </label>
-                                  <input
-                                    id="selectedReferenceNumber"
-                                    value={paymentReference}
-                                    onChange={(e) =>
-                                      setPaymentReference(e.target.value)
-                                    }
-                                    placeholder="Enter Ref Number"
-                                    className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
-                                    type="text"
-                                  />
-                                </div>
-                              </div>
-    
-                              <div className="w-1/3 flex justify-end">
-                                <button
-                                  onClick={AmountRefund}
-                                  type="button"
-                                  className="tab:w-full px-6 flex py-2.5 items-center bg-yellow-600 text-white hover:bg-yellow-600 hover:text-black transition-all duration-300
-                                font-medium rounded-md text-sm "
-                                >
-                                  refund
-                                  <HandCoins />
-                                </button>
-                              </div>
-    
-                              <div className=" flex justify-end">
-                                <button
-                                  onClick={deletePopup}
-                                  type="button"
-                                  className="tab:w-full flex px-6 py-2.5 gap-2 items-center bg-red-600 text-white hover:bg-red-600 hover:text-black transition-all duration-300
-                                  font-medium rounded-md text-sm "
-                                >
-                                  Delete
-                                  <Trash />
-                                </button>
-                              </div>
-                            </div>
-                          </div> */}
-                      {/* {deletePop && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                          <div className="bg-white p-6 rounded-lg shadow-lg w-auto h-fit">
-                            <div className="w-full h-fit">
-                              <div className="w-full h-fit flex justify-end ">
-                                <X
-                                  className="text-lg cursor-pointer"
-                                  onClick={deletePopClose}
-                                />
-                              </div>
-                              <div className="w-full h-auto flex justify-center flex-col items-center">
-                                <h4>Are You Sure</h4>
-                              </div>
-                            </div>
-
-                            <div className="w-full h-fit flex justify-center items-center">
-                              <button
-                                onClick={DeleteTable}
-                                className="mt-4 w-full h-12 bg-red-600 text-white hover:bg-red-600 hover:text-black transition-all duration-300 font-medium rounded-md text-lg"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )} */}
                     </div>
                   </div>
                 )}
@@ -763,27 +559,21 @@ const RegistrationDeskPopUp = () => {
                             Driver Name
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">
+                            Driver Photo
+                          </th>
+                          <th className="px-6 py-3 whitespace-nowrap">
                             Vehicle
                           </th>
                           <th className="px-6 py-3 whitespace-nowrap">Class</th>
                           <th className="px-6 py-3 whitespace-nowrap">
                             Contestant Number
                           </th>
-                          {/* <th className="px-6 py-3 whitespace-nowrap">
-                            Payment Status
-                          </th> */}
-                          {/* <th className="px-6 py-3 whitespace-nowrap">
-                            Documents
-                          </th> */}
-                          {/* <th className="px-6 py-3 whitespace-nowrap">
-                            Scrutiny
-                          </th> */}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 text-center uppercase">
                         {tableData.map((event, index) => (
                           <tr
-                            key={event.eventid}
+                            key={event.regId}
                             className="bg-white hover:bg-gray-50"
                           >
                             <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
@@ -791,6 +581,19 @@ const RegistrationDeskPopUp = () => {
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap text-gray-900">
                               {event.drivername}
+                            </td>
+                            <td className="px-6 py-2 whitespace-nowrap flex justify-center">
+                              <div className="border w-10 h-10 rounded-full">
+                                {event.driverPhotoUrl ? (
+                                  <img
+                                    src={event.driverPhotoUrl}
+                                    alt="Driver"
+                                    className="w-10 h-10 rounded-full"
+                                  />
+                                ) : (
+                                  <IoPerson size={24} />
+                                )}
+                              </div>
                             </td>
                             <td className="px-6 py-2 whitespace-nowrap">
                               {event.regNumb}
@@ -801,48 +604,6 @@ const RegistrationDeskPopUp = () => {
                             <td className="px-6 py-2 whitespace-nowrap">
                               {event.contestantNo}
                             </td>
-                            {/* <td className="px-6 py-2 whitespace-nowrap">
-                              <span
-                                className={`p-2 rounded-full text-xs ${
-                                  event.amountPaid === 92
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-yellow-100 text-yellow-800"
-                                }`}
-                              >
-                                {event.amountPaid === 92 ? "Paid" : "Pending"}
-                              </span>
-                            </td> */}
-
-                            {/* <td className="px-6 py-2 whitespace-nowrap">
-                              <span
-                                className={`p-2 rounded-full text-xs ${
-                                  event.documentStatus === 97
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : "bg-green-100 text-green-800"
-                                }`}
-                              >
-                                {event.documentStatus === 97
-                                  ? "Pending"
-                                  : "Verified"}
-                              </span>
-                            </td> */}
-                            {/* <td className="px-6 py-2 whitespace-nowrap">
-                              <span
-                                className={`p-2 rounded-full text-xs ${
-                                  event.scrutinyStatus === 15
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : event.scrutinyStatus === 16
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {event.scrutinyStatus === 15
-                                  ? "Pending"
-                                  : event.scrutinyStatus === 16
-                                  ? "Verified"
-                                  : "Rejected"}
-                              </span>
-                            </td> */}
                           </tr>
                         ))}
                       </tbody>

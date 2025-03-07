@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 import { parse } from "date-fns";
 import { IMAGE_URL } from "../constants/global-const";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { DataTable } from "simple-datatables";
 
 const EventForm = () => {
   const [eventData, setEventData] = useState({
@@ -31,20 +34,125 @@ const EventForm = () => {
     },
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [submittedEvents, setSubmittedEvents] = useState([]);
-  const recordsPerPage = 5;
-  const startIndex = (currentPage - 1) * recordsPerPage;
-  const endIndex = startIndex + recordsPerPage;
-  const currentEvents = submittedEvents.slice(startIndex, endIndex);
-  const totalRecords = submittedEvents.length;
-  const totalPages = Math.ceil(totalRecords / recordsPerPage);
-  // eslint-disable-next-line no-unused-vars
+  const tableRef = useRef(null);
+  const dropdownRef = useRef(null);
   const [eventId, setEventId] = useState(null);
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
+  const [currentEvents, setCurrentEvents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "none",
+  });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const options = [
+    { value: 5, label: "5 per page" },
+    { value: 10, label: "10 per page" },
+    { value: 15, label: "15 per page" },
+    { value: 20, label: "20 per page" },
+  ];
+
+  // Handle dropdown option selection
+  const handleOptionClick = (value) => {
+    setRecordsPerPage(value);
+    setCurrentPage(1); // Reset to the first page when changing records per page
+    setIsDropdownOpen(false);
+  };
+
+  // Filter data based on search query
+  const filteredData = submittedEvents.filter((event) =>
+    Object.values(event).some((value) =>
+      String(value).toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  // Sort data based on sort configuration
+  const sortedData = React.useMemo(() => {
+    let sortableData = [...filteredData];
+    if (sortConfig.key && sortConfig.direction !== "none") {
+      sortableData.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  }, [filteredData, sortConfig]);
+
+  // Calculate total pages based on recordsPerPage
+  const totalPages = Math.ceil(sortedData.length / recordsPerPage);
+
+  // Calculate start and end index for pagination
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const endIndex = startIndex + recordsPerPage;
+
+  // Slice data for the current page
+  const currentData = sortedData.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Handle sorting
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      if (sortConfig.direction === "asc") direction = "desc";
+      else if (sortConfig.direction === "desc") direction = "none";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    let pages = [];
+    if (totalPages <= 5) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      pages = [1];
+
+      let start = Math.max(2, currentPage - 2);
+      let end = Math.min(totalPages - 1, currentPage + 2);
+
+      if (start > 2) {
+        pages.push("...");
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (end < totalPages - 1) {
+        pages.push("...");
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  const SortingIcon = ({ direction }) => {
+    if (direction === "none") {
+      return <FaSort className="w-4 h-4 ms-1" />;
+    } else if (direction === "asc") {
+      return <FaSortUp className="w-4 h-4 ms-1" />;
+    } else if (direction === "desc") {
+      return <FaSortDown className="w-4 h-4 ms-1" />;
+    }
+    return null; // Default case
+  };
   const handleInputChange = (e, field) => {
     const { value } = e.target;
     console.log(`Field: ${field}, Value: ${value}`); // Log the value of the input
@@ -233,8 +341,8 @@ const EventForm = () => {
   };
 
   const handleNavigate = (eventId) => {
-    navigate(`/report/${eventId}`); // ✅ Correctly replace :eventId with actual ID
-    console.log("World", eventId); // ✅ Log the event ID to confirm it's correct
+    navigate(`/report/${eventId}`);
+    console.log("World", eventId);
   };
 
   const handleUpdate = async (e) => {
@@ -334,51 +442,41 @@ const EventForm = () => {
     }
   };
 
-  const maxVisiblePages = 2;
-
-  const getPageNumbers = () => {
-    let pages = [];
-
-    if (totalPages <= 5) {
-      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-    } else {
-      pages = [1];
-
-      let start = Math.max(2, currentPage - maxVisiblePages);
-      let end = Math.min(totalPages - 1, currentPage + maxVisiblePages);
-
-      if (start > 2) {
-        pages.push("...");
-      }
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
-      if (end < totalPages - 1) {
-        pages.push("...");
-      }
-
-      pages.push(totalPages);
-    }
-
-    return pages;
-  };
-
-  const refreshEvents = () => {
+  const refreshEvents = useCallback(() => {
     axios
       .get(`${BASE_URL}/api/EventRegistration`)
       .then((response) => {
-        console.log("API Response:", response.data.$values);
         setSubmittedEvents(response.data.$values || []);
       })
       .catch((error) => {
         toast.error("There was an error loading events!", error);
       });
-  };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false); // Close dropdown if clicked outside
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  // Update currentEvents when submittedEvents, recordsPerPage, or currentPage changes
+  useEffect(() => {
+    setCurrentEvents(submittedEvents.slice(startIndex, endIndex));
+  }, [submittedEvents, startIndex, endIndex]);
+
   useEffect(() => {
     refreshEvents();
-  }, []);
+  }, [refreshEvents]);
 
   return (
     <>
@@ -823,18 +921,110 @@ const EventForm = () => {
                   <h2 className="text-xl font-bold p-4 bg-gray-50 border-b">
                     Submitted Events
                   </h2>
+
+                  <div className="w-full h-20 flex justify-between items-center px-5 gap-5">
+                    {/* Search Input */}
+                    <input
+                      className="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      type="text"
+                      placeholder="Search..."
+                      onChange={(e) => {
+                        const query = e.target.value;
+                        setSearchQuery(query);
+                      }}
+                    />
+
+                    {/* Page Type Dropdown */}
+                    <div
+                      ref={dropdownRef}
+                      className="relative w-1/2 flex justify-end"
+                    >
+                      <div className="w-2/3 relative">
+                        <label
+                          htmlFor="pageType-select"
+                          className=" text-sm font-medium text-gray-700"
+                        >
+                          Page Type
+                        </label>
+
+                        <button
+                          id="pageType-select"
+                          className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          aria-haspopup="true"
+                          aria-expanded={isDropdownOpen}
+                          onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
+                        >
+                          <div className="flex items-center justify-between">
+                            <span>{`${recordsPerPage} per page`}</span>
+                            <svg
+                              className="h-4 w-4 text-gray-500"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                              aria-hidden="true"
+                            >
+                              <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
+                            </svg>
+                          </div>
+                        </button>
+
+                        {/* Dropdown List */}
+                        {isDropdownOpen && (
+                          <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
+                            <ul className="py-1">
+                              {options.map((option, index) => (
+                                <li
+                                  key={index}
+                                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                  onClick={() =>
+                                    handleOptionClick(option.value)
+                                  } // Handle selection
+                                >
+                                  {option.label}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="overflow-auto max-h-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr className="divide-x divide-gray-200">
+                    <table ref={tableRef} className="w-full">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 top-0 text-center">
+                        <tr>
                           <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                             S.No
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            Event Name
+                          <th
+                            onClick={() => handleSort("eventname")}
+                            className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
+                          >
+                            <div className="flex items-center justify-center">
+                              Event Name
+                              <SortingIcon
+                                direction={
+                                  sortConfig.key === "eventname"
+                                    ? sortConfig.direction
+                                    : "none"
+                                }
+                              />
+                            </div>
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            Event Type
+                          <th
+                            onClick={() => handleSort("eventtype")}
+                            className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
+                          >
+                            <div className="flex items-center justify-center">
+                              Event Type
+                              <SortingIcon
+                                direction={
+                                  sortConfig.key === "eventtype"
+                                    ? sortConfig.direction
+                                    : "none"
+                                }
+                              />
+                            </div>
                           </th>
                           <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Status
@@ -848,7 +1038,7 @@ const EventForm = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {currentEvents.map((event, index) => {
+                        {currentData.map((event, index) => {
                           const globalIndex =
                             (currentPage - 1) * recordsPerPage + index + 1;
 
@@ -858,8 +1048,11 @@ const EventForm = () => {
                                 {globalIndex}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                {event.eventname}
+                                {event.eventname.length > 10
+                                  ? `${event.eventname.slice(0, 10)}...`
+                                  : event.eventname}
                               </td>
+
                               <td className="px-6 py-4 whitespace-nowrap">
                                 {eventTypeMapping[event.eventtype] || "Unknown"}
                               </td>
@@ -935,7 +1128,7 @@ const EventForm = () => {
                       ) : (
                         <button
                           key={index}
-                          onClick={() => setCurrentPage(page)}
+                          onClick={() => handlePageChange(page)}
                           className={`px-3 py-2 rounded-md ${
                             currentPage === page
                               ? "bg-cyan-700 text-white"

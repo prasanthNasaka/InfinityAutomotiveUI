@@ -46,8 +46,8 @@ const Linkraceanddrive = () => {
   const [recordsPerPage, setRecordsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({
-    key: null, 
-    direction: "none", 
+    key: null,
+    direction: "none",
   });
   const filteredData = tableData.filter((event) =>
     Object.values(event).some((value) =>
@@ -496,7 +496,7 @@ const Linkraceanddrive = () => {
         amountPaid: amountPaidChecked ? 92 : 91, // Map to 92 for paid, 91 for pending
         referenceNo: referenceNumber || "",
         scrutinyStatus: 15, //15 pending 16 approved 17 rejected 18 N/A
-        documentStatus: parseInt(addDocVerify) || 97, //97 pending 98 verified
+        documentStatus: parseInt(addDocVerify) || 98, //97 pending 98 verified
       };
       console.log("payload", payload);
 
@@ -1148,13 +1148,16 @@ const Linkraceanddrive = () => {
                       setCurrentPage(1); // Reset to the first page on search
                     }}
                   />
-                  <div className="flex items-center space-x-2">
-                    <label htmlFor="pageType" className="font-medium">
+                  <div className="flex items-center space-x-3">
+                    <label
+                      htmlFor="pageType"
+                      className="font-medium text-gray-700"
+                    >
                       Page Type:
                     </label>
                     <select
                       id="pageType"
-                      className="border p-2 rounded-md"
+                      className="border border-gray-300 bg-white text-gray-700 p-2 pl-3 pr-8 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300 ease-in-out hover:shadow-md"
                       value={recordsPerPage}
                       onChange={(e) => {
                         setRecordsPerPage(Number(e.target.value));
