@@ -142,15 +142,7 @@ const MainSideBar = () => {
             <FaTv />
             {!isCollapsed && <span>Emp Login</span>}
           </Link>
-          <Link
-            to="/scrutineerpage"
-            className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-              isActive("/current_categ") ? "bg-cyan-600 rounded-lg" : ""
-            }`}
-          >
-            <FaClipboardList />
-            {!isCollapsed && <span>ScrutineerPage</span>}
-          </Link>
+
           <Link
             to="/scrutiny"
             className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${

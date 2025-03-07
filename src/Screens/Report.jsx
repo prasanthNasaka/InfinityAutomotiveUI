@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
@@ -13,15 +14,9 @@ const Report = () => {
   const [committee, setCommittee] = useState([]);
 
   const { eventId } = useParams();
-  console.log("Event ID before payload:", eventId);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!eventId) {
-      console.error("Error: eventId is undefined or invalid.");
-      return;
-    }
 
     const payload = [
       {
@@ -62,7 +57,7 @@ const Report = () => {
 
       if (response.data?.$values?.length > 0) {
         setCommittee(response.data.$values);
-        console.log("Comjhgfdyfgytfdfgt", committee);
+        console.log("Committee members:", response.data.$values);
       } else {
         console.warn("No data found for this eventId.");
         setCommittee([]);
@@ -74,16 +69,20 @@ const Report = () => {
       );
     }
   };
-  const handleDelete = async (eventid) => {
-    console.log("event", eventid);
 
+  const handleDelete = async (id) => {
     try {
       const response = await axios.delete(
-        `${BASE_URL}/api/EventOrgcommitee?OrgId=${eventId}`
+        `${BASE_URL}/api/EventOrgcommitee?OrgId=${id}`
       );
-      console.log("response", response);
+      console.log("Deleted successfully:", response.data);
+      toast.success("Deleted Successfully");
+
+      setCommittee((prevCommittee) =>
+        prevCommittee.filter((item) => item.$id !== id)
+      );
     } catch (error) {
-      console.log(error);
+      console.error("Error deleting:", error);
     }
   };
 
@@ -120,7 +119,7 @@ const Report = () => {
               </label>
               <input
                 type="text"
-                className=" w-1/3 p-3 border border-gray-300 rounded"
+                className="w-1/3 p-3 border border-gray-300 rounded"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
@@ -133,7 +132,7 @@ const Report = () => {
               </label>
               <input
                 type="text"
-                className=" w-1/3 p-3 border border-gray-300 rounded"
+                className="w-1/3 p-3 border border-gray-300 rounded"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 placeholder="Enter your Role"
@@ -152,21 +151,24 @@ const Report = () => {
             <table className="w-full border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-200">
-                  <th className="border p-2"> Name</th>
-                  <th className="border p-2">Role </th>
+                  <th className="border p-2">Name</th>
+                  <th className="border p-2">Role</th>
                   <th className="border p-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {committee.length > 0 ? (
-                  committee.map((member, index) => (
-                    <tr key={index}>
+                  committee.map((member) => (
+                    <tr key={member.$id}>
                       <td className="border p-2 text-center">{member.name}</td>
                       <td className="border p-2 text-center">{member.role}</td>
                       <td className="border p-2 text-center">
                         <button
                           className="p-1 bg-red-400 border text-black rounded-md"
-                          onClick={() => handleDelete(member.eventid)}
+                          onClick={() => {
+                            console.log("Deleting Id:", member.id);
+                            handleDelete(member.id);
+                          }}
                         >
                           Delete
                         </button>

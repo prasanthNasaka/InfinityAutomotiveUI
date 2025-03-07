@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 const Status = () => {
   const [drivers, setDrivers] = useState([]);
@@ -25,11 +26,48 @@ const Status = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/Vehicle`);
 
-      console.log("API Response:", response.data);
       const vehicledata = response.data.$values || [];
       setVehicles(vehicledata);
     } catch (error) {
-      console.error("Error fetching drivers:", error);
+      toast.error("Error fetching drivers:", error);
+    }
+  };
+
+  const handleDeactivateDriver = async (driverId) => {
+    try {
+      await axios.put(`${BASE_URL}/api/drivers/DeActivate/${driverId}`);
+      toast.success("Driver Deactivated Successfully");
+      fetchDrivers();
+    } catch (error) {
+      toast.error("Error deactivating driver:", error);
+    }
+  };
+  const handleactivateDriver = async (driverId) => {
+    try {
+      await axios.put(`${BASE_URL}/api/drivers/Activate/${driverId}`);
+      toast.success("Driver activated Successfully");
+      fetchDrivers();
+    } catch (error) {
+      toast.error("Error activating driver:", error);
+    }
+  };
+
+  const handleDeactivateVehicle = async (vehicleId) => {
+    try {
+      await axios.put(`${BASE_URL}/api/Vehicle/DeActivate/${vehicleId}`);
+      toast.success("Vehicle Deactivated Successfully");
+      fetchVehicles();
+    } catch (error) {
+      toast.error("Error deactivating vehicle:", error);
+    }
+  };
+  const handleactivateVehicle = async (vehicleId) => {
+    try {
+      await axios.put(`${BASE_URL}/api/Vehicle/Activate/${vehicleId}`);
+      toast.success("Vehicle activated Successfully");
+      fetchVehicles();
+    } catch (error) {
+      toast.error("Error activating vehicle:", error);
     }
   };
 
@@ -40,6 +78,8 @@ const Status = () => {
 
   return (
     <>
+      <Toaster position="bottom-center" reverseOrder={false} />
+
       <div className="h-24 w-full shadow-md p-1">
         <Newheader />
       </div>
@@ -49,15 +89,15 @@ const Status = () => {
           <MainSideBar />
         </div>
 
-        <div className="flex w-full p-8 h-fit flex-col">
-          <form className="w-full mx-auto p-3 rounded-md shadow-lg h-fit">
+        <div className="flex w-full p-8 h-full flex-col">
+          <form className="w-full mx-auto p-3 rounded-md shadow-lg h-fit overflow-auto">
             <div className="flex w-full gap-5 ">
               <div className="w-1/2">
                 <h1 className="flex justify-center text-3xl font-bold w-full">
                   Racer Details
                 </h1>
 
-                <table className="w-full border-collapse border border-gray-300 mt-10  ">
+                <table className="w-full border-collapse border border-gray-300 mt-10 h-screen overflow-auto ">
                   <thead>
                     <tr className="bg-gray-200">
                       <th className="border p-2">Driver Name</th>
@@ -72,7 +112,7 @@ const Status = () => {
                       drivers.map((driver) => (
                         <tr key={driver.driverId}>
                           <td className="border p-2 text-center">
-                            {driver.drivername || "N/A"}
+                            {driver.driverName || "N/A"}
                           </td>
                           <td className="border p-2 text-center">
                             {driver.phone || "N/A"}
@@ -85,11 +125,22 @@ const Status = () => {
                           </td>
                           <td className="border p-2 text-center">
                             <div className="flex gap-2 justify-center">
-                              <button className="p-2 bg-orange-300 border text-black rounded-md hover:bg-orange-400 transition duration-200">
+                              <button
+                                type="button"
+                                className="p-2 bg-orange-300 border text-black rounded-md hover:bg-orange-400 transition duration-200"
+                                onClick={() =>
+                                  handleDeactivateDriver(driver.driverId)
+                                }
+                              >
                                 Inactive
                               </button>
-                              <button className="p-2 bg-red-400 border text-black rounded-md hover:bg-red-500 transition duration-200">
-                                Delete
+                              <button
+                                className="p-2 bg-green-300 border text-black rounded-md transition duration-200"
+                                onClick={() =>
+                                  handleactivateDriver(driver.driverId)
+                                }
+                              >
+                                Active{" "}
                               </button>
                             </div>
                           </td>
@@ -107,7 +158,7 @@ const Status = () => {
               </div>
 
               <div className="w-1/2">
-                <h1 className="flex justify-center text-3xl font-bold w-full">
+                <h1 className="flex justify-center text-3xl font-bold w-full ">
                   Vehicle Details
                 </h1>
 
@@ -142,14 +193,20 @@ const Status = () => {
                               <button
                                 type="button"
                                 className="p-2 bg-orange-300 border text-black rounded-md transition-colors"
+                                onClick={() =>
+                                  handleDeactivateVehicle(vehicle.vehicleId)
+                                }
                               >
                                 Inactive
                               </button>
                               <button
                                 type="button"
-                                className="p-2 bg-red-400 border text-black rounded-md transition-colors"
+                                className="p-2 bg-green-300 border text-black rounded-md transition-colors"
+                                onClick={() =>
+                                  handleactivateVehicle(vehicle.vehicleId)
+                                }
                               >
-                                Delete
+                                Active{" "}
                               </button>
                             </div>
                           </td>

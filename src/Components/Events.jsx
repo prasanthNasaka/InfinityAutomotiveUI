@@ -488,7 +488,9 @@ const EventForm = () => {
                       </div>
 
                       <div className="space-y-4">
-                        <h3 className="text-sm font-bold text-gray-700">Status</h3>
+                        <h3 className="text-sm font-bold text-gray-700">
+                          Status
+                        </h3>
                         <div className="flex gap-4">
                           <label className="flex items-center">
                             <input
@@ -784,7 +786,7 @@ const EventForm = () => {
                       {/* Go to Event Page button */}
                       <button
                         type="button"
-                        onClick={handleNavigate} // Trigger navigate with eventId
+                        onClick={() => handleNavigate(eventId)} // Pass eventId to handleNavigate
                         className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
                       >
                         Managing Organizer Committee

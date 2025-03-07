@@ -68,12 +68,15 @@ const AddCompany = () => {
         `${BASE_URL}/api/companies/${formData.companyId}`,
         {
           companyName: formData.name,
+          Abbr: formData.abbr,
           street: formData.address.street,
           city: formData.address.city,
           state: formData.address.state,
           zip: formData.address.zip,
           country: formData.address.country,
           website: formData.address.website,
+          contact: {},
+          login: {},
         }
       );
 
@@ -105,7 +108,7 @@ const AddCompany = () => {
     }));
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value, // This now works for 'abbr'
+      [name]: value,
     }));
   };
 
@@ -197,6 +200,17 @@ const AddCompany = () => {
       setError("Failed to fetch companies.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (companyId) => {
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/api/companies/${companyId}`
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -360,6 +374,7 @@ const AddCompany = () => {
                 onClick={() =>
                   setFormData({
                     name: "",
+                    abbr: "",
                     address: {
                       street: "",
                       city: "",
@@ -444,7 +459,10 @@ const AddCompany = () => {
                               type="button"
                               className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
                             >
-                              <MdOutlineDelete className="w-6 h-6" />
+                              <MdOutlineDelete
+                                className="w-6 h-6"
+                                onClick={() => handleDelete(company.companyId)}
+                              />
                             </button>
                           </div>
                         </td>
