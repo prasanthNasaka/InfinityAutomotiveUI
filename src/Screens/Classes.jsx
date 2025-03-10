@@ -179,7 +179,11 @@ const Classes = () => {
             <MainSideBar />
           </div>
           <div className="flex w-full flex-col overflow-auto p-4 gap-4">
-            <div className="w-full flex gap-2 tab:flex-col">
+            <div className="w-full flex flex-col gap-2 tab:flex-col">
+            <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">
+                {editCategory ? "Edit Class" : "Add Class"}
+              </h3>
+              
               <div className="w-1/2 tab:w-full">
                 <label className="text-sm font-medium text-white">
                   Event Name
@@ -296,9 +300,7 @@ const Classes = () => {
               </div>
             </div> */}
             <div className="w-full p-6 bg-white border rounded-lg shadow-lg">
-              <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">
-                {editCategory ? "Edit Class" : "Add Class"}
-              </h3>
+              
               <div className="flex items-end gap-4 mb-4 flex-wrap">
                 <div className="flex-1 min-w-[150px]">
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
