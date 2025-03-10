@@ -5,6 +5,8 @@ import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
+import toast, { Toaster } from "react-hot-toast"; // Importing toast
+
 
 const EmployeeTypes = {
   OTHERS: 0,
@@ -26,7 +28,6 @@ const Add_Employee = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
 
   // Handle Input Change
   const handleChange = (e) => {
@@ -60,14 +61,6 @@ const Add_Employee = () => {
     return Object.keys(formErrors).length === 0;
   };
 
-  // Show temporary success message
-  const showSuccessMessage = (message) => {
-    setSuccessMessage(message);
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 3000);
-  };
-
   // Add Employee
   const handleAddEmployee = async () => {
     if (!validateForm()) return;
@@ -85,19 +78,15 @@ const Add_Employee = () => {
       };
 
       const response = await axios.post(`${BASE_URL}/api/Employee`, payload);
-      if (response.status === 201) { // Check for successful creation
-        const newEmployee = response.data; // Adjust based on API response
+      if (response.status === 201) {
+        const newEmployee = response.data;
         setEmployeeList((prev) => [...prev, newEmployee]);
         resetForm();
-        showSuccessMessage("Employee added successfully!");
+        toast.success("Employee added successfully!"); // Success toast
       }
     } catch (error) {
       console.error("Error adding employee:", error);
-      if (error.response && error.response.data) {
-        setErrors({ submit: error.response.data.message || "Failed to add employee" });
-      } else {
-        setErrors({ submit: "Failed to add employee" });
-      }
+      toast.error(error.response?.data?.message || "Failed to add employee"); // Error toast
     } finally {
       setLoading(false);
     }
@@ -136,21 +125,17 @@ const Add_Employee = () => {
         payload
       );
 
-      if (response.status === 200) { // Check for successful update
+      if (response.status === 200) {
         const updatedEmployeeList = employeeList.map((emp) =>
           emp.empId === response.data.empId ? response.data : emp
         );
         setEmployeeList(updatedEmployeeList);
         resetForm();
-        showSuccessMessage("Employee updated successfully!");
+        toast.success("Employee updated successfully!"); // Success toast
       }
     } catch (error) {
       console.error("Error updating employee:", error);
-      if (error.response && error.response.data) {
-        setErrors({ submit: error.response.data.message || "Failed to update employee" });
-      } else {
-        setErrors({ submit: "Failed to update employee" });
-      }
+      toast.error(error.response?.data?.message || "Failed to update employee"); // Error toast
     } finally {
       setLoading(false);
     }
@@ -162,13 +147,26 @@ const Add_Employee = () => {
       setLoading(true);
       await axios.delete(`${BASE_URL}/api/Employee/${id}`);
       setEmployeeList(employeeList.filter((employee) => employee.empId !== id));
-      showSuccessMessage("Employee deleted successfully!");
+      toast.success("Employee deleted successfully!"); // Success toast
     } catch (error) {
       console.error("Error deleting employee:", error);
-      setErrors({ submit: "Failed to delete employee" });
+      toast.error("Failed to delete employee"); // Error toast
     } finally {
       setLoading(false);
     }
+  };
+
+  // Reset form
+  const resetForm = () => {
+    setFormData({
+      empId: null,
+      empName: "",
+      phone: "",
+      email: "",
+      role: EmployeeTypes.OTHERS,
+      otherInfo: "",
+    });
+    setErrors({});
   };
 
   // Fetch Employees
@@ -189,44 +187,24 @@ const Add_Employee = () => {
     fetchEmployees();
   }, []);
 
-  // Reset form
-  const resetForm = () => {
-    setFormData({
-      empId: null,
-      empName: "",
-      phone: "",
-      email: "",
-      role: EmployeeTypes.OTHERS,
-      otherInfo: "",
-    });
-    setErrors({});
-  };
-
   return (
     <section className="w-full h-full">
-      <Newheader />
+      <div className="w-full h-24 overflow-y-hidden shadow-lg bg-gradient-to-r from-cyan-500 to-cyan-700">
+        <Newheader />
+      </div>
 
-      <div className="flex w-full h-[calc(100vh-6rem)]">
-        <MainSideBar />
+      <div className="flex h-[calc(100vh-4rem)]">
+        <div className="bg-gray-100">
+          <MainSideBar />
+        </div>
 
         <div className="flex-1 p-6 space-y-6 overflow-auto bg-gray-100">
-          {successMessage && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-              <span className="block sm:inline">{successMessage}</span>
-            </div>
-          )}
-
-          {errors.submit && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-              <span className="block sm:inline">{errors.submit}</span>
-            </div>
-          )}
-
+        <Toaster position="bottom-center" reverseOrder={false} />
           <div className="bg-white p-6 flex flex-col rounded-lg shadow-lg">
             <h3 className="text-2xl font-semibold mb-4 text-cyan-700">
               {formData.empId ? "Edit Employee" : "Organizing Committee Member"}
             </h3>
-            <div className="space-y-4 w-1/2 ">
+            <div className="space-y-4 w-1/2">
               {["empName", "phone", "email"].map((field) => (
                 <div key={field}>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -286,7 +264,9 @@ const Add_Employee = () => {
                   placeholder="Enter Other Info"
                 />
                 {errors.otherInfo && (
-                  <p className="text-red-500 text-sm mt-1">{errors.otherInfo}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.otherInfo}
+                  </p>
                 )}
               </div>
             </div>
@@ -303,13 +283,19 @@ const Add_Employee = () => {
                 className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
                 disabled={loading}
               >
-                {loading ? "Processing..." : formData.empId ? "Update" : "Submit"}
+                {loading
+                  ? "Processing..."
+                  : formData.empId
+                  ? "Update"
+                  : "Submit"}
               </button>
             </div>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-lg mt-6">
-            <h3 className="text-xl font-semibold text-cyan-700 mb-4">Employee List</h3>
+            <h3 className="text-xl font-semibold text-cyan-700 mb-4">
+              Employee List
+            </h3>
             {employeeList.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-gray-700 border-collapse">
