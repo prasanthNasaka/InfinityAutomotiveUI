@@ -1,6 +1,7 @@
 // import Card from "../Components/Card";
 // import MainSideBar from "../Components/MainSideBar";
-// import Newheader from "../Components/Newheader";
+import Newheader from "../Components/Newheader";
+
 
 import MainSideBar from "../Components/MainSideBar";
 
@@ -8,9 +9,16 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen w-full h-screen flex flex-col bg-gray-100">
       {/* Navigation Bar */}
-      <nav className="bg-cyan-600 p-4 text-white ">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Racing Dashboard</h1>
+      <Newheader />
+      {/* <nav className="bg-white p-4  ">
+        <div className="container flex justify-between items-center ">
+          <div className="flex">
+          <FaFlagCheckered className="text-3xl" />
+
+<h1 className="text-3xl font- font-bold text-cyan-500">Amon</h1>
+<h1 className="text-3xl font-bold text-black">Racing</h1>
+          </div>
+         
           <div className="flex items-center space-x-4">
             <span className="text-lg">Welcome, Racer!</span>
             <img className="border w-10 rounded-lg h-10"
@@ -18,7 +26,7 @@ const Dashboard = () => {
             />
           </div>
         </div>
-      </nav>
+      </nav> */}
 
 
         <div className="w-full flex h-full">
