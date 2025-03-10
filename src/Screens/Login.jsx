@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import videoBg from "../assets/videoBg.mp4";
@@ -14,6 +14,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("authToken");
+  const userRole = localStorage.getItem("userRole");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -22,16 +25,15 @@ const Login = () => {
         username: email,
         password,
       });
-
       if (response.status === 200) {
         toast.success("Login successful! Redirecting...");
         const { token, role } = response.data;
-
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
+
         localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("userRole", role || "101");
+        localStorage.setItem("userRole", role || "100");
       } else {
         toast.error(response.data || "Something went wrong");
         toast.error("warning");
@@ -52,6 +54,12 @@ const Login = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [token, navigate]);
 
   return (
     <>
