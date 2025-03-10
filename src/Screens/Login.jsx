@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -24,10 +25,13 @@ const Login = () => {
 
       if (response.status === 200) {
         toast.success("Login successful! Redirecting...");
+        const { token, role } = response.data;
+
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
         localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("userRole", role || "101");
       } else {
         toast.error(response.data || "Something went wrong");
         toast.error("warning");
