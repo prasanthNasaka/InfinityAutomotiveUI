@@ -120,8 +120,8 @@ const Add_Employee = () => {
         comId: 0, // Updated to match API
       };
 
-      const response = await axios.put(
-        `${BASE_URL}/api/Employee/${formData.empId}`,
+      const response = await axios.put(`
+        ${BASE_URL}/api/Employee/${formData.empId}`,
         payload
       );
 
@@ -188,14 +188,15 @@ const Add_Employee = () => {
   }, []);
 
   return (
-    <section className="w-full h-full">
-      <div className="w-full h-24 overflow-y-hidden shadow-lg bg-gradient-to-r from-cyan-500 to-cyan-700">
+    <section className="w-full h-screen flex flex-col">
+      <div className="overflow-y-hidden shadow-lg ">
         <Newheader />
       </div>
 
-      <div className="flex h-[calc(100vh-4rem)]">
-        <div className="bg-gray-100">
-          <MainSideBar />
+      <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
+
+        <div className=" h-full">
+        <MainSideBar />
         </div>
 
         <div className="flex-1 p-6 space-y-6 overflow-auto bg-gray-100">
