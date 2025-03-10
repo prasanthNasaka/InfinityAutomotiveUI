@@ -482,12 +482,12 @@ const EventForm = () => {
     <>
       <Toaster position="bottom-center" reverseOrder={false} />
 
-      <section className="w-full h-full">
-        <div className="w-full h-24 overflow-y-hidden shadow-lg">
+      <section className="w-full h-screen flex flex-col">
+        <div className="overflow-y-hidden shadow-lg">
           <Newheader />
         </div>
 
-        <div className="flex w-full h-[calc(100vh-6rem)]">
+        <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
           <div className="bg-gray-100">
             <MainSideBar />
           </div>

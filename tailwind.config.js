@@ -3,6 +3,13 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+        playfair: ["Playfair Display", "serif"],
+        roboto: ["Roboto", "sans-serif"],
+        robotoCondensed: ["Roboto Condensed", "sans-serif"],
+        robotoMono: ["Roboto Mono", "monospace"],
+      },
       animation: {
         leftToRight: "leftToRight 2s ease-in-out infinite",
         rightToLeft: "rightToLeft 2s ease-in-out infinite",

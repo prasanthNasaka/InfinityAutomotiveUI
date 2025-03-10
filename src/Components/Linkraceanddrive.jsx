@@ -553,15 +553,13 @@ const Linkraceanddrive = () => {
 
   return (
     <section className="w-full h-screen flex flex-col">
-      <div className="w-full h-24 overflow-y-hidden shadow-lg">
+      <div className=" overflow-y-hidden shadow-lg ">
         <Newheader />
       </div>
 
-      <div className="flex h-[calc(100vh-6rem)] overflow-hidden">
+      <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
         <div className=" h-full">
-          <div className="h-full ">
-            <MainSideBar />
-          </div>
+        <MainSideBar />
         </div>
 
         <div className="flex-1 p-3 overflow-y-auto">

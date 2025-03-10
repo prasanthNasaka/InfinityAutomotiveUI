@@ -196,13 +196,13 @@ const Emp_Login = () => {
 
   return (
     <>
-      <section className="w-full h-full">
-        <div className="w-full h-24 overflow-y-hidden shadow-lg bg-gradient-to-r from-cyan-500 to-cyan-700">
+      <section className="w-full h-screen flex flex-col">
+        <div className="overflow-y-hidden drop-shadow-lg">
           <Newheader />
         </div>
 
-        <div className="flex w-full h-[calc(100vh-6rem)]">
-          <div className="bg-gray-100">
+        <div className="flex overflow-hidden h-[calc(100vh-1rem)]">
+          <div className="h-full">
             <MainSideBar />
           </div>
 
