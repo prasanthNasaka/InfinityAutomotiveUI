@@ -7,6 +7,7 @@ import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const Registration = () => {
   const [name, setName] = useState("");
@@ -90,8 +91,8 @@ const Registration = () => {
           throw new Error("Driver ID is required for editing.");
         }
 
-        response = await axios.put(
-          `${BASE_URL}/api/drivers/${selecteddetails.driverId}`,
+        response = await AxiosInstance.put(
+          `/api/drivers/${selecteddetails.driverId}`,
           formData,
           {
             headers: {
@@ -105,7 +106,7 @@ const Registration = () => {
           throw new Error("Driver name, phone, and email are required.");
         }
 
-        response = await axios.post(`${BASE_URL}/api/drivers`, formData, {
+        response = await AxiosInstance.post("/api/drivers", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -160,21 +161,40 @@ const Registration = () => {
   };
 
   const handleDriverSelect = async (driver) => {
+    if (!driver?.driverId) {
+      console.warn("Invalid driver selection:", driver);
+      return;
+    }
+
     setSelectedDriver(driver);
-    if (driver.driverId) {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/api/drivers/${driver.driverId}`
-        );
+    setLoading(true);
+
+    try {
+      const response = await AxiosInstance.get(
+        `/api/drivers/${driver.driverId}`
+      );
+
+      console.log("response", response);
+
+      if (response.data) {
         setSelectedDetails(response.data);
-        setDrivers(response.data);
-      } catch (err) {
-        console.error("Error fetching driver details:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        setDrivers((prevDrivers) => {
+          const driversArray = Array.isArray(prevDrivers) ? prevDrivers : [];
+
+          return driversArray.map((d) =>
+            d.driverId === driver.driverId ? response.data : d
+          );
+        });
+      } else {
+        console.warn("Unexpected response format:", response);
       }
+    } catch (err) {
+      console.error("Error fetching driver details:", err);
+      setError(
+        err.response?.data?.message || "Failed to fetch driver details."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 

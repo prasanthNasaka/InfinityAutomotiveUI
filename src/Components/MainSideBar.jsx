@@ -27,9 +27,7 @@ const MainSideBar = () => {
   const [menuIcon, setMenuIcon] = useState(<FaRegDotCircle />);
   const [isEntryDeskOpen, setIsEntryDeskOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [userRole, setUserRole] = useState(
-    localStorage.getItem("userRole") || "101"
-  );
+  const [userRole, setUserRole] = useState(localStorage.getItem("userRole"));
 
   const isActive = (path) => location.pathname === path;
 
@@ -64,7 +62,6 @@ const MainSideBar = () => {
 
       <div className="flex-1 overflow-auto">
         <ul className="p-2 flex flex-col font-serif gap-4">
-          {/* Show Dashboard for roles 101 and 102 */}
           {(userRole === "101" || userRole === "102") && (
             <Link
               to="/dashboard"
@@ -77,7 +74,7 @@ const MainSideBar = () => {
             </Link>
           )}
 
-          {userRole === "100" && ( 
+          {userRole === "100" && (
             <>
               <Link
                 to="/addcompany"
@@ -109,7 +106,7 @@ const MainSideBar = () => {
             </>
           )}
 
-          {userRole === "101" && ( 
+          {userRole === "101" && (
             <>
               <Link
                 to="/events"
@@ -168,7 +165,7 @@ const MainSideBar = () => {
             </>
           )}
 
-          {userRole === "102" && ( 
+          {userRole === "102" && (
             <>
               <Link
                 to="/classes"
@@ -218,7 +215,7 @@ const MainSideBar = () => {
             </>
           )}
 
-          {userRole === "103" && ( 
+          {userRole === "103" && (
             <div
               className="p-2 rounded-lg relative flex-col flex gap-3 cursor-pointer"
               onMouseEnter={() => setIsHovered(true)}
@@ -253,7 +250,7 @@ const MainSideBar = () => {
             </div>
           )}
 
-          {userRole === "104" && ( 
+          {userRole === "104" && (
             <Link
               to="/driverracelink"
               className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
@@ -265,7 +262,7 @@ const MainSideBar = () => {
             </Link>
           )}
 
-          {userRole === "105" && ( 
+          {userRole === "105" && (
             <Link
               to="/scrutiny"
               className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
