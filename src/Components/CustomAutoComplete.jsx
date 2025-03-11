@@ -9,7 +9,7 @@ import { GoPlus } from "react-icons/go";
 import DriverRegistration from "../Screens/DriverRegistration";
 import VehicleRegistration from "../Screens/VehicleRegistration";
 
-const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from}) => {
+const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from,disabled}) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -130,6 +130,8 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from}) => {
   }, [options]);
 
   const handleInputChange = (e) => {
+    if (disabled) return; // Prevent updates when disabled
+  
     const value = e.target.value;
     setInputValue(value);
     setShowDropdown(true);
@@ -139,17 +141,20 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from}) => {
   return (
     <div className="relative w-full">
       <div className="relative flex items-center w-full">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          className="w-full px-4 py-2 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder={`Search by ${
-            searchType === "vehicle"
-              ? "Vehicle Make, Model, Reg No"
-              : "Driver Name, Phone, DL, Fmsci No"
-          }...`}
-        />
+      <input
+      type="text"
+      value={inputValue}
+      onChange={handleInputChange}
+      className={`w-full px-4 py-2 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+        disabled ? "bg-gray-50 cursor-not-allowed" : ""
+      }`}
+      placeholder={`Search by ${
+        searchType === "vehicle"
+          ? "Vehicle Make, Model, Reg No"
+          : "Driver Name, Phone, DL, Fmsci No"
+      }...`}
+      disabled={disabled} // Apply disabled state
+    />
         <div className="absolute right-12 top-0 h-full flex items-center pr-2 space-x-1 ">
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent mr-2" />

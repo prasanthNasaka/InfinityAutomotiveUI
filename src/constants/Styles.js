@@ -12,15 +12,23 @@ const Styles  = {
     buttonHoverBg: "#1E40AF", // Blue-700
   
     heading: {
-      fontFamily: "Roboto Mono, monospace",
+      fontFamily: "Poppins, sans-serif",
+      color: "#1A1A1A",
+      fontSize: "1.9rem",
       fontWeight: "bold",
-      color: "#1F2937",
-      fontSize: "2rem",
+    },
+
+    side: {
+      fontFamily: "Poppins, sans-serif",
+      // fontWeight: "bold",
+      color: "#FFFFFF",
+      fontSize: "1.1rem",
     },
   
     label: {
-      fontSize: "1rem",
-      fontWeight: "600",
+      fontFamily: "Poppins, sans-serif",
+      fontSize: "0.9rem",
+      fontWeight: "400",
       color: "#374151",
     },
   
@@ -34,7 +42,7 @@ const Styles  = {
     },
 
     description: {
-        fontFamily:"roboto",
+        fontFamily:"Poppins, sans-serif",
         color: "#1A1A1A"
     },
   

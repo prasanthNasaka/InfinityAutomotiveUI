@@ -20,6 +20,7 @@ import {
   LayoutTemplate,
   ShieldBan,
 } from "lucide-react";
+import Styles from "../constants/Styles";
 
 const MainSideBar = () => {
   const location = useLocation();
@@ -70,7 +71,7 @@ const MainSideBar = () => {
               }`}
             >
               <FaClipboardList />
-              {!isCollapsed && <span>Dashboard</span>}
+              {!isCollapsed && <span style={Styles.side}>Dashboard</span>}
             </Link>
           )}
 
@@ -83,7 +84,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaClipboardList />
-                {!isCollapsed && <span>Add Company</span>}
+                {!isCollapsed && <span style={Styles.side}>Add Company</span>}
               </Link>
               <Link
                 to="/eventsapproved"
@@ -92,7 +93,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <CalendarFold />
-                {!isCollapsed && <span>Approve Event</span>}
+                {!isCollapsed && <span style={Styles.side}>Approve Event</span>}
               </Link>
               <Link
                 to="/status"
@@ -101,7 +102,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <ShieldBan />
-                {!isCollapsed && <span>Manage Entry Desk</span>}
+                {!isCollapsed && <span style={Styles.side}>Manage Entry Desk</span>}
               </Link>
             </>
           )}
@@ -115,7 +116,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaCalendarAlt />
-                {!isCollapsed && <span>Events</span>}
+                {!isCollapsed && <span style={Styles.side}>Events</span>}
               </Link>
               <Link
                 to="/classes"
@@ -124,7 +125,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaCalendarAlt />
-                {!isCollapsed && <span>Classes</span>}
+                {!isCollapsed && <span style={Styles.side}>Classes</span>}
               </Link>
               <Link
                 to="/driverracelink"
@@ -133,7 +134,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaUserCheck />
-                {!isCollapsed && <span>Registration Desk</span>}
+                {!isCollapsed && <span style={Styles.side}>Registration Desk</span>}
               </Link>
               <Link
                 to="/addemployee"
@@ -142,7 +143,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <Building />
-                {!isCollapsed && <span>Organizing Committee</span>}
+                {!isCollapsed && <span style={Styles.side}>Organizing Committee</span>}
               </Link>
               <Link
                 to="/emplogin"
@@ -151,7 +152,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaTv />
-                {!isCollapsed && <span>Emp Login</span>}
+                {!isCollapsed && <span style={Styles.side}>Emp Login</span>}
               </Link>
               <Link
                 to="/scrutiny"
@@ -160,7 +161,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaClipboardList />
-                {!isCollapsed && <span>Scrutiny</span>}
+                {!isCollapsed && <span style={Styles.side}>Scrutiny</span>}
               </Link>
             </>
           )}
@@ -174,7 +175,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaCalendarAlt />
-                {!isCollapsed && <span>Classes</span>}
+                {!isCollapsed && <span style={Styles.side}>Classes</span>}
               </Link>
               <Link
                 to="/driverracelink"
@@ -183,7 +184,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaUserCheck />
-                {!isCollapsed && <span>Registration Desk</span>}
+                {!isCollapsed && <span style={Styles.side}>Registration Desk</span>}
               </Link>
               <Link
                 to="/addemployee"
@@ -192,7 +193,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <Building />
-                {!isCollapsed && <span>Organizing Committee</span>}
+                {!isCollapsed && <span style={Styles.side}>Organizing Committee</span>}
               </Link>
               <Link
                 to="/emplogin"
@@ -201,7 +202,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaTv />
-                {!isCollapsed && <span>Emp Login</span>}
+                {!isCollapsed && <span style={Styles.side}>Emp Login</span>}
               </Link>
               <Link
                 to="/scrutiny"
@@ -210,7 +211,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaClipboardList />
-                {!isCollapsed && <span>Scrutiny</span>}
+                {!isCollapsed && <span style={Styles.side}>Scrutiny</span>}
               </Link>
             </>
           )}
@@ -234,7 +235,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaRegAddressCard />
-                {!isCollapsed && <span>Racer Details</span>}
+                {!isCollapsed && <span style={Styles.side}>Racer Details</span>}
               </Link>
               <Link
                 to="/vehicle_registration"
@@ -245,7 +246,7 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaCar />
-                {!isCollapsed && <span>Vehicle Registration</span>}
+                {!isCollapsed && <span style={Styles.side}>Vehicle Registration</span>}
               </Link>
             </div>
           )}
@@ -258,7 +259,7 @@ const MainSideBar = () => {
               }`}
             >
               <FaUserCheck />
-              {!isCollapsed && <span>Registration Desk</span>}
+              {!isCollapsed && <span style={Styles.side}>Registration Desk</span>}
             </Link>
           )}
 
@@ -270,7 +271,7 @@ const MainSideBar = () => {
               }`}
             >
               <FaClipboardList />
-              {!isCollapsed && <span>Scrutiny</span>}
+              {!isCollapsed && <span style={Styles.side}>Scrutiny</span>}
             </Link>
           )}
         </ul>

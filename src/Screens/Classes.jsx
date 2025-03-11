@@ -8,6 +8,7 @@ import axios from "axios";
 import { MdOutlineDelete } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import toast, { Toaster } from "react-hot-toast";
+import Styles from "../constants/Styles";
 
 const Classes = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -180,9 +181,12 @@ const Classes = () => {
           </div>
           <div className="flex w-full flex-col overflow-auto p-4 gap-4">
             <div className="w-full flex flex-col gap-2 tab:flex-col">
-            <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">
+              <div className="flex">
+              <h3 style={Styles.heading} className="text-2xl font-bold mb-4 text-gray-800 text-center ">
                 {editCategory ? "Edit Class" : "Add Class"}
               </h3>
+              </div>
+           
               
               <div className="w-1/2 tab:w-full">
                 <label className="text-sm font-medium text-white">
