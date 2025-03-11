@@ -1,7 +1,7 @@
 import axios from "axios";
+import { BASE_URL } from "../constants/global-const";
 
 // Base URL
-const BASE_URL = "https://localhost:7206";
 
 // Create Axios instance
 const AxiosInstance = axios.create({
