@@ -15,6 +15,7 @@ import { IMAGE_URL } from "../constants/global-const";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { DataTable } from "simple-datatables";
+import Styles from "../constants/Styles";
 
 const EventForm = () => {
   const [eventData, setEventData] = useState({
@@ -495,11 +496,14 @@ const EventForm = () => {
             <section className="h-auto w-full flex p-6 justify-center items-center">
               <form
                 onSubmit={editMode ? handleUpdate : handleSubmit}
-                className="w-full flex flex-col gap-6 rounded-lg bg-white shadow-lg p-4"
+                className="w-full flex border flex-col gap-6 rounded-lg bg-white shadow-lg p-4"
               >
-                <h2 className="text-2xl font-bold text-center">
+                <div className="flex">
+                <h2 style={Styles.heading} className="  justify-start">
                   {editMode ? "Edit Event" : "Event Form"}
                 </h2>
+                </div>
+               
 
                 <div className="flex gap-4">
                   <div className="w-1/2 gap-2 flex flex-col">

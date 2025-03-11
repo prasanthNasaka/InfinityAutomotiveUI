@@ -13,6 +13,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { HandCoins, Trash, X } from "lucide-react";
 import axios from "axios";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import Styles from "../constants/Styles";
+import { GiTakeMyMoney } from "react-icons/gi";
 
 const Linkraceanddrive = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
@@ -41,6 +43,7 @@ const Linkraceanddrive = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [addDocVerify, setAddDocVerify] = useState(98);
   const [deletePop, setDeletePop] = useState(false);
+  const [entryPrice, setEntryPrice] = useState(null);
   const [updatedContestantNumbers, setUpdatedContestantNumbers] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(5);
@@ -148,18 +151,18 @@ const Linkraceanddrive = () => {
 
   const handleEventChange = (event) => {
     const selectedEventId = event.target.value;
-
     setEventId(selectedEventId);
     setSelectedEvent(selectedEventId);
-    setSelectedCategory("");
+    setSelectedCategory(""); // Reset category on event change
+    setEntryPrice(null); // Reset entry price on event change
     setTableData([]);
 
     if (selectedEventId) {
       fetch(`${BASE_URL}/api/eventcategories?event_id=${selectedEventId}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data && Array.isArray(data.$values)) {
-            setCategories(data.$values);
+          if (Array.isArray(data)) {
+            setCategories(data);
           } else {
             setCategories([]);
           }
@@ -172,8 +175,8 @@ const Linkraceanddrive = () => {
       fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
         .then((response) => response.json())
         .then((data) => {
-          if (Array.isArray(data.$values)) {
-            setTableData(data.$values);
+          if (Array.isArray(data)) {
+            setTableData(data);
           } else {
             setTableData([]);
           }
@@ -205,8 +208,20 @@ const Linkraceanddrive = () => {
     localStorage.removeItem("regId");
   };
 
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
+  const handleCategoryChange = (event) => {
+    const selectedCatId = event.target.value;
+    setSelectedCategory(selectedCatId);
+
+    // Find the selected category and get entry price
+    const selectedCategoryData = categories.find(
+      (cat) => cat.evtCatId === Number(selectedCatId)
+    );
+
+    if (selectedCategoryData) {
+      setEntryPrice(selectedCategoryData.entryprice);
+    } else {
+      setEntryPrice(null);
+    }
   };
 
   const handleDataReceived = (type, data) => {
@@ -319,7 +334,7 @@ const Linkraceanddrive = () => {
     }
 
     const payload = {
-      refNumb: paymentReference,
+      refNumb: paymentReference, // ✅ Correctly checks for an entered reference number
       regId: selectedIds,
     };
 
@@ -334,7 +349,7 @@ const Linkraceanddrive = () => {
 
       toast.success("Amount status updated successfully!");
       setSelectedIds([]);
-      setPaymentReference("");
+      setPaymentReference(""); // ✅ Clears input after submission
       setDrvTableData([]);
       await fetchUpdatedData();
     } catch (error) {
@@ -534,17 +549,25 @@ const Linkraceanddrive = () => {
   };
 
   const fetchUpdatedData = async () => {
-    fetch(`${BASE_URL}/api/EventRegistration/ActiveEvents`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data.$values)) {
-          setEvents(data.$values);
-        } else {
-          console.error("Expected an array of events, but received:", data);
-          setEvents([]);
-        }
-      })
-      .catch((error) => console.error("Error fetching events:", error));
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/EventRegistration/ActiveEvents`
+      );
+      const data = await response.json();
+
+      console.log("Fetched Data:", data); // Ensure data is logged
+
+      if (Array.isArray(data)) {
+        setEvents(data);
+      } else if (data && Array.isArray(data.events)) {
+        setEvents(data.events); // ✅ Handles nested event data
+      } else {
+        console.error("Unexpected data format:", data);
+        setEvents([]);
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
   };
 
   useEffect(() => {
@@ -559,14 +582,17 @@ const Linkraceanddrive = () => {
 
       <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
         <div className=" h-full">
-        <MainSideBar />
+          <MainSideBar />
         </div>
 
         <div className="flex-1 p-3 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-lg  border mb-6">
-              <div className="p-2">
-                <h3 className="text-2xl font-semibold text-center text-gray-900">
+            <div className="bg-white rounded-lg shadow-md mb-6">
+              <div className="p-2 flex">
+                <h3
+                  style={Styles.heading}
+                  className="text-2xl font-semibold text-center text-gray-900"
+                >
                   Registration
                 </h3>
               </div>
@@ -575,9 +601,7 @@ const Linkraceanddrive = () => {
                 <div className="w-full h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
                   <div className="w-full flex p-2 gap-2 tab:flex-col">
                     <div className="w-1/2 tab:w-full">
-                      <label className="text-sm font-medium text-gray-900">
-                        Event Name
-                      </label>
+                      <label style={Styles.label}>Event Name</label>
                       <select
                         value={selectedEvent}
                         onChange={handleEventChange}
@@ -593,9 +617,7 @@ const Linkraceanddrive = () => {
                     </div>
 
                     <div className="w-1/2 tab:w-full">
-                      <label className="text-sm font-medium text-gray-900">
-                        Event Class
-                      </label>
+                      <label style={Styles.label}>Event Class</label>
                       <select
                         value={selectedCategory}
                         onChange={handleCategoryChange}
@@ -625,6 +647,7 @@ const Linkraceanddrive = () => {
                           Search
                         </label>
                         <AutoCompleteSearch
+                          disabled={!selectedEvent} // Disable if no event is selected
                           from="myComponent"
                           searchType="Driver"
                           onDataReceived={(data) =>
@@ -648,7 +671,10 @@ const Linkraceanddrive = () => {
                             )}
                           </div>
 
-                          <div className="w-1/2 flex flex-col gap-4 justify-center">
+                          <div
+                            style={Styles.label}
+                            className="w-1/2 flex flex-col gap-4 justify-center"
+                          >
                             <span>
                               Name:{" "}
                               {selectedDriver
@@ -685,6 +711,7 @@ const Linkraceanddrive = () => {
                             Search
                           </label>
                           <AutoCompleteSearch
+                            disabled={!selectedEvent} // Disable if no event is selected
                             from="myComponent"
                             searchType="vehicle"
                             onDataReceived={(data) =>
@@ -709,7 +736,10 @@ const Linkraceanddrive = () => {
                               <LuBike className="text-4xl border text-cyan-600 w-48 bg-white rounded-lg h-32 object-cover" />
                             )}
                           </div>
-                          <div className="w-1/2 flex flex-col gap-4 justify-center">
+                          <div
+                            style={Styles.label}
+                            className="w-1/2 flex flex-col gap-4 justify-center"
+                          >
                             <span>
                               Brand:{" "}
                               {selectedVehicle
@@ -743,25 +773,21 @@ const Linkraceanddrive = () => {
                   <div className="w-full flex p-2 gap-2 tab:flex-col items-center">
                     <div className="w-1/2 tab:w-full flex items-end  justify-around px-2">
                       <div className="w-1/3 ">
-                        <div className="relative">
-                          <input
-                            value={value}
-                            onChange={numberInput}
-                            type="text"
-                            className="peer block w-full appearance-auto border-b-2 border-gray-100 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 
-                     focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-200 dark:text-black dark:focus:border-blue-500"
-                            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="Contestent Number"
-                            className="absolute left-2 top-3 text-sm text-gray-500 transition-all 
-                     peer-placeholder-shown:top-4 peer-placeholder-shown:scale-100 
-                     peer-focus:top-1 peer-focus:scale-75 peer-focus:text-cyan-600"
-                          >
-                            Contestant Number
-                          </label>
-                        </div>
+                        <label
+                          style={Styles.label}
+                          htmlFor="contestantNumber"
+                          className="block text-md"
+                        >
+                          Contestant Number
+                        </label>
+                        <input
+                          disabled={!selectedEvent}
+                          id="contestantNumber"
+                          type="text"
+                          value={value}
+                          onChange={numberInput}
+                          className="p-2 w-full bg-gray-50 border border-gray-300 rounded-lg"
+                        />
                         {error && (
                           <span className="text-sm text-red-500">{error}</span>
                         )}
@@ -788,6 +814,7 @@ const Linkraceanddrive = () => {
                         />
                         <label
                           htmlFor="documentVerified"
+                          style={Styles.label}
                           className="text-md text-black ml-2 hover:cursor-pointer"
                         >
                           Document Verified
@@ -806,6 +833,7 @@ const Linkraceanddrive = () => {
                           required
                         />
                         <label
+                          style={Styles.label}
                           htmlFor="amountPaid"
                           className="text-md text-black hover:cursor-pointer"
                         >
@@ -815,7 +843,11 @@ const Linkraceanddrive = () => {
 
                       {amountPaidChecked && (
                         <div className="w-1/3 flex items-center mr-24">
-                          <label className="text-md" htmlFor="referenceNumber">
+                          <label
+                            style={Styles.label}
+                            className="text-md"
+                            htmlFor="referenceNumber"
+                          >
                             Number:
                           </label>
                           <input
@@ -843,6 +875,17 @@ const Linkraceanddrive = () => {
                         </button>
                       </div>
                     </div>
+                  </div>
+                  <div className="w-full flex p-2 gap-2 justify-end tab:flex-col items-center">
+                    {entryPrice !== null && (
+                      <div className="mt-4 p-2 bg-gray-100 rounded-md">
+                        <strong>Entry Price:</strong>{" "}
+                        <span className="text-green-600 flex text-lg">
+                          <GiTakeMyMoney className="text-3xl" />
+                          {entryPrice}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -873,6 +916,8 @@ const Linkraceanddrive = () => {
                         </div>
                       </div>
 
+                      {/* <span>${entryprice}</span> */}
+
                       <div className="w-full h-fit flex justify-center items-center">
                         <button
                           onClick={Close}
@@ -891,7 +936,7 @@ const Linkraceanddrive = () => {
                       <div className="overflow-x-auto border-b-2">
                         <table className="w-full text-sm text-left text-gray-500">
                           <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
-                            <tr>
+                            <tr style={Styles.label}>
                               <th className="px-6 py-3 whitespace-nowrap">
                                 <button
                                   onClick={handleSelectAll}
@@ -1180,7 +1225,7 @@ const Linkraceanddrive = () => {
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm text-left text-gray-500">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
-                          <tr>
+                          <tr style={Styles.label}>
                             <th className="px-6 py-3 whitespace-nowrap">
                               SL.No
                             </th>
@@ -1248,6 +1293,9 @@ const Linkraceanddrive = () => {
                               Payment Status
                             </th>
                             <th className="px-6 py-3 whitespace-nowrap">
+                              Reference Number
+                            </th>
+                            <th className="px-6 py-3 whitespace-nowrap">
                               Documents
                             </th>
                             <th className="px-6 py-3 whitespace-nowrap">
@@ -1287,6 +1335,10 @@ const Linkraceanddrive = () => {
                                   {event.amountPaid === 92 ? "Paid" : "Pending"}
                                 </span>
                               </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                {event.referenceNo}
+                              </td>
+
                               <td className="px-6 py-2 whitespace-nowrap">
                                 <span
                                   className={`p-2 rounded-full text-xs ${

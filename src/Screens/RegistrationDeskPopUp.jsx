@@ -6,6 +6,8 @@ import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
+import Styles from "../constants/Styles";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 
 const RegistrationDeskPopUp = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
@@ -27,6 +29,87 @@ const RegistrationDeskPopUp = () => {
   const [DrvtableData, setDrvTableData] = useState([]);
   const [eventId, setEventId] = useState(false);
   const [addDocVerify, setAddDocVerify] = useState(97);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "none",
+  });
+
+  const filteredData = tableData.filter((event) =>
+    Object.values(event).some((value) =>
+      String(value).toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortConfig.direction === "none") return 0;
+
+    const key = sortConfig.key;
+    if (a[key] < b[key]) return sortConfig.direction === "asc" ? -1 : 1;
+    if (a[key] > b[key]) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // eslint-disable-next-line react/prop-types
+  const SortingIcon = ({ direction }) => {
+    if (direction === "none") {
+      return <FaSort className="w-4 h-4 ms-1" />;
+    } else if (direction === "asc") {
+      return <FaSortUp className="w-4 h-4 ms-1" />;
+    } else if (direction === "desc") {
+      return <FaSortDown className="w-4 h-4 ms-1" />;
+    }
+  };
+
+  const totalPages = Math.ceil(sortedData.length / recordsPerPage);
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const endIndex = startIndex + recordsPerPage;
+  const currentData = sortedData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      if (sortConfig.direction === "asc") direction = "desc";
+      else if (sortConfig.direction === "desc") direction = "none";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getPageNumbers = () => {
+    let pages = [];
+    const maxVisiblePages = 2; // Number of pages to show around the current page
+
+    if (totalPages <= 5) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      pages = [1];
+
+      let start = Math.max(2, currentPage - maxVisiblePages);
+      let end = Math.min(totalPages - 1, currentPage + maxVisiblePages);
+
+      if (start > 2) {
+        pages.push("...");
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (end < totalPages - 1) {
+        pages.push("...");
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
 
   const handleEventChange = (event) => {
     const selectedEventId = event.target.value;
@@ -40,8 +123,8 @@ const RegistrationDeskPopUp = () => {
       fetch(`${BASE_URL}/api/eventcategories?event_id=${selectedEventId}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data && Array.isArray(data.$values)) {
-            setCategories(data.$values);
+          if (data && Array.isArray(data)) {
+            setCategories(data);
           } else {
             setCategories([]);
           }
@@ -54,8 +137,8 @@ const RegistrationDeskPopUp = () => {
       fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
         .then((response) => response.json())
         .then((data) => {
-          if (data && Array.isArray(data.$values)) {
-            const updatedData = data.$values.map((item) => ({
+          if (data && Array.isArray(data)) {
+            const updatedData = data.map((item) => ({
               ...item,
               driverPhotoUrl: item.driverPhoto
                 ? `${IMAGE_URL}${item.driverPhoto}`
@@ -188,8 +271,8 @@ const RegistrationDeskPopUp = () => {
     fetch(`${BASE_URL}/api/EventRegistration/ActiveEvents`)
       .then((response) => response.json())
       .then((data) => {
-        if (Array.isArray(data.$values)) {
-          setEvents(data.$values);
+        if (Array.isArray(data)) {
+          setEvents(data);
         } else {
           console.error("Expected an array of events, but received:", data);
           setEvents([]);
@@ -210,8 +293,11 @@ const RegistrationDeskPopUp = () => {
         <div className="flex-1 p-3 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
             <div className="bg-white rounded-lg  border mb-6">
-              <div className="p-2">
-                <h3 className="text-2xl font-semibold text-center text-gray-900">
+              <div className="p-2 flex">
+                <h3
+                  style={Styles.heading}
+                  className="text-2xl font-semibold text-center text-gray-900"
+                >
                   Registration
                 </h3>
               </div>
@@ -220,7 +306,10 @@ const RegistrationDeskPopUp = () => {
                 <div className="w-full h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
                   <div className="w-full flex p-2 gap-2 tab:flex-col">
                     <div className="w-1/2 tab:w-full">
-                      <label className="text-sm font-medium text-gray-900">
+                      <label
+                        style={Styles.label}
+                        className="text-sm font-medium text-gray-900"
+                      >
                         Event Name
                       </label>
                       <select
@@ -238,7 +327,10 @@ const RegistrationDeskPopUp = () => {
                     </div>
 
                     <div className="w-1/2 tab:w-full">
-                      <label className="text-sm font-medium text-gray-900">
+                      <label
+                        style={Styles.label}
+                        className="text-sm font-medium text-gray-900"
+                      >
                         Event Class
                       </label>
                       <select
@@ -269,14 +361,15 @@ const RegistrationDeskPopUp = () => {
                         <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
                           Search
                         </label>
-                        <AutoCompleteSearch
-                          from="myComponent"
-                          searchType="Driver"
-                          onDataReceived={(data) =>
-                            handleDataReceived("driver", data)
-                          }
-                          onSelect={(driver) => handleSelect("driver", driver)}
-                        />
+
+                      <AutoCompleteSearch
+  disabled={!selectedEvent}  // Disable until event is selected
+  from="myComponent"
+  searchType="Driver"
+  onDataReceived={(data) => handleDataReceived("driver", data)}
+  onSelect={(driver) => handleSelect("driver", driver)}
+/>
+
                       </form>
 
                       <div className="w-full h-full">
@@ -293,7 +386,10 @@ const RegistrationDeskPopUp = () => {
                             )}
                           </div>
 
-                          <div className="w-1/2 flex flex-col gap-4 justify-center">
+                          <div
+                            style={Styles.label}
+                            className="w-1/2 flex flex-col gap-4 justify-center"
+                          >
                             <span>
                               Name:{" "}
                               {selectedDriver
@@ -330,6 +426,7 @@ const RegistrationDeskPopUp = () => {
                             Search
                           </label>
                           <AutoCompleteSearch
+                            disabled={!selectedEvent} // Disable until event is selected
                             from="myComponent"
                             searchType="vehicle"
                             onDataReceived={(data) =>
@@ -354,7 +451,10 @@ const RegistrationDeskPopUp = () => {
                               <LuBike className="text-4xl border text-cyan-600 w-48 bg-white rounded-lg h-32 object-cover" />
                             )}
                           </div>
-                          <div className="w-1/2 flex flex-col gap-4 justify-center">
+                          <div
+                            style={Styles.label}
+                            className="w-1/2 flex flex-col gap-4 justify-center"
+                          >
                             <span>
                               Brand:{" "}
                               {selectedVehicle
@@ -389,6 +489,7 @@ const RegistrationDeskPopUp = () => {
                     <div className="w-1/2 tab:w-full flex items-center px-2">
                       <div className="w-1/2">
                         <label
+                          style={Styles.label}
                           htmlFor="contestantNumber"
                           className="block text-md"
                         >
@@ -408,7 +509,11 @@ const RegistrationDeskPopUp = () => {
                       </div>
 
                       <div className="w-1/2 flex flex-col">
-                        <label htmlFor="referenceNumber" className="text-md">
+                        <label
+                          style={Styles.label}
+                          htmlFor="referenceNumber"
+                          className="text-md"
+                        >
                           Number:
                         </label>
                         <input
@@ -448,7 +553,7 @@ const RegistrationDeskPopUp = () => {
                       <div className="overflow-x-auto border-b-2">
                         <table className="w-full text-sm text-left text-gray-500">
                           <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
-                            <tr>
+                            <tr style={Styles.label}>
                               <th className="px-6 py-3 whitespace-nowrap">
                                 SL.No
                               </th>
@@ -548,68 +653,197 @@ const RegistrationDeskPopUp = () => {
               </div>
             </div>
             {tableData && tableData.length > 0 && (
-              <div className="min-h-auto">
-                <div className="border rounded-lg overflow-hidden bg-white shadow-md">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-500">
-                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
-                        <tr>
-                          <th className="px-6 py-3 whitespace-nowrap">SL.No</th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Driver Name
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Driver Photo
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Vehicle
-                          </th>
-                          <th className="px-6 py-3 whitespace-nowrap">Class</th>
-                          <th className="px-6 py-3 whitespace-nowrap">
-                            Contestant Number
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 text-center uppercase">
-                        {tableData.map((event, index) => (
-                          <tr
-                            key={event.regId}
-                            className="bg-white hover:bg-gray-50"
-                          >
-                            <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
-                              {index + 1}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap text-gray-900">
-                              {event.drivername}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap flex justify-center">
-                              <div className="border w-10 h-10 rounded-full">
-                                {event.driverPhotoUrl ? (
-                                  <img
-                                    src={event.driverPhotoUrl}
-                                    alt="Driver"
-                                    className="w-10 h-10 rounded-full"
-                                  />
-                                ) : (
-                                  <IoPerson size={24} />
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              {event.regNumb}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              {event.evtCategory}
-                            </td>
-                            <td className="px-6 py-2 whitespace-nowrap">
-                              {event.contestantNo}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <div className="min-h-auto border">
+                <div className="w-full h-14 flex justify-between items-center px-5">
+                  <input
+                    className="w-1/3 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1); // Reset to the first page on search
+                    }}
+                  />
+                  <div className="flex items-center space-x-3">
+                    <label
+                      htmlFor="pageType"
+                      className="font-medium text-gray-700"
+                    >
+                      Page Type:
+                    </label>
+                    <select
+                      id="pageType"
+                      className="border border-gray-300 bg-white text-gray-700 p-2 pl-3 pr-8 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300 ease-in-out hover:shadow-md"
+                      value={recordsPerPage}
+                      onChange={(e) => {
+                        setRecordsPerPage(Number(e.target.value));
+                        setCurrentPage(1); // Reset to the first page on records per page change
+                      }}
+                    >
+                      <option value="5">5 per page</option>
+                      <option value="10">10 per page</option>
+                      <option value="15">15 per page</option>
+                      <option value="20">20 per page</option>
+                    </select>
                   </div>
                 </div>
+
+                {/* Display "No data found" message if filteredData is empty */}
+                {filteredData.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500">
+                    No data found for your search query.
+                  </div>
+                ) : (
+                  <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm text-left text-gray-500">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                          <tr style={Styles.label}>
+                            <th className="px-6 py-3 whitespace-nowrap">
+                              SL.No
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("drivername")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Driver Name
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "drivername"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("regNumb")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Vehicle
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "regNumb"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("evtCategory")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Class
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "evtCategory"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th
+                              className="px-6 py-3 whitespace-nowrap cursor-pointer"
+                              onClick={() => handleSort("contestantNo")}
+                            >
+                              <div className="flex items-center justify-center">
+                                Contestant Number
+                                <SortingIcon
+                                  direction={
+                                    sortConfig.key === "contestantNo"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 text-center uppercase">
+                          {currentData.map((event, index) => (
+                            <tr
+                              key={event.eventid}
+                              className="bg-white hover:bg-gray-50"
+                            >
+                              <td className="px-6 py-2 whitespace-nowrap font-medium text-gray-900">
+                                {startIndex + index + 1}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap text-gray-900">
+                                {event.drivername}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                {event.regNumb}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                {event.evtCategory}
+                              </td>
+                              <td className="px-6 py-2 whitespace-nowrap">
+                                {event.contestantNo}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pagination Controls */}
+                {filteredData.length > 0 && (
+                  <div className="flex justify-end px-2 items-center space-x-2 m-4">
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={currentPage === 1}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === 1
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-cyan-500 text-white hover:bg-cyan-700"
+                      }`}
+                    >
+                      Prev
+                    </button>
+                    {getPageNumbers().map((page, index) =>
+                      page === "..." ? (
+                        <span key={index} className="px-3 py-2">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={index}
+                          onClick={() => handlePageChange(page)}
+                          className={`px-3 py-2 rounded-md ${
+                            currentPage === page
+                              ? "bg-cyan-700 text-white"
+                              : "bg-gray-200 hover:bg-gray-400"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === totalPages
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-cyan-500 text-white hover:bg-cyan-700"
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
