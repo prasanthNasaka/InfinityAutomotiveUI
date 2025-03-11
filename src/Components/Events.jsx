@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { DataTable } from "simple-datatables";
 import Styles from "../constants/Styles";
+import AxiosInstance from "./AxiosInstance";
 
 const EventForm = () => {
   const [eventData, setEventData] = useState({
@@ -264,7 +265,7 @@ const EventForm = () => {
     }
 
     try {
-      const response = await axios.post(
+      const response = await AxiosInstance.post(
         `${BASE_URL}/api/EventRegistration`,
         formData,
         {
@@ -385,7 +386,7 @@ const EventForm = () => {
       const url = `${BASE_URL}/api/EventRegistration/${editId}`;
       console.log("Making PUT request to:", url);
 
-      const response = await axios.put(url, formData, {
+      const response = await AxiosInstance.put(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -424,7 +425,7 @@ const EventForm = () => {
       try {
         console.log("Deleting event with ID:", eventId);
         const url = `${BASE_URL}/api/EventRegistration/${eventId}`;
-        await axios.delete(url);
+        await AxiosInstance.delete(url);
         setSubmittedEvents(
           submittedEvents.filter(
             (event) => (event.id || event.eventId) !== eventId
@@ -444,10 +445,9 @@ const EventForm = () => {
   };
 
   const refreshEvents = useCallback(() => {
-    axios
-      .get(`${BASE_URL}/api/EventRegistration`)
+    AxiosInstance.get(`${BASE_URL}/api/EventRegistration`)
       .then((response) => {
-        setSubmittedEvents(response.data.$values || []);
+        setSubmittedEvents(response.data || []);
       })
       .catch((error) => {
         toast.error("There was an error loading events!", error);
@@ -499,11 +499,10 @@ const EventForm = () => {
                 className="w-full flex border flex-col gap-6 rounded-lg bg-white shadow-lg p-4"
               >
                 <div className="flex">
-                <h2 style={Styles.heading} className="  justify-start">
-                  {editMode ? "Edit Event" : "Event Form"}
-                </h2>
+                  <h2 style={Styles.heading} className="  justify-start">
+                    {editMode ? "Edit Event" : "Event Form"}
+                  </h2>
                 </div>
-               
 
                 <div className="flex gap-4">
                   <div className="w-1/2 gap-2 flex flex-col">

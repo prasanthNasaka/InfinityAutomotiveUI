@@ -7,6 +7,7 @@ import axios from "axios";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const Vehicledetails = () => {
   const [vehicleData, setVehicleData] = useState([]);
@@ -88,7 +89,7 @@ const Vehicledetails = () => {
           throw new Error("Vehicle ID is required for editing.");
         }
 
-        response = await axios.put(
+        response = await AxiosInstance.put(
           `${BASE_URL}/api/Vehicle/${selecteddetails.vehicleId}`,
           formData,
           {
@@ -99,7 +100,7 @@ const Vehicledetails = () => {
         );
         toast.success("Vehicle updated successfully:", response.data);
       } else {
-        response = await axios.post(`${BASE_URL}/api/Vehicle`, formData, {
+        response = await AxiosInstance.post(`${BASE_URL}/api/Vehicle`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -161,7 +162,7 @@ const Vehicledetails = () => {
     if (vehicle.vehicleId) {
       setLoading(true);
       try {
-        const response = await axios.get(
+        const response = await AxiosInstance.get(
           `${BASE_URL}/api/Vehicle/${vehicle.vehicleId}`
         );
         setSelectedDetails(response.data);
