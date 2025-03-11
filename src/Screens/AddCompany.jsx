@@ -8,6 +8,7 @@ import Loader from "../Components/Loader";
 import toast, { Toaster } from "react-hot-toast";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const AddCompany = () => {
   const [formData, setFormData] = useState({
@@ -64,8 +65,8 @@ const AddCompany = () => {
 
   const updateCompany = async () => {
     try {
-      const response = await axios.put(
-        `${BASE_URL}/api/companies/${formData.companyId}`,
+      const response = await AxiosInstance.put(
+        `/api/companies/${formData.companyId}`,
         {
           companyName: formData.name,
           Abbr: formData.abbr,
@@ -120,42 +121,49 @@ const AddCompany = () => {
     setSuccess(false);
 
     const formattedData = {
-      CompanyName: formData.name,
-      Abbr: formData.abbr,
-      Street: formData.address.street,
-      City: formData.address.city,
-      State: formData.address.state,
-      Zip: formData.address.zip,
-      Country: formData.address.country,
-      Website: formData.address.website,
-
-      Employees: {
-        EmpName: formData.contact.contactPerson,
-        Email: formData.contact.email,
-        Phone: formData.contact.phone,
-        Otherinfo: "Admin user for the company",
+      companyName: formData.name,
+      abbr: formData.abbr,
+      street: formData.address.street,
+      city: formData.address.city,
+      state: formData.address.state,
+      zip: formData.address.zip,
+      country: formData.address.country,
+      website: formData.address.website,
+      employees: {
+        empName: formData.contact.contactPerson,
+        email: formData.contact.email,
+        comId: 0, // Set dynamically if needed
+        phone: formData.contact.phone,
+        otherInfo: "Admin user for the company",
+        employeeType: 1, // Default employee type
+        status: 1, // Active by default
       },
-
       userInfo: {
-        Username: formData.login.username,
-        Password: formData.login.password,
-        usertype: 1,
+        id: 0, // Keep it 0 if the backend auto-generates IDs
+        username: formData.login.username,
+        password: formData.login.password,
+        usertype: 100, // Ensure correct role ID
+        compid: 0, // Set dynamically if needed
+        empId: 0, // Set dynamically if needed
+        isActive: true, // Default active status
       },
     };
 
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/companies`,
+      const response = await AxiosInstance.post(
+        "/api/companies",
         formattedData
       );
-      toast.success("Added Company:", response.data);
+
+      toast.success("Company added successfully!");
+
+      // Update state with new company
       setCompanies((prevCompanies) => [...prevCompanies, response.data]);
 
-      setSuccess(true);
+      // Reset form state after successful submission
       setFormData({
         name: "",
         abbr: "",
-
         address: {
           street: "",
           city: "",
@@ -167,6 +175,8 @@ const AddCompany = () => {
         contact: { phone: "", email: "", contactPerson: "" },
         login: { username: "", password: "" },
       });
+
+      setSuccess(true);
     } catch (err) {
       console.error("Error:", err.response?.data || err.message);
 
@@ -183,16 +193,17 @@ const AddCompany = () => {
   const fetchCompanies = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/companies`);
+      const response = await AxiosInstance.get("/api/companies");
 
-      if (
-        response.data &&
-        response.data.$values &&
+      if (response.data && Array.isArray(response.data)) {
+        setCompanies(response.data); // Directly set the array
+      } else if (
+        response.data?.$values &&
         Array.isArray(response.data.$values)
       ) {
-        setCompanies(response.data.$values);
+        setCompanies(response.data.$values); // Fallback if $values exists
       } else {
-        setCompanies([]);
+        setCompanies([]); // Empty state if no valid data
         console.error("Unexpected response format:", response.data);
       }
     } catch (err) {
@@ -414,17 +425,18 @@ const AddCompany = () => {
                   <tr className="bg-gray-200">
                     <th className="border p-2">Company Name</th>
                     <th className="border p-2">State</th>
-                    <th className="border p-2">street</th>
-                    <th className="border p-2">website</th>
+                    <th className="border p-2">Street</th>
+                    <th className="border p-2">Website</th>
                     <th className="border p-2">City</th>
+                    <th className="border p-2">Country</th>
                     <th className="border p-2">Status</th>
                     <th className="border p-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {companies.length > 0 ? (
-                    companies.map((company, index) => (
-                      <tr key={index}>
+                    companies.map((company) => (
+                      <tr key={company.companyId}>
                         <td className="border p-2 text-center">
                           {company.companyName}
                         </td>
@@ -437,9 +449,11 @@ const AddCompany = () => {
                         <td className="border p-2 text-center">
                           {company.website}
                         </td>
-
                         <td className="border p-2 text-center">
-                          {company.city}, {company.country}
+                          {company.city}
+                        </td>
+                        <td className="border p-2 text-center">
+                          {company.country}
                         </td>
                         <td className="border p-2 text-center">
                           {company.status || "Active"}
@@ -449,20 +463,16 @@ const AddCompany = () => {
                             <button
                               type="button"
                               className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                              onClick={() => handleEdit(company)}
                             >
-                              <CiEdit
-                                className="w-6 h-6"
-                                onClick={() => handleEdit(company)}
-                              />
+                              <CiEdit className="w-6 h-6" />
                             </button>
                             <button
                               type="button"
                               className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                              onClick={() => handleDelete(company.companyId)}
                             >
-                              <MdOutlineDelete
-                                className="w-6 h-6"
-                                onClick={() => handleDelete(company.companyId)}
-                              />
+                              <MdOutlineDelete className="w-6 h-6" />
                             </button>
                           </div>
                         </td>
@@ -470,7 +480,7 @@ const AddCompany = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="text-center p-2">
+                      <td colSpan="8" className="text-center p-2">
                         No companies to display
                       </td>
                     </tr>

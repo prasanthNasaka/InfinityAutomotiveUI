@@ -8,8 +8,8 @@ import { BASE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
 
 const Login = () => {
-  const [email, setEmail] = useState("admin");
-  const [password, setPassword] = useState("moto@123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -25,18 +25,20 @@ const Login = () => {
         username: email,
         password,
       });
+
       if (response.status === 200) {
         toast.success("Login successful! Redirecting...");
-        const { token, role } = response.data;
+
+        const { jwtToken, roleID } = response.data.data;
+
+        localStorage.setItem("authToken", jwtToken);
+        localStorage.setItem("userRole", roleID);
+
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
-
-        localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("userRole", role || "100");
       } else {
-        toast.error(response.data || "Something went wrong");
-        toast.error("warning");
+        toast.error(response.data.message || "Something went wrong");
       }
     } catch (error) {
       if (error.response) {
@@ -46,7 +48,6 @@ const Login = () => {
             : error.response.data.message ||
               "Please enter a valid username or password";
         toast.error(errorMsg);
-        toast.error("error");
       } else if (error.request) {
         toast.error("Network error. Please check your connection.");
       } else {

@@ -63,7 +63,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from}) => {
           },
         });
 
-        const data = response.data.$values || [];
+        const data = response.data || [];
         setOptions(data);
         onDataReceived(data);
 

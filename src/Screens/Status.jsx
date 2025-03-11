@@ -15,7 +15,7 @@ const Status = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/drivers`);
 
-      const driverData = response.data.$values || [];
+      const driverData = response.data || [];
       setDrivers(driverData);
     } catch (error) {
       console.error("Error fetching drivers:", error);
@@ -26,7 +26,7 @@ const Status = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/Vehicle`);
 
-      const vehicledata = response.data.$values || [];
+      const vehicledata = response.data || [];
       setVehicles(vehicledata);
     } catch (error) {
       toast.error("Error fetching drivers:", error);
