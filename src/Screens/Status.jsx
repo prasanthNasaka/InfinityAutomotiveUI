@@ -6,6 +6,7 @@ import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const Status = () => {
   const [drivers, setDrivers] = useState([]);
@@ -13,7 +14,7 @@ const Status = () => {
 
   const fetchDrivers = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/drivers`);
+      const response = await AxiosInstance.get(`${BASE_URL}/api/drivers`);
 
       const driverData = response.data || [];
       setDrivers(driverData);
@@ -24,7 +25,7 @@ const Status = () => {
 
   const fetchVehicles = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/Vehicle`);
+      const response = await AxiosInstance.get(`${BASE_URL}/api/Vehicle`);
 
       const vehicledata = response.data || [];
       setVehicles(vehicledata);
@@ -35,7 +36,7 @@ const Status = () => {
 
   const handleDeactivateDriver = async (driverId) => {
     try {
-      await axios.put(`${BASE_URL}/api/drivers/DeActivate/${driverId}`);
+      await AxiosInstance.put(`${BASE_URL}/api/drivers/DeActivate/${driverId}`);
       toast.success("Driver Deactivated Successfully");
       fetchDrivers();
     } catch (error) {
@@ -44,7 +45,7 @@ const Status = () => {
   };
   const handleactivateDriver = async (driverId) => {
     try {
-      await axios.put(`${BASE_URL}/api/drivers/Activate/${driverId}`);
+      await AxiosInstance.put(`${BASE_URL}/api/drivers/Activate/${driverId}`);
       toast.success("Driver activated Successfully");
       fetchDrivers();
     } catch (error) {
@@ -54,7 +55,7 @@ const Status = () => {
 
   const handleDeactivateVehicle = async (vehicleId) => {
     try {
-      await axios.put(`${BASE_URL}/api/Vehicle/DeActivate/${vehicleId}`);
+      await AxiosInstance.put(`${BASE_URL}/api/Vehicle/DeActivate/${vehicleId}`);
       toast.success("Vehicle Deactivated Successfully");
       fetchVehicles();
     } catch (error) {
@@ -63,7 +64,7 @@ const Status = () => {
   };
   const handleactivateVehicle = async (vehicleId) => {
     try {
-      await axios.put(`${BASE_URL}/api/Vehicle/Activate/${vehicleId}`);
+      await AxiosInstance.put(`${BASE_URL}/api/Vehicle/Activate/${vehicleId}`);
       toast.success("Vehicle activated Successfully");
       fetchVehicles();
     } catch (error) {

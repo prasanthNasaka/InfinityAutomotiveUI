@@ -6,6 +6,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { BASE_URL } from "../constants/global-const";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import AxiosInstance from "../Components/AxiosInstance";
 
 function Scrutinys() {
   const [events, setEvents] = useState([]);
@@ -22,10 +23,10 @@ function Scrutinys() {
 
   const handleGetData = async () => {
     try {
-      const response = await axios.get(
+      const response = await AxiosInstance.get(
         `${BASE_URL}/api/EventRegistration/ActiveEvents`
       );
-      setEvents(response.data.$values);
+      setEvents(response.data);
     } catch (error) {
       toast.error("Failed to fetch event names. No Data Found.");
     }
@@ -37,10 +38,10 @@ function Scrutinys() {
 
     if (eventId) {
       try {
-        const response = await axios.get(
+        const response = await AxiosInstance.get(
           `${BASE_URL}/api/Registration/event/${eventId}`
         );
-        const data = response.data.$values;
+        const data = response.data;
         if (Array.isArray(data)) {
           setTableData(data);
           toast.success("Data fetched successfully.");
@@ -64,10 +65,10 @@ function Scrutinys() {
 
   const handleCheckList = async (eventData) => {
     try {
-      const response = await axios.get(
+      const response = await AxiosInstance.get(
         `${BASE_URL}/api/Scrutiny?RegId=${eventData.regId}`
       );
-      const data = response.data.$values;
+      const data = response.data;
       console.log("data", data);
 
       if (data) {
@@ -122,7 +123,7 @@ function Scrutinys() {
     });
 
     try {
-      const response = await axios.put(
+      const response = await AxiosInstance.put(
         `${BASE_URL}/api/Scrutiny`,
         scrutinyData
       );

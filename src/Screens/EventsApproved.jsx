@@ -5,6 +5,7 @@ import { CalendarCheck2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const EventsApproved = () => {
   const [events, setEvents] = useState([]);
@@ -22,7 +23,7 @@ const EventsApproved = () => {
 
   const handleApprove = (event) => {
     const eventId = event.eventid;
-    axios
+    AxiosInstance
       .put(
         `${BASE_URL}/api/EventRegistration/ApproveEvents?EventId=${eventId}`,
         {
@@ -47,10 +48,10 @@ const EventsApproved = () => {
   };
 
   const fetchEvents = () => {
-    axios
+    AxiosInstance
       .get(`${BASE_URL}/api/EventRegistration/EventsToApprove`)
       .then((response) => {
-        setEvents(response.data.$values);
+        setEvents(response.data);
       })
       .catch((error) => {
         console.error("Error Fetching Events:", error);
