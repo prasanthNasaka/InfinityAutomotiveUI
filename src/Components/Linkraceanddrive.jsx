@@ -15,6 +15,7 @@ import axios from "axios";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import Styles from "../constants/Styles";
 import { GiTakeMyMoney } from "react-icons/gi";
+import AxiosInstance from "./AxiosInstance";
 
 const Linkraceanddrive = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
@@ -149,44 +150,54 @@ const Linkraceanddrive = () => {
     }
   };
 
-  const handleEventChange = (event) => {
-    const selectedEventId = event.target.value;
-    setEventId(selectedEventId);
-    setSelectedEvent(selectedEventId);
-    setSelectedCategory(""); // Reset category on event change
-    setEntryPrice(null); // Reset entry price on event change
-    setTableData([]);
+ 
 
-    if (selectedEventId) {
-      fetch(`${BASE_URL}/api/eventcategories?event_id=${selectedEventId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setCategories(data);
-          } else {
-            setCategories([]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching event categories:", error);
+
+const handleEventChange = (event) => {
+  const selectedEventId = event.target.value;
+  setEventId(selectedEventId);
+  setSelectedEvent(selectedEventId);
+  setSelectedCategory(""); // Reset category on event change
+  setEntryPrice(null); // Reset entry price on event change
+  setTableData([]);
+
+  if (selectedEventId) {
+    // Fetch event categories
+    AxiosInstance
+      .get(`/api/eventcategories`, {
+        params: { event_id: selectedEventId }
+      })
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          setCategories(response.data);
+        } else {
           setCategories([]);
-        });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching event categories:", error);
+        setCategories([]);
+      });
 
-      fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setTableData(data);
-          } else {
-            setTableData([]);
-          }
-        })
-        .catch((error) => console.error("Error fetching table data:", error));
-    } else {
-      setCategories([]);
-      setTableData([]);
-    }
-  };
+    // Fetch table data for event registration
+    AxiosInstance
+      .get(`/api/Registration/event/${selectedEventId}`)
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          setTableData(response.data);
+        } else {
+          setTableData([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching table data:", error);
+      });
+  } else {
+    setCategories([]);
+    setTableData([]);
+  }
+};
+
 
   const deletePopup = () => {
     setDeletePop(true);
@@ -295,25 +306,26 @@ const Linkraceanddrive = () => {
     setSelectAll(false);
   };
 
+  
+
   const AmountRefund = async () => {
     if (selectedIds.length === 0) {
       toast.error("Please select at least one record.");
       return;
     }
-
+  
     const payload = selectedIds;
-
+  
     try {
-      const response = await fetch(
+      const response = await AxiosInstance.put(
         `${BASE_URL}/api/Registration/AmountRefund`,
+        payload, // Sending payload as the body
         {
-          method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
         }
       );
-
-      if (response.ok) {
+  
+      if (response.status === 200) { // Check if status code is 200 for success
         toast.success("Refund successful!");
         setSelectedIds([]);
         setDrvTableData([]);
@@ -339,7 +351,7 @@ const Linkraceanddrive = () => {
     };
 
     try {
-      const response = await axios.put(
+      const response = await AxiosInstance.put(
         `${BASE_URL}/api/Registration/AmountPaid`,
         payload,
         {
@@ -361,22 +373,27 @@ const Linkraceanddrive = () => {
     }
   };
 
+  
+
+
   const DeleteTable = async () => {
     if (selectedIds.length === 0) {
       toast.error("Please select at least one record to delete.");
       return;
     }
-
+  
     const payload = selectedIds;
-
+  
     try {
-      const response = await fetch(`${BASE_URL}/api/Registration`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
+      const response = await AxiosInstance.delete(
+        `${BASE_URL}/api/Registration`, 
+        {
+          headers: { "Content-Type": "application/json" },
+          data: payload, // Axios uses 'data' for the body of a DELETE request
+        }
+      );
+  
+      if (response.status === 200) { // Check if status code is 200 for success
         toast.success("Records deleted successfully!");
         setSelectedIds([]);
         setDrvTableData([]);
@@ -390,6 +407,7 @@ const Linkraceanddrive = () => {
     }
   };
 
+
   const ContestentUpdate = async () => {
     if (selectedIds.length === 0) {
       toast.error("Please select at least one record.");
@@ -402,7 +420,7 @@ const Linkraceanddrive = () => {
     }));
 
     try {
-      const response = await axios.put(
+      const response = await AxiosInstance.put(
         `${BASE_URL}/api/Registration/ContestNo`,
         payload,
         {
@@ -440,22 +458,27 @@ const Linkraceanddrive = () => {
     console.log("handleContestantChange", handleContestantChange);
   };
 
+  
+
+
   const DocumentVerify = async () => {
     if (selectedIds.length === 0) {
       toast.error("Please select at least one record.");
       return;
     }
-
+  
     const payload = selectedIds;
-
+  
     try {
-      const response = await fetch(`${BASE_URL}/api/Registration/DocVerified`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
+      const response = await AxiosInstance.put(
+        `${BASE_URL}/api/Registration/DocVerified`, 
+        payload,  // Passing payload as the body of the request
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+  
+      if (response.status === 200) {  // Check if status code is 200 for success
         toast.success("Documents verified successfully!");
         setSelectedIds([]);
         setDrvTableData([]);
@@ -469,31 +492,42 @@ const Linkraceanddrive = () => {
     }
   };
 
+ 
+
+
   const handleGetData = () => {
-    fetch(`${BASE_URL}/api/EventRegistration`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data.$values)) {
-          setEvents(data.$values);
+    AxiosInstance
+      .get(`${BASE_URL}/api/EventRegistration`)
+      .then((response) => {
+        if (Array.isArray(response.data.$values)) {
+          setEvents(response.data.$values);
         } else {
           setEvents([]);
         }
       })
-      .catch((error) => console.error("Error fetching events:", error));
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
   };
+
+  
 
   const handlePopUp = () => {
     const storedRegId = localStorage.getItem("regId");
     console.log("Stored regId:", storedRegId);
-
+  
     if (storedRegId) {
-      fetch(`${BASE_URL}/api/Registration/ContestentNo?EventId=${storedRegId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("API Response:", data);
-          setRegId(data.$values);
+      AxiosInstance
+        .get(`${BASE_URL}/api/Registration/ContestentNo`, {
+          params: { EventId: storedRegId },  // Sending the EventId as query parameter
         })
-        .catch((error) => console.error("Fetch error:", error));
+        .then((response) => {
+          console.log("API Response:", response.data);
+          setRegId(response.data);
+        })
+        .catch((error) => {
+          console.error("Axios error:", error);
+        });
     }
   };
 
@@ -515,7 +549,7 @@ const Linkraceanddrive = () => {
       };
       console.log("payload", payload);
 
-      const response = await axios.post(
+      const response = await AxiosInstance.post(
         `${BASE_URL}/api/Registration`,
         payload,
         {
@@ -548,21 +582,21 @@ const Linkraceanddrive = () => {
     }
   };
 
+ 
+
+
   const fetchUpdatedData = async () => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/EventRegistration/ActiveEvents`
-      );
-      const data = await response.json();
-
-      console.log("Fetched Data:", data); // Ensure data is logged
-
-      if (Array.isArray(data)) {
-        setEvents(data);
-      } else if (data && Array.isArray(data.events)) {
-        setEvents(data.events); // ✅ Handles nested event data
+      const response = await AxiosInstance.get(`${BASE_URL}/api/EventRegistration/ActiveEvents`);
+  
+      console.log("Fetched Data:", response.data); // Ensure data is logged
+  
+      if (Array.isArray(response.data)) {
+        setEvents(response.data);
+      } else if (response.data && Array.isArray(response.data.events)) {
+        setEvents(response.data.events); // ✅ Handles nested event data
       } else {
-        console.error("Unexpected data format:", data);
+        console.error("Unexpected data format:", response.data);
         setEvents([]);
       }
     } catch (error) {
