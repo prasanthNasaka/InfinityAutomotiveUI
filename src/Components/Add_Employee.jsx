@@ -8,7 +8,6 @@
 // import toast, { Toaster } from "react-hot-toast"; // Importing toast
 // import AxiosInstance from "./AxiosInstance";
 
-
 // const EmployeeTypes = {
 //   OTHERS: 0,
 //   EMPLOYEE: 86,
@@ -360,7 +359,6 @@
 
 // export default Add_Employee;
 
-
 import { useState, useEffect } from "react";
 import MainSideBar from "./MainSideBar";
 import Newheader from "./Newheader";
@@ -485,7 +483,10 @@ const Add_Employee = () => {
         comId: 0,
       };
 
-      const response = await AxiosInstance.put(`api/Employee/${formData.empId}`, payload);
+      const response = await AxiosInstance.put(
+        `api/Employee/${formData.empId}`,
+        payload
+      );
       if (response.status === 200) {
         const updatedEmployeeList = employeeList.map((emp) =>
           emp.empId === response.data.empId ? response.data : emp
@@ -550,7 +551,7 @@ const Add_Employee = () => {
 
   return (
     <section className="w-full h-screen flex flex-col">
-      <div className="overflow-y-hidden shadow-lg ">
+      <div className=" overflow-y-hidden shadow-lg ">
         <Newheader />
       </div>
 
@@ -558,157 +559,195 @@ const Add_Employee = () => {
         <div className=" h-full">
           <MainSideBar />
         </div>
-
-        <div className="flex-1 p-6 space-y-6 overflow-auto bg-gray-100">
+        <div className="flex-1 p-3 overflow-y-auto">
+          <div className="max-w-7xl mx-auto">
+          <div className="bg-white   mb-6">
           <Toaster position="bottom-center" reverseOrder={false} />
-          <div className="bg-white p-6 flex flex-col rounded-lg shadow-lg">
-            <h3
-              style={Styles.heading}
-              className="text-2xl font-semibold mb-4 text-cyan-700"
-            >
-              {formData.empId ? "Edit Employee" : "Organizing Committee Member"}
-            </h3>
-            <div className="flex flex-wrap gap-4 w-full  p-4">
-              {["empName", "phone", "email"].map((field) => (
-                <div key={field} className="w-1/3">
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
-                  </label>
-                  <input
-                    type={field === "email" ? "email" : "text"}
-                    name={field}
-                    value={formData[field]}
-                    onChange={handleChange}
-                    maxLength={field === "phone" ? 10 : undefined}
-                    className={`w-full p-3 border-2 rounded-md ${
-                      errors[field] ? "border-red-500" : "border-gray-300"
-                    } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                    placeholder={`Enter ${
-                      field.charAt(0).toUpperCase() + field.slice(1)
-                    }`}
-                  />
-                  {errors[field] && (
-                    <p className="text-red-500 text-sm mt-1">{errors[field]}</p>
-                  )}
-                </div>
-              ))}
-
-              <div className="w-1/3">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Type
-                </label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              <div className="bg-white p-2 flex flex-col ">
+              <div className="p-2 flex">
+              <h3
+                  style={Styles.heading}
+                  className="text-2xl font-semibold mb-4 text-cyan-700"
                 >
-                  <option value={EmployeeTypes.OTHERS}>Select Type</option>
-                  <option value={EmployeeTypes.EMPLOYEE}>Employee</option>
-                  <option value={EmployeeTypes.ORGANISER}>Organiser</option>
-                  <option value={EmployeeTypes.SCRUTINEER}>Scrutineer</option>
-                </select>
-                {errors.role && (
-                  <p className="text-red-500 text-sm mt-1">{errors.role}</p>
-                )}
+                  {formData.empId
+                    ? "Edit Employee"
+                    : "Organizing Committee Member"}
+                </h3>
               </div>
 
-              <div className="w-1/3">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Other Info
-                </label>
-                <input
-                  type="text"
-                  name="otherInfo"
-                  value={formData.otherInfo}
-                  onChange={handleChange}
-                  className={`w-full p-3 border-2 rounded-md ${
-                    errors.otherInfo ? "border-red-500" : "border-gray-300"
-                  } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-                  placeholder="Enter Other Info"
-                />
-                {errors.otherInfo && (
-                  <p className="text-red-500 text-sm mt-1">{errors.otherInfo}</p>
+                
+                <div className="w-full  h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
+                <div className="flex flex-wrap gap-4 w-full  p-4">
+                  {["employee Name", "phone", "email"].map((field) => (
+                    <div key={field} className="w-1/3">
+                      <label
+                        style={Styles.label}
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                      >
+                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                      </label>
+                      <input
+                        style={Styles.select}
+                        type={field === "email" ? "email" : "text"}
+                        name={field}
+                        value={formData[field]}
+                        onChange={handleChange}
+                        maxLength={field === "phone" ? 10 : undefined}
+                        className={`w-full p-3 border-2 rounded-md ${
+                          errors[field] ? "border-red-500" : "border-gray-300"
+                        } focus:outline-none `}
+                        placeholder={`Enter ${
+                          field.charAt(0).toUpperCase() + field.slice(1)
+                        }`}
+                      />
+                      {errors[field] && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors[field]}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+
+                  <div className="w-1/3">
+                    <label
+                      style={Styles.label}
+                      className="block text-sm font-semibold text-gray-700 mb-1"
+                    >
+                      Type
+                    </label>
+                    <select
+                      style={Styles.select}
+                      name="role"
+                      value={formData.role}
+                      onChange={handleChange}
+                      className="w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none "
+                    >
+                      <option value={EmployeeTypes.OTHERS}>Select Type</option>
+                      <option value={EmployeeTypes.EMPLOYEE}>Employee</option>
+                      <option value={EmployeeTypes.ORGANISER}>Organiser</option>
+                      <option value={EmployeeTypes.SCRUTINEER}>
+                        Scrutineer
+                      </option>
+                    </select>
+                    {errors.role && (
+                      <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+                    )}
+                  </div>
+
+                  <div className="w-1/3">
+                    <label
+                      style={Styles.label}
+                      className="block text-sm font-semibold text-gray-700 mb-1"
+                    >
+                      Other Info
+                    </label>
+                    <input
+                      style={Styles.select}
+                      type="text"
+                      name="otherInfo"
+                      value={formData.otherInfo}
+                      onChange={handleChange}
+                      className={`w-full p-3 border-2 rounded-md ${
+                        errors.otherInfo ? "border-red-500" : "border-gray-300"
+                      } focus:outline-none `}
+                      placeholder="Enter Other Info"
+                    />
+                    {errors.otherInfo && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.otherInfo}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex w-1/2 gap-4 mt-4">
+                  <button
+                    onClick={resetForm}
+                    className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={
+                      formData.empId ? handleUpdateEmployee : handleAddEmployee
+                    }
+                    className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                    disabled={loading}
+                  >
+                    {loading
+                      ? "Processing..."
+                      : formData.empId
+                      ? "Update"
+                      : "Submit"}
+                  </button>
+                </div>
+                </div>
+               
+              </div>
+            </div>
+            <div className="w-full  p-3 space-y-6 overflow-auto ">
+             
+
+              <div className="w-full bg-white p-6 rounded-lg shadow-lg">
+                <h3 style={Styles.tableheading} className="text-xl font-semibold text-cyan-700 mb-4">
+                  Employee List
+                </h3>
+                {employeeList.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-gray-700 border-collapse">
+                      <thead className="bg-gray-50 text-gray-600">
+                        <tr style={Styles.label}>
+                          <th className="py-3 px-4 text-left">Name</th>
+                          <th className="py-3 px-4 text-left">Phone</th>
+                          <th className="py-3 px-4 text-left">Email</th>
+                          <th className="py-3 px-4 text-left">Employee Type</th>
+                          <th className="py-3 px-4 text-left">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {employeeList.map((emp) => (
+                          <tr
+                            key={emp.empId}
+                            className="border-t hover:bg-gray-50"
+                          >
+                            <td className="py-3 px-4">{emp.empName}</td>
+                            <td className="py-3 px-4">{emp.phone}</td>
+                            <td className="py-3 px-4">{emp.email}</td>
+                            <td className="py-3 px-4 text-center">
+                              {emp.employeeType === EmployeeTypes.EMPLOYEE
+                                ? "Employee"
+                                : emp.employeeType === EmployeeTypes.ORGANISER
+                                ? "Organiser"
+                                : emp.employeeType === EmployeeTypes.SCRUTINEER
+                                ? "Scrutineer"
+                                : "Others"}
+                            </td>
+                            <td className="py-3 px-4">
+                              <button
+                                onClick={() => handleEdit(emp)}
+                                className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                              >
+                                <CiEdit className="size-6" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteEmployee(emp.empId)}
+                                className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                              >
+                                <MdOutlineDelete className="size-6" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">
+                    {loading ? "Loading employees..." : "No employees found."}
+                  </p>
                 )}
               </div>
             </div>
-
-            <div className="flex w-1/2 gap-4 mt-4">
-              <button
-                onClick={resetForm}
-                className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={
-                  formData.empId ? handleUpdateEmployee : handleAddEmployee
-                }
-                className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
-                disabled={loading}
-              >
-                {loading
-                  ? "Processing..."
-                  : formData.empId
-                  ? "Update"
-                  : "Submit"}
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg mt-6">
-            <h3 className="text-xl font-semibold text-cyan-700 mb-4">Employee List</h3>
-            {employeeList.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-gray-700 border-collapse">
-                  <thead className="bg-gray-50 text-gray-600">
-                    <tr>
-                      <th className="py-3 px-4 text-left">Name</th>
-                      <th className="py-3 px-4 text-left">Phone</th>
-                      <th className="py-3 px-4 text-left">Email</th>
-                      <th className="py-3 px-4 text-left">Employee Type</th>
-                      <th className="py-3 px-4 text-left">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {employeeList.map((emp) => (
-                      <tr key={emp.empId} className="border-t hover:bg-gray-50">
-                        <td className="py-3 px-4">{emp.empName}</td>
-                        <td className="py-3 px-4">{emp.phone}</td>
-                        <td className="py-3 px-4">{emp.email}</td>
-                        <td className="py-3 px-4 text-center">
-                          {emp.employeeType === EmployeeTypes.EMPLOYEE
-                            ? "Employee"
-                            : emp.employeeType === EmployeeTypes.ORGANISER
-                            ? "Organiser"
-                            : emp.employeeType === EmployeeTypes.SCRUTINEER
-                            ? "Scrutineer"
-                            : "Others"}
-                        </td>
-                        <td className="py-3 px-4">
-                          <button
-                            onClick={() => handleEdit(emp)}
-                            className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                          >
-                            <CiEdit className="size-6" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteEmployee(emp.empId)}
-                            className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
-                          >
-                            <MdOutlineDelete className="size-6" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-center py-4">
-                {loading ? "Loading employees..." : "No employees found."}
-              </p>
-            )}
           </div>
         </div>
       </div>

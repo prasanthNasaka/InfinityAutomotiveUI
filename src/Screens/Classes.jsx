@@ -686,16 +686,17 @@ const Classes = () => {
         <div className="overflow-y-hidden shadow-lg">
           <Newheader />
         </div>
-        <div className="flex w-full h-[calc(100vh-1rem)]">
+        <div className="flex overflow-hidden h-[calc(100vh-1rem)]">
           <div className="bg-gray-100">
             <MainSideBar />
           </div>
-          <div className="flex w-full flex-col overflow-auto p-4 gap-4">
-            <div className="w-full flex flex-col gap-2 tab:flex-col">
-              <div className="flex">
+          <div className="flex-1 p-3  overflow-y-auto">
+            <div className="max-w-7xl  mx-auto">
+            <div className="bg-white p-2   mb-6">
+              <div className="p-2 flex">
                 <h3
                   style={Styles.heading}
-                  className="text-2xl font-bold mb-4 text-gray-800 text-center "
+                  className="text-2xl font-bold  text-gray-800 text-center "
                 >
                   {editCategory ? "Edit Class" : "Add Class"}
                 </h3>
@@ -706,15 +707,17 @@ const Classes = () => {
                   Event Name
                 </label>
                 <div className="w-full flex flex-col gap-2">
-                  <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">
+                  {/* <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">
                     {editCategory ? "Edit Class" : "Add Class"}
-                  </h3>
+                  </h3> */}
 
+                  <div className="w-full  h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
                   <div className="w-1/2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label  className="text-sm font-medium text-gray-700">
                       Event Name
                     </label>
                     <select
+                    style={Styles.select}
                       value={selectedEvent}
                       onChange={handleEventChange}
                       className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
@@ -728,13 +731,15 @@ const Classes = () => {
                     </select>
                   </div>
 
-                  <div className="w-full p-6 bg-white border rounded-lg shadow-lg">
-                    <div className="flex items-end gap-4 mb-4 flex-wrap">
+                  <div className="w-full p-3 bg-white  ">
+                    <div disabled={!selectedEvent} className="flex items-end gap-4 mb-4 flex-wrap ">
                       <div className="flex-1 min-w-[150px]">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
                           Category Type
                         </label>
                         <select
+                        style={Styles.select}
+                        
                           value={newCategory.wheelertype}
                           onChange={(e) =>
                             setNewCategory({
@@ -755,10 +760,11 @@ const Classes = () => {
                       </div>
 
                       <div className="flex-1 min-w-[150px]">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
                           Template
                         </label>
                         <select
+                        style={Styles.select}
                           value={newCategory.template}
                           onChange={(e) =>
                             setNewCategory({
@@ -779,10 +785,11 @@ const Classes = () => {
                       </div>
 
                       <div className="flex-1 min-w-[150px]">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
                           Class Name
                         </label>
                         <input
+                        style={Styles.select}
                           type="text"
                           value={newCategory.evtCategory}
                           onChange={(e) =>
@@ -798,10 +805,11 @@ const Classes = () => {
                       </div>
 
                       <div className="flex-1 min-w-[80px]">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
                           Participants
                         </label>
                         <input
+                        style={Styles.select}
                           type="number"
                           value={newCategory.noOfVeh}
                           onChange={(e) =>
@@ -816,11 +824,12 @@ const Classes = () => {
                         />
                       </div>
 
-                      <div className="flex-1 min-w-[80px]">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      <div  className="flex-1 min-w-[80px]">
+                        <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
                           Laps
                         </label>
                         <input
+                        style={Styles.select}
                           type="number"
                           value={newCategory.nooflaps}
                           onChange={(e) =>
@@ -836,10 +845,11 @@ const Classes = () => {
                       </div>
 
                       <div className="flex-1 min-w-[80px]">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
                           Price
                         </label>
                         <input
+                        style={Styles.select}
                           type="number"
                           value={newCategory.entryprice}
                           onChange={(e) =>
@@ -865,12 +875,15 @@ const Classes = () => {
                       </div>
                     </div>
                   </div>
+                  </div>
 
-                  <div className="w-full p-4 bg-white mt-6 rounded-lg shadow-lg">
-                    <h3 className="text-xl font-bold mb-4">Event Classes</h3>
+                 
+
+                  <div className="w-full p-4 bg-white mt-6 rounded-lg ">
+                    <h3 style={Styles.tableheading}  >Event Classes</h3>
                     <div className="overflow-auto max-h-auto">
-                      <table className="min-w-full bg-white border-gray-300 rounded-lg">
-                        <thead>
+                      <table className="w-full text-sm text-left text-gray-500">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
                           <tr>
                             <th className="py-2 px-4 border-b">Class Name</th>
                             <th className="py-2 px-4 border-b">Type</th>
@@ -930,6 +943,7 @@ const Classes = () => {
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
