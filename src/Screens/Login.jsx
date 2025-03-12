@@ -8,8 +8,8 @@ import { BASE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("KMI");
+  const [password, setPassword] = useState("Hyd@12345");
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -34,9 +34,18 @@ const Login = () => {
         localStorage.setItem("authToken", jwtToken);
         localStorage.setItem("userRole", roleID);
 
+        const roleRoutes = {
+          100: "/addcompany",
+          101: "/dashboard",
+          102: "/dashboard",
+          103: "/registration",
+          104: "/driverracelink",
+          default: "/scrutiny",
+        };
+
         setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
+          navigate(roleRoutes[roleID] || roleRoutes.default);
+        }, 2000);
       } else {
         toast.error(response.data.message || "Something went wrong");
       }
