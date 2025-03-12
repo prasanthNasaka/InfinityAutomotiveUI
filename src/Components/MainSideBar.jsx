@@ -26,7 +26,6 @@ const MainSideBar = () => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [menuIcon, setMenuIcon] = useState(<FaRegDotCircle />);
-  const [isEntryDeskOpen, setIsEntryDeskOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [userRole, setUserRole] = useState(localStorage.getItem("userRole"));
 

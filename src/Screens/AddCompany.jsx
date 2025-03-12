@@ -38,7 +38,7 @@ const AddCompany = () => {
   const handleEdit = (company) => {
     setFormData({
       name: company.companyName || "",
-      abbr: company.abbr || "", // Ensure 'abbr' is set
+      abbr: company.abbr || "",
 
       address: {
         street: company.street || "",
@@ -132,20 +132,20 @@ const AddCompany = () => {
       employees: {
         empName: formData.contact.contactPerson,
         email: formData.contact.email,
-        comId: 0, // Set dynamically if needed
+        comId: 0,
         phone: formData.contact.phone,
         otherInfo: "Admin user for the company",
-        employeeType: 1, // Default employee type
-        status: 1, // Active by default
+        employeeType: 1,
+        status: 1,
       },
       userInfo: {
-        id: 0, // Keep it 0 if the backend auto-generates IDs
+        id: 0,
         username: formData.login.username,
         password: formData.login.password,
-        usertype: 100, // Ensure correct role ID
-        compid: 0, // Set dynamically if needed
-        empId: 0, // Set dynamically if needed
-        isActive: true, // Default active status
+        usertype: 100,
+        compid: 0,
+        empId: 0,
+        isActive: true,
       },
     };
 
@@ -157,10 +157,8 @@ const AddCompany = () => {
 
       toast.success("Company added successfully!");
 
-      // Update state with new company
       setCompanies((prevCompanies) => [...prevCompanies, response.data]);
 
-      // Reset form state after successful submission
       setFormData({
         name: "",
         abbr: "",
@@ -196,14 +194,14 @@ const AddCompany = () => {
       const response = await AxiosInstance.get("/api/companies");
 
       if (response.data && Array.isArray(response.data)) {
-        setCompanies(response.data); // Directly set the array
+        setCompanies(response.data);
       } else if (
         response.data?.$values &&
         Array.isArray(response.data.$values)
       ) {
-        setCompanies(response.data.$values); // Fallback if $values exists
+        setCompanies(response.data.$values);
       } else {
-        setCompanies([]); // Empty state if no valid data
+        setCompanies([]);
         console.error("Unexpected response format:", response.data);
       }
     } catch (err) {

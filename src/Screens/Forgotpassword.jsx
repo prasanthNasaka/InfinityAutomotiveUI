@@ -2,13 +2,51 @@ import { Link } from "react-router-dom";
 import videoBg from "../assets/videoBg.mp4";
 import Footer from "../Components/Footer";
 import { useState } from "react";
+import { BASE_URL } from "../constants/global-const";
+import AxiosInstance from "../Components/AxiosInstance";
 
-const Forgotpassword = () => {
-  const [step, setStep] = useState(1); 
+const ForgotPassword = () => {
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isEmailDisabled, setIsEmailDisabled] = useState(false);
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await AxiosInstance.get(
+        `${BASE_URL}/api/Auth/ForgotPassword`,
+        {
+          Username: "username",
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setStep(2);
+    setIsEmailDisabled(true);
+  };
+
+  const handleSubmitOtp = async () => {
+    try {
+      const response = await AxiosInstance.get(
+        `${BASE_URL}/api/Auth/ForgotPassword`
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setStep(3);
+  };
+
+  const handleChangePassword = (e) => {
+    e.preventDefault();
+    console.log("Password changed successfully.");
+  };
 
   return (
     <section className="w-full h-screen lappy:h-auto relative ">
@@ -29,14 +67,14 @@ const Forgotpassword = () => {
           <h1 className="sm:text-5xl md:text-6xl lg:text-6xl font-bold uppercase bg-gradient-to-l from-gray-800 to-white bg-clip-text text-transparent text-center desk:text-5xl phone:text-3xl">
             AMON Racing Club
             <div className="flex justify-end w-10/6 underline text-center tab:text-xs">
-              <span className="sm:text-xs md:text-sm lg:text-l bg-gradient-to-l from-gray-800 to-white  bg-clip-text text-transparent">
+              <span className="sm:text-xs md:text-sm lg:text-l bg-gradient-to-l from-gray-800 to-white bg-clip-text text-transparent">
                 Every second counts..Every corner matters..
               </span>
             </div>
           </h1>
         </div>
 
-        <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center  lappy:bg-black lappy:p-3">
+        <div className="w-full lg:w-1/2 h-1/2 lg:h-full bg-black/20 flex flex-col items-center justify-center lappy:bg-black lappy:p-3">
           <div className="flex items-center justify-center h-fit mx-auto w-full phone:w-4/5 sm:w-3/4 md:w-2/3 lg:w-1/2 bg-white relative rounded-lg shadow-lg p-1 2xl:w-4/6">
             <div className="w-full p-6 md:mt-0 sm:max-w-md bg-white text-black dark:bg-white dark:text-black">
               <button className="flex items-center bg-cyan-500 text-white gap-3 p-2 border-none rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300">
@@ -65,56 +103,59 @@ const Forgotpassword = () => {
               <h3 className="text-xl font-semibold text-black mb-2 dark:text-black">
                 Reset your password
               </h3>
-             
 
               <form className="mt-4 space-y-4 lg:mt-5 md:space-y-5">
-                {step === 1 && (
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-black">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <div className="flex justify-end mt-3">
-                      <button
-                        type="button"
-                        className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
-                        onClick={() => setStep(2)} // Move to OTP step
-                      >
-                        Send OTP
-                      </button>
+                {step < 3 && (
+                  <>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-black">
+                        UserName
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
+                        placeholder="Enter your UserName/Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isEmailDisabled}
+                      />
+                      {step === 1 && (
+                        <div className="flex justify-end mt-3">
+                          <button
+                            type="button"
+                            className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
+                            onClick={handleSendOtp}
+                          >
+                            Send OTP
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
 
-                {step === 2 && (
-                  <div className="relative">
-                    <label className="block mb-2 text-sm font-medium text-black">
-                      Enter OTP
-                    </label>
-                    <input
-                      className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
-                      placeholder="Enter your OTP"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                    />
-
-                    <div className="flex justify-end mt-3">
-                      <button
-                        type="button"
-                        className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
-                        onClick={() => setStep(3)} 
-                      >
-                        Submit OTP
-                      </button>
-                    </div>
-                  </div>
+                    {step === 2 && (
+                      <div className="relative">
+                        <label className="block mb-2 text-sm font-medium text-black">
+                          Enter OTP
+                        </label>
+                        <input
+                          className="bg-white border border-gray-300 text-black text-sm rounded-lg block w-full p-2.5"
+                          placeholder="Enter your OTP"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                        />
+                        <div className="flex justify-end mt-3">
+                          <button
+                            type="button"
+                            className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
+                            onClick={handleSubmitOtp}
+                          >
+                            Submit OTP
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {step === 3 && (
@@ -148,6 +189,7 @@ const Forgotpassword = () => {
                     <div className="flex justify-end">
                       <button
                         type="submit"
+                        onClick={handleChangePassword}
                         className="px-5 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition duration-300"
                       >
                         Change
@@ -167,4 +209,4 @@ const Forgotpassword = () => {
   );
 };
 
-export default Forgotpassword;
+export default ForgotPassword;
