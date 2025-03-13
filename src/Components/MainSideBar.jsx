@@ -101,7 +101,9 @@ const MainSideBar = () => {
                 }`}
               >
                 <ShieldBan />
-                {!isCollapsed && <span style={Styles.side}>Manage Entry Desk</span>}
+                {!isCollapsed && (
+                  <span style={Styles.side}>Manage Entry Desk</span>
+                )}
               </Link>
             </>
           )}
@@ -133,7 +135,9 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaUserCheck />
-                {!isCollapsed && <span style={Styles.side}>Registration Desk</span>}
+                {!isCollapsed && (
+                  <span style={Styles.side}>Registration Desk</span>
+                )}
               </Link>
               <Link
                 to="/addemployee"
@@ -142,7 +146,9 @@ const MainSideBar = () => {
                 }`}
               >
                 <Building />
-                {!isCollapsed && <span style={Styles.side}>Organizing Committee</span>}
+                {!isCollapsed && (
+                  <span style={Styles.side}>Organizing Committee</span>
+                )}
               </Link>
               <Link
                 to="/emplogin"
@@ -154,13 +160,13 @@ const MainSideBar = () => {
                 {!isCollapsed && <span style={Styles.side}>Emp Login</span>}
               </Link>
               <Link
-                to="/scrutiny"
+                to="/template"
                 className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-                  isActive("/scrutiny") ? "bg-cyan-600 rounded-lg" : ""
+                  isActive("/template") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
                 <FaClipboardList />
-                {!isCollapsed && <span style={Styles.side}>Scrutiny</span>}
+                {!isCollapsed && <span style={Styles.side}>Template</span>}
               </Link>
             </>
           )}
@@ -183,7 +189,9 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaUserCheck />
-                {!isCollapsed && <span style={Styles.side}>Registration Desk</span>}
+                {!isCollapsed && (
+                  <span style={Styles.side}>Registration Desk</span>
+                )}
               </Link>
               <Link
                 to="/addemployee"
@@ -192,7 +200,9 @@ const MainSideBar = () => {
                 }`}
               >
                 <Building />
-                {!isCollapsed && <span style={Styles.side}>Organizing Committee</span>}
+                {!isCollapsed && (
+                  <span style={Styles.side}>Organizing Committee</span>
+                )}
               </Link>
               <Link
                 to="/emplogin"
@@ -204,13 +214,13 @@ const MainSideBar = () => {
                 {!isCollapsed && <span style={Styles.side}>Emp Login</span>}
               </Link>
               <Link
-                to="/scrutiny"
+                to="/template"
                 className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
-                  isActive("/scrutiny") ? "bg-cyan-600 rounded-lg" : ""
+                  isActive("/template") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
                 <FaClipboardList />
-                {!isCollapsed && <span style={Styles.side}>Scrutiny</span>}
+                {!isCollapsed && <span style={Styles.side}>Template</span>}
               </Link>
             </>
           )}
@@ -245,7 +255,9 @@ const MainSideBar = () => {
                 }`}
               >
                 <FaCar />
-                {!isCollapsed && <span style={Styles.side}>Vehicle Registration</span>}
+                {!isCollapsed && (
+                  <span style={Styles.side}>Vehicle Registration</span>
+                )}
               </Link>
             </div>
           )}
@@ -258,7 +270,9 @@ const MainSideBar = () => {
               }`}
             >
               <FaUserCheck />
-              {!isCollapsed && <span style={Styles.side}>Registration Desk</span>}
+              {!isCollapsed && (
+                <span style={Styles.side}>Registration Desk</span>
+              )}
             </Link>
           )}
 
