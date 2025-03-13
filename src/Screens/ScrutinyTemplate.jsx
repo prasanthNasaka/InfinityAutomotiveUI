@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
+import AxiosInstance from "../Components/AxiosInstance";
+import toast, { Toaster } from "react-hot-toast";
 
 const ScrutinyTemplate = () => {
   const [scrutinyRules, setScrutinyRules] = useState([]);
@@ -15,22 +17,19 @@ const ScrutinyTemplate = () => {
   const fetchScrutinyRules = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BASE_URL}/api/Scrutiny/DefaultTemplate`);
-      console.log("API Response:", response.data);
+      const response = await AxiosInstance.get(
+        `${BASE_URL}/api/Scrutiny/DefaultTemplate`
+      );
 
-      if (
-        response.data &&
-        response.data.$values &&
-        Array.isArray(response.data.$values)
-      ) {
-        setScrutinyRules(response.data.$values);
+      if (response.data && response.data && Array.isArray(response.data)) {
+        setScrutinyRules(response.data);
       } else {
         setScrutinyRules([]);
         console.error("Unexpected response format:", response.data);
       }
     } catch (error) {
       console.error("Error fetching scrutiny rules:", error);
-      setError("Failed to fetch scrutiny rules.");
+      toast.error("Failed to fetch scrutiny rules.");
     } finally {
       setLoading(false);
     }
@@ -77,20 +76,19 @@ const ScrutinyTemplate = () => {
         scrutineyrule: selectedScrutinyRules,
       };
 
-      console.log("Request Body:", requestBody);
-
-      const response = await axios.post(
+      const response = await AxiosInstance.post(
         `${BASE_URL}/api/Scrutiny/Template`,
         requestBody
       );
 
       console.log("Added Template Response:", response.data);
+      toast.success("Template Added Successfully");
       fetchScrutinyRules();
       setNewTemplate("");
       setSelectedRules(new Set());
     } catch (error) {
       console.error("Error adding scrutiny template:", error);
-      alert("Failed to add scrutiny template.");
+      toast.error("Failed to add scrutiny template.");
     }
   };
   useEffect(() => {
@@ -99,6 +97,8 @@ const ScrutinyTemplate = () => {
 
   return (
     <>
+      <Toaster position="bottom-center" reverseOrder={false} />
+
       <div className="h-24 w-full shadow-md p-1">
         <Newheader />
       </div>
