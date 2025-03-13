@@ -16,6 +16,7 @@ import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import Styles from "../constants/Styles";
 import { GiTakeMyMoney } from "react-icons/gi";
 import AxiosInstance from "./AxiosInstance";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const Linkraceanddrive = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
@@ -150,54 +151,48 @@ const Linkraceanddrive = () => {
     }
   };
 
- 
-
-
-const handleEventChange = (event) => {
-  const selectedEventId = event.target.value;
-  setEventId(selectedEventId);
-  setSelectedEvent(selectedEventId);
-  setSelectedCategory(""); // Reset category on event change
-  setEntryPrice(null); // Reset entry price on event change
-  setTableData([]);
-
-  if (selectedEventId) {
-    // Fetch event categories
-    AxiosInstance
-      .get(`/api/eventcategories`, {
-        params: { event_id: selectedEventId }
-      })
-      .then((response) => {
-        if (Array.isArray(response.data)) {
-          setCategories(response.data);
-        } else {
-          setCategories([]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching event categories:", error);
-        setCategories([]);
-      });
-
-    // Fetch table data for event registration
-    AxiosInstance
-      .get(`/api/Registration/event/${selectedEventId}`)
-      .then((response) => {
-        if (Array.isArray(response.data)) {
-          setTableData(response.data);
-        } else {
-          setTableData([]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching table data:", error);
-      });
-  } else {
-    setCategories([]);
+  const handleEventChange = (event) => {
+    const selectedEventId = event.target.value;
+    setEventId(selectedEventId);
+    setSelectedEvent(selectedEventId);
+    setSelectedCategory(""); // Reset category on event change
+    setEntryPrice(null); // Reset entry price on event change
     setTableData([]);
-  }
-};
 
+    if (selectedEventId) {
+      // Fetch event categories
+      AxiosInstance.get(`/api/eventcategories`, {
+        params: { event_id: selectedEventId },
+      })
+        .then((response) => {
+          if (Array.isArray(response.data)) {
+            setCategories(response.data);
+          } else {
+            setCategories([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching event categories:", error);
+          setCategories([]);
+        });
+
+      // Fetch table data for event registration
+      AxiosInstance.get(`/api/Registration/event/${selectedEventId}`)
+        .then((response) => {
+          if (Array.isArray(response.data)) {
+            setTableData(response.data);
+          } else {
+            setTableData([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching table data:", error);
+        });
+    } else {
+      setCategories([]);
+      setTableData([]);
+    }
+  };
 
   const deletePopup = () => {
     setDeletePop(true);
@@ -306,16 +301,14 @@ const handleEventChange = (event) => {
     setSelectAll(false);
   };
 
-  
-
   const AmountRefund = async () => {
     if (selectedIds.length === 0) {
       toast.error("Please select at least one record.");
       return;
     }
-  
+
     const payload = selectedIds;
-  
+
     try {
       const response = await AxiosInstance.put(
         `${BASE_URL}/api/Registration/AmountRefund`,
@@ -324,8 +317,9 @@ const handleEventChange = (event) => {
           headers: { "Content-Type": "application/json" },
         }
       );
-  
-      if (response.status === 200) { // Check if status code is 200 for success
+
+      if (response.status === 200) {
+        // Check if status code is 200 for success
         toast.success("Refund successful!");
         setSelectedIds([]);
         setDrvTableData([]);
@@ -373,27 +367,25 @@ const handleEventChange = (event) => {
     }
   };
 
-  
-
-
   const DeleteTable = async () => {
     if (selectedIds.length === 0) {
       toast.error("Please select at least one record to delete.");
       return;
     }
-  
+
     const payload = selectedIds;
-  
+
     try {
       const response = await AxiosInstance.delete(
-        `${BASE_URL}/api/Registration`, 
+        `${BASE_URL}/api/Registration`,
         {
           headers: { "Content-Type": "application/json" },
           data: payload, // Axios uses 'data' for the body of a DELETE request
         }
       );
-  
-      if (response.status === 200) { // Check if status code is 200 for success
+
+      if (response.status === 200) {
+        // Check if status code is 200 for success
         toast.success("Records deleted successfully!");
         setSelectedIds([]);
         setDrvTableData([]);
@@ -406,7 +398,6 @@ const handleEventChange = (event) => {
       toast.error("Delete failed!");
     }
   };
-
 
   const ContestentUpdate = async () => {
     if (selectedIds.length === 0) {
@@ -458,27 +449,25 @@ const handleEventChange = (event) => {
     console.log("handleContestantChange", handleContestantChange);
   };
 
-  
-
-
   const DocumentVerify = async () => {
     if (selectedIds.length === 0) {
       toast.error("Please select at least one record.");
       return;
     }
-  
+
     const payload = selectedIds;
-  
+
     try {
       const response = await AxiosInstance.put(
-        `${BASE_URL}/api/Registration/DocVerified`, 
-        payload,  // Passing payload as the body of the request
+        `${BASE_URL}/api/Registration/DocVerified`,
+        payload, // Passing payload as the body of the request
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-  
-      if (response.status === 200) {  // Check if status code is 200 for success
+
+      if (response.status === 200) {
+        // Check if status code is 200 for success
         toast.success("Documents verified successfully!");
         setSelectedIds([]);
         setDrvTableData([]);
@@ -492,12 +481,8 @@ const handleEventChange = (event) => {
     }
   };
 
- 
-
-
   const handleGetData = () => {
-    AxiosInstance
-      .get(`${BASE_URL}/api/EventRegistration`)
+    AxiosInstance.get(`${BASE_URL}/api/EventRegistration`)
       .then((response) => {
         if (Array.isArray(response.data.$values)) {
           setEvents(response.data.$values);
@@ -510,17 +495,14 @@ const handleEventChange = (event) => {
       });
   };
 
-  
-
   const handlePopUp = () => {
     const storedRegId = localStorage.getItem("regId");
     console.log("Stored regId:", storedRegId);
-  
+
     if (storedRegId) {
-      AxiosInstance
-        .get(`${BASE_URL}/api/Registration/ContestentNo`, {
-          params: { EventId: storedRegId },  // Sending the EventId as query parameter
-        })
+      AxiosInstance.get(`${BASE_URL}/api/Registration/ContestentNo`, {
+        params: { EventId: storedRegId }, // Sending the EventId as query parameter
+      })
         .then((response) => {
           console.log("API Response:", response.data);
           setRegId(response.data);
@@ -582,15 +564,14 @@ const handleEventChange = (event) => {
     }
   };
 
- 
-
-
   const fetchUpdatedData = async () => {
     try {
-      const response = await AxiosInstance.get(`${BASE_URL}/api/EventRegistration/ActiveEvents`);
-  
+      const response = await AxiosInstance.get(
+        `${BASE_URL}/api/EventRegistration/ActiveEvents`
+      );
+
       console.log("Fetched Data:", response.data); // Ensure data is logged
-  
+
       if (Array.isArray(response.data)) {
         setEvents(response.data);
       } else if (response.data && Array.isArray(response.data.events)) {
@@ -621,8 +602,8 @@ const handleEventChange = (event) => {
 
         <div className="flex-1 p-3 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-lg shadow-md mb-6">
-              <div className="p-2 flex">
+            <div className="bg-white mb-6">
+              <div className="p-2 ml-2 flex">
                 <h3
                   style={Styles.heading}
                   className="text-2xl font-semibold text-center text-gray-900"
@@ -631,12 +612,26 @@ const handleEventChange = (event) => {
                 </h3>
               </div>
 
-              <div className="p-4">
-                <div className="w-full h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
+              <div className="p-4 ">
+                <div className="w-full  h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
+                  <div className="w-full h-auto">
+                    {entryPrice !== null && (
+                      <div className="w-full flex  gap-2 justify-end tab:flex-col items-center">
+                        <div className=" w-full justify-end items-center flex p-2 bg-gray-100 rounded-md">
+                          <strong style={Styles.label}>Entry Price:</strong>
+                          <span className="text-green-600 flex text-lg">
+                            <GiTakeMyMoney className="text-3xl" />
+                            {entryPrice}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <div className="w-full flex p-2 gap-2 tab:flex-col">
                     <div className="w-1/2 tab:w-full">
                       <label style={Styles.label}>Event Name</label>
                       <select
+                      style={Styles.select}
                         value={selectedEvent}
                         onChange={handleEventChange}
                         className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
@@ -653,6 +648,8 @@ const handleEventChange = (event) => {
                     <div className="w-1/2 tab:w-full">
                       <label style={Styles.label}>Event Class</label>
                       <select
+                      style={Styles.select}
+                        data-tooltip-id="my-tooltip-2"
                         value={selectedCategory}
                         onChange={handleCategoryChange}
                         disabled={!selectedEvent || categories.length === 0}
@@ -674,21 +671,26 @@ const handleEventChange = (event) => {
                       </select>
                     </div>
                   </div>
+
                   <div className="w-full flex h-auto p-2 gap-2 tab:flex-col">
                     <div className="w-1/2 flex flex-col gap-2 tab:w-full">
                       <form className="w-full">
                         <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
                           Search
                         </label>
-                        <AutoCompleteSearch
-                          disabled={!selectedEvent} // Disable if no event is selected
-                          from="myComponent"
-                          searchType="Driver"
-                          onDataReceived={(data) =>
-                            handleDataReceived("driver", data)
-                          }
-                          onSelect={(driver) => handleSelect("driver", driver)}
-                        />
+                        <div data-tooltip-id="my-tooltip-2">
+                          <AutoCompleteSearch
+                            disabled={!selectedEvent}
+                            from="myComponent"
+                            searchType="Driver"
+                            onDataReceived={(data) =>
+                              handleDataReceived("driver", data)
+                            }
+                            onSelect={(driver) =>
+                              handleSelect("driver", driver)
+                            }
+                          />
+                        </div>
                       </form>
 
                       <div className="w-full h-full">
@@ -744,17 +746,19 @@ const handleEventChange = (event) => {
                           <label className="mb-2 text-sm font-medium text-gray-900 sr-only">
                             Search
                           </label>
-                          <AutoCompleteSearch
-                            disabled={!selectedEvent} // Disable if no event is selected
-                            from="myComponent"
-                            searchType="vehicle"
-                            onDataReceived={(data) =>
-                              handleDataReceived("vehicle", data)
-                            }
-                            onSelect={(vehicle) =>
-                              handleSelect("vehicle", vehicle)
-                            }
-                          />
+                          <div data-tooltip-id="my-tooltip-2">
+                            <AutoCompleteSearch
+                              disabled={!selectedEvent}
+                              from="myComponent"
+                              searchType="vehicle"
+                              onDataReceived={(data) =>
+                                handleDataReceived("vehicle", data)
+                              }
+                              onSelect={(vehicle) =>
+                                handleSelect("vehicle", vehicle)
+                              }
+                            />
+                          </div>
                         </form>
                       </div>
                       <div className="w-full h-full tab:w-full">
@@ -805,8 +809,8 @@ const handleEventChange = (event) => {
                   </div>
 
                   <div className="w-full flex p-2 gap-2 tab:flex-col items-center">
-                    <div className="w-1/2 tab:w-full flex items-end  justify-around px-2">
-                      <div className="w-1/3 ">
+                    <div className="w-1/2 tab:w-full flex items-end justify-around px-2">
+                      <div className="w-1/2">
                         <label
                           style={Styles.label}
                           htmlFor="contestantNumber"
@@ -815,6 +819,7 @@ const handleEventChange = (event) => {
                           Contestant Number
                         </label>
                         <input
+                          data-tooltip-id="my-tooltip-2"
                           disabled={!selectedEvent}
                           id="contestantNumber"
                           type="text"
@@ -827,18 +832,29 @@ const handleEventChange = (event) => {
                         )}
                       </div>
 
-                      <div className="w-1/3 flex justify-end ">
+                      <div className="w-1/3 flex justify-end">
                         <button
-                          onClick={Popup}
+                          data-tooltip-id="my-tooltip-2"
                           type="button"
-                          className="tab:w-full px-6 py-2.5 bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300
-                            font-medium rounded-md text-sm "
+                          disabled={!selectedEvent}
+                          onClick={Popup}
+                          className={`tab:w-full px-6 py-2.5 text-white font-medium rounded-md text-sm transition-all ${
+                            selectedEvent
+                              ? "bg-cyan-500 hover:bg-cyan-600 hover:text-black"
+                              : "bg-gray-400 cursor-not-allowed"
+                          }`}
                         >
                           Show List
                         </button>
+                        <ReactTooltip
+                          id="my-tooltip-2"
+                          place="bottom"
+                          variant="info"
+                          content="Please Select Event Name"
+                        />
                       </div>
 
-                      <div className="w-1/3 flex ml-8 items-center  p-2 rounded">
+                      <div className="w-1/3 flex ml-8 items-center p-2 rounded">
                         <input
                           checked={addDocVerify}
                           onChange={(e) => setAddDocVerify(e.target.checked)}
@@ -856,7 +872,7 @@ const handleEventChange = (event) => {
                       </div>
                     </div>
 
-                    <div className="w-1/2  tab:w-full flex items-center justify-around px-2">
+                    <div className="w-1/2 tab:w-full flex items-center justify-around px-2">
                       <div className="flex w-1/3 items-center gap-1">
                         <input
                           id="amountPaid"
@@ -876,7 +892,7 @@ const handleEventChange = (event) => {
                       </div>
 
                       {amountPaidChecked && (
-                        <div className="w-1/3 flex items-center mr-24">
+                        <div className="w-1/3 flex-col flex items-center mr-24">
                           <label
                             style={Styles.label}
                             className="text-md"
@@ -896,30 +912,26 @@ const handleEventChange = (event) => {
 
                       <div className="w-1/3 flex justify-end">
                         <button
+                          data-tooltip-id="my-tooltip-1"
                           type="button"
                           disabled={!isFormValid() || isSubmitting}
                           onClick={handleSubmit}
                           className={`tab:w-full px-6 py-2.5 text-white font-medium rounded-lg text-sm transition-all ${
                             isFormValid() && !isSubmitting
-                              ? "tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300 font-medium rounded-md text-sm "
+                              ? "tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300 font-medium rounded-md text-sm"
                               : "bg-gray-400 cursor-not-allowed"
                           }`}
                         >
                           {isSubmitting ? "Submitting..." : "Add Contestant"}
                         </button>
+                        <ReactTooltip
+                          id="my-tooltip-1"
+                          place="bottom"
+                          variant="warning"
+                          content="Fill All The Details"
+                        />
                       </div>
                     </div>
-                  </div>
-                  <div className="w-full flex p-2 gap-2 justify-end tab:flex-col items-center">
-                    {entryPrice !== null && (
-                      <div className="mt-4 p-2 bg-gray-100 rounded-md">
-                        <strong>Entry Price:</strong>{" "}
-                        <span className="text-green-600 flex text-lg">
-                          <GiTakeMyMoney className="text-3xl" />
-                          {entryPrice}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
 
@@ -949,8 +961,6 @@ const handleEventChange = (event) => {
                           )}
                         </div>
                       </div>
-
-                      {/* <span>${entryprice}</span> */}
 
                       <div className="w-full h-fit flex justify-center items-center">
                         <button
