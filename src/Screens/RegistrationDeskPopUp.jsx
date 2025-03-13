@@ -362,14 +362,15 @@ const RegistrationDeskPopUp = () => {
                           Search
                         </label>
 
-                      <AutoCompleteSearch
-  disabled={!selectedEvent}  // Disable until event is selected
-  from="myComponent"
-  searchType="Driver"
-  onDataReceived={(data) => handleDataReceived("driver", data)}
-  onSelect={(driver) => handleSelect("driver", driver)}
-/>
-
+                        <AutoCompleteSearch
+                          disabled={!selectedEvent} // Disable until event is selected
+                          from="myComponent"
+                          searchType="Driver"
+                          onDataReceived={(data) =>
+                            handleDataReceived("driver", data)
+                          }
+                          onSelect={(driver) => handleSelect("driver", driver)}
+                        />
                       </form>
 
                       <div className="w-full h-full">
@@ -514,7 +515,7 @@ const RegistrationDeskPopUp = () => {
                           htmlFor="referenceNumber"
                           className="text-md"
                         >
-                          Number:
+                          Payment Ref Number:
                         </label>
                         <input
                           id="referenceNumber"
