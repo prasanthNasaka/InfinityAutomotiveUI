@@ -246,7 +246,7 @@ const EventForm = () => {
     formData.append("eventname", eventData.eventName);
     formData.append("startdate", eventData.dateRange.start.toISOString());
     formData.append("enddate", eventData.dateRange.end.toISOString());
-    formData.append("isactive", 6);
+    formData.append("isactive", 1);
     formData.append("eventstatus", 6);
     formData.append("bankname", eventData.bankDetails.bankName);
     formData.append("ifsccode", eventData.bankDetails.ifscCode);
@@ -415,7 +415,7 @@ const EventForm = () => {
     } catch (error) {
       console.error("Failed to update event:", error);
       console.error("Error details:", error.response?.data || error.message);
-      alert(
+      toast.error(
         `Failed to update event: ${
           error.response?.data?.errors?.id || error.message
         }`
@@ -1040,7 +1040,7 @@ const EventForm = () => {
                             </div>
                           </th>
                           <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            Status
+                            Event Status
                           </th>
                           <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Categories
