@@ -170,10 +170,9 @@ const Registration = () => {
     setLoading(true);
 
     try {
-      const response = await AxiosInstance.get(
-        `/api/drivers/${driver.driverId}`
-      );
-
+      const response = await AxiosInstance.get(`/api/drivers/ById`, {
+        params: { id: driver.driverId },
+      });
       console.log("response", response);
 
       if (response.data) {

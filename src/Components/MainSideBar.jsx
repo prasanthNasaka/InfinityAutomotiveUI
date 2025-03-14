@@ -174,6 +174,15 @@ const MainSideBar = () => {
           {userRole === "102" && (
             <>
               <Link
+                to="/events"
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                  isActive("/events") ? "bg-cyan-600 rounded-lg" : ""
+                }`}
+              >
+                <FaCalendarAlt />
+                {!isCollapsed && <span style={Styles.side}>Events</span>}
+              </Link>
+              <Link
                 to="/classes"
                 className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/classes") ? "bg-cyan-600 rounded-lg" : ""

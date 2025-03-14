@@ -3,10 +3,10 @@
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import { useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const Report = () => {
   const [name, setName] = useState("");
@@ -15,91 +15,91 @@ const Report = () => {
 
   const { eventId } = useParams();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = [
-      {
-        name,
-        role,
-        eventid: parseInt(eventId, 10),
-      },
-    ];
-
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/api/EventOrgcommitee`,
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      toast.success("Added Successfully");
-      console.log("Success:", response.data);
-      fetchEventOrgCommittee();
-    } catch (error) {
-      console.error(
-        "Error:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    setName("");
-    setRole("");
-  };
-
   const fetchEventOrgCommittee = async () => {
     try {
-      const response = await axios.get(
+      const response = await AxiosInstance.get(
         `${BASE_URL}/api/EventOrgcommitee?eventId=${eventId}`
       );
 
       console.log("Full API Response:", response.data);
 
-      if (response.data?.$values?.length > 0) {
-        setCommittee(response.data.$values);
-        console.log("Committee members:", response.data.$values);
+      if (Array.isArray(response.data)) {
+        setCommittee(response.data);
       } else {
-        console.warn("No data found for this eventId.");
+        console.warn("Unexpected API response format:", response.data);
         setCommittee([]);
       }
     } catch (error) {
-      console.error(
-        "Error fetching data:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error fetching data:", error);
+      toast.error("Failed to load committee members.");
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      payload: [
+        {
+          name,
+          role,
+          eventid: parseInt(eventId, 10),
+        },
+      ],
+    };
+
+    try {
+      const response = await AxiosInstance.post(
+        `${BASE_URL}/api/EventOrgcommitee`,
+        payload, 
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success("Added Successfully");
+      console.log("Success:", response.data);
+      fetchEventOrgCommittee();
+      setName("");
+      setRole("");
+    } catch (error) {
+      console.error(
+        "Error:",
+        error.response ? error.response.data : error.message
+      );
+      toast.error("Failed to add member.");
+    }
+  };
+
+  // Handle delete
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(
+      await AxiosInstance.delete(
         `${BASE_URL}/api/EventOrgcommitee?OrgId=${id}`
       );
-      console.log("Deleted successfully:", response.data);
-      toast.success("Deleted Successfully");
 
+      toast.success("Deleted Successfully");
       setCommittee((prevCommittee) =>
-        prevCommittee.filter((item) => item.$id !== id)
+        prevCommittee.filter((item) => item.id !== id)
       );
     } catch (error) {
       console.error("Error deleting:", error);
+      toast.error("Failed to delete member.");
     }
   };
 
+  // Fetch data when eventId changes
   useEffect(() => {
     if (eventId) {
       fetchEventOrgCommittee();
     }
   }, [eventId]);
 
-  useEffect(() => {
-    console.log("Updated committee state:", committee);
-  }, [committee]);
-
   return (
     <>
       <Toaster position="bottom-center" reverseOrder={false} />
-
       <div className="h-24 w-full shadow-md p-1">
         <Newheader />
       </div>
@@ -108,7 +108,8 @@ const Report = () => {
           <MainSideBar />
         </div>
 
-        <div className="flex w-full p-8 h-auto flex-col ">
+        <div className="flex w-full p-8 h-auto flex-col">
+          {/* Form */}
           <form
             className="w-full mx-auto p-8 rounded-md shadow-lg h-fit"
             onSubmit={handleSubmit}
@@ -147,6 +148,7 @@ const Report = () => {
             </div>
           </form>
 
+          {/* Table */}
           <div className="flex w-full p-8 h-fit">
             <table className="w-full border-collapse border border-gray-300">
               <thead>
@@ -159,16 +161,13 @@ const Report = () => {
               <tbody>
                 {committee.length > 0 ? (
                   committee.map((member) => (
-                    <tr key={member.$id}>
+                    <tr key={member.id}>
                       <td className="border p-2 text-center">{member.name}</td>
                       <td className="border p-2 text-center">{member.role}</td>
                       <td className="border p-2 text-center">
                         <button
                           className="p-1 bg-red-400 border text-black rounded-md"
-                          onClick={() => {
-                            console.log("Deleting Id:", member.id);
-                            handleDelete(member.id);
-                          }}
+                          onClick={() => handleDelete(member.id)}
                         >
                           Delete
                         </button>
