@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import DatePicker from "react-datepicker";
-import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
@@ -247,8 +246,8 @@ const EventForm = () => {
     formData.append("eventname", eventData.eventName);
     formData.append("startdate", eventData.dateRange.start.toISOString());
     formData.append("enddate", eventData.dateRange.end.toISOString());
-    formData.append("isactive", eventData.status);
-    formData.append("eventstatus", 0);
+    formData.append("isactive", 6);
+    formData.append("eventstatus", 6);
     formData.append("bankname", eventData.bankDetails.bankName);
     formData.append("ifsccode", eventData.bankDetails.ifscCode);
     formData.append("accountname", eventData.bankDetails.accountHolderName);
@@ -312,34 +311,45 @@ const EventForm = () => {
   };
 
   const handleEdit = (event) => {
-    setEventId(event.eventid);
-    const eventId = event.eventid;
-    if (!eventId) {
-      console.error("No event ID found for editing:", event);
-      return;
-    }
-    setEditMode(true);
-    setEditId(eventId);
+    if (event.eventstatus === 6) {
+      toast("The event cannot be edited until it is approved.", {
+        icon: "⚠️",
+        style: {
+          border: "1px solid #FFA500",
+          padding: "16px",
+        },
+      });
+      resetForm();
+    } else {
+      setEventId(event.eventid);
+      const eventId = event.eventid;
+      if (!eventId) {
+        console.error("No event ID found for editing:", event);
+        return;
+      }
+      setEditMode(true);
+      setEditId(eventId);
 
-    setEventData({
-      eventType: event.eventtype,
-      eventName: event.eventname,
-      dateRange: {
-        start: new Date(event.startdate),
-        end: new Date(event.enddate),
-      },
-      status: event.isactive,
-      location: event.location || "",
-      geoLocation: event.gmapLocation || "",
-      bannerImage: event.banner ? `${IMAGE_URL}${event.banner}` : null,
-      bankDetails: {
-        bankName: event.bankname,
-        accountHolderName: event.accountname,
-        accountNumber: event.accountnum,
-        ifscCode: event.ifsccode,
-        Qrpath: event.qrpath ? `${IMAGE_URL}${event.qrpath}` : null,
-      },
-    });
+      setEventData({
+        eventType: event.eventtype,
+        eventName: event.eventname,
+        dateRange: {
+          start: new Date(event.startdate),
+          end: new Date(event.enddate),
+        },
+        status: event.isactive,
+        location: event.location || "",
+        geoLocation: event.gmapLocation || "",
+        bannerImage: event.banner ? `${IMAGE_URL}${event.banner}` : null,
+        bankDetails: {
+          bankName: event.bankname,
+          accountHolderName: event.accountname,
+          accountNumber: event.accountnum,
+          ifscCode: event.ifsccode,
+          Qrpath: event.qrpath ? `${IMAGE_URL}${event.qrpath}` : null,
+        },
+      });
+    }
   };
 
   const handleNavigate = (eventId) => {
@@ -361,7 +371,7 @@ const EventForm = () => {
     formData.append("startdate", eventData.dateRange.start.toISOString());
     formData.append("enddate", eventData.dateRange.end.toISOString());
     formData.append("isactive", eventData.status);
-    formData.append("eventstatus", 0);
+    formData.append("eventstatus", eventData.status);
     formData.append("bankname", eventData.bankDetails.bankName);
     formData.append("ifsccode", eventData.bankDetails.ifscCode);
     formData.append("accountname", eventData.bankDetails.accountHolderName);
@@ -678,7 +688,7 @@ const EventForm = () => {
                                   }
                                   alt="Uploaded Banner"
                                   className="w-full h-full object-cover rounded-lg"
-                                />
+                                required/>
                                 <button
                                   type="button"
                                   onClick={() =>
