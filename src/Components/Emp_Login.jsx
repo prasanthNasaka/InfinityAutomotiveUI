@@ -159,18 +159,18 @@ const Emp_Login = () => {
 
   return (
     <section className="w-full h-screen flex flex-col">
-      <div className=" overflow-y-hidden shadow-lg ">
+      <div className="overflow-y-hidden shadow-lg">
         <Newheader />
       </div>
 
-      <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
+      <div className="flex overflow-hidden h-[calc(100vh-1rem)]">
         <div className="h-full">
           <MainSideBar />
         </div>
 
-        <div className="flex-1 p-3 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-white mb-6">
+        <div className="flex-1 p-2  overflow-y-auto">
+        <div className="max-w-7xl  mx-auto">
+        <div className="bg-white    mb-6">
               <div className="bg-white w-full  flex flex-col items-center rounded-lg shadow-lg">
                 {errors.submit && (
                   <p className="text-red-500 mb-4">{errors.submit}</p>
