@@ -1,8 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 
-// Base URL
-
 // Create Axios instance
 const AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -41,7 +39,9 @@ AxiosInstance.interceptors.response.use(
         console.error("Auth token expired. Redirecting to login...");
         localStorage.removeItem("authToken"); // Clear expired token
         window.location.href = "/login"; // Redirect to login page
-        return Promise.reject(new Error("Session expired. Please log in again."));
+        return Promise.reject(
+          new Error("Session expired. Please log in again.")
+        );
       }
     }
     return Promise.reject(error);
