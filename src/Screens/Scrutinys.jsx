@@ -1,14 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { CheckCircle2, AlertCircle } from "lucide-react";
-import { Link } from "react-router-dom";
-import { IoMdArrowRoundBack } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+
 import { BASE_URL } from "../constants/global-const";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import AxiosInstance from "../Components/AxiosInstance";
 
 function Scrutinys() {
+  const navigate = useNavigate();
+
   const [events, setEvents] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
@@ -16,6 +17,13 @@ function Scrutinys() {
   const [scrutinyRules, setScrutinyRules] = useState([]);
   const [bgColor, setBgColor] = useState(getRandomColor());
   const [answers, setAnswers] = useState({});
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+
+  const logOutHandler = () => {
+    localStorage.removeItem("authToken");
+    setIsLoggedOut(true);
+    navigate("/login");
+  };
 
   function getRandomColor() {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -162,13 +170,12 @@ function Scrutinys() {
         <div className="w-full mx-auto">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">Technical Scrutiny Checklist</h1>
-            <Link
-              to="/dashboard"
-              className="w-32 flex items-center gap-2 p-2 border text-center hover:bg-white hover:text-black transform ease-in-out duration-1000 rounded-md"
+            <button
+              onClick={logOutHandler}
+              className="w-fit text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-5 py-2.5"
             >
-              <IoMdArrowRoundBack className="w-6 h-6" />
-              Dashboard
-            </Link>
+              Logout
+            </button>
           </div>
         </div>
       </div>
