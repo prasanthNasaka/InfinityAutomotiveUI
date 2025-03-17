@@ -192,18 +192,18 @@ const RegistrationDeskPopUp = () => {
     }
   };
 
-  const numberInput = (e) => {
-    const inputValue = e.target.value;
+  // const numberInput = (e) => {
+  //   const inputValue = e.target.value;
 
-    if (/^\d*$/.test(inputValue) && inputValue.length <= 3) {
-      setValue(inputValue);
-      setError("");
-    } else if (inputValue.length > 3) {
-      setError("Maximum 3 digits");
-    } else {
-      setError("Only numbers are accepted");
-    }
-  };
+  //   if (/^\d*$/.test(inputValue) && inputValue.length <= 3) {
+  //     setValue(inputValue);
+  //     setError("");
+  //   } else if (inputValue.length > 3) {
+  //     setError("Maximum 3 digits");
+  //   } else {
+  //     setError("Only numbers are accepted");
+  //   }
+  // };
 
   const isFormValid = () => {
     return (
@@ -227,10 +227,10 @@ const RegistrationDeskPopUp = () => {
         eventId: parseInt(selectedEvent) || 0,
         eventcategoryId: parseInt(selectedCategory) || 0,
         contestantNo: parseInt(value) || 0,
-        amountPaid: amountPaidChecked ? 92 : 91, // Map to 92 for paid, 91 for pending
-        referenceNo: referenceNumber || "",
+       amountPaid: amountPaidChecked ? 92 : 91, // Default 91 (pending), 92 if paid
+        referenceNo: referenceNumber ,
         scrutinyStatus: 15, //15 pending 16 approved 17 rejected 18 N/A
-        documentStatus: parseInt(addDocVerify) || 97, //97 pending 98 verified
+        documentStatus:  97, //97 pending 98 verified (parseInt(addDocVerify) ||)
       };
       console.log("payload", payload);
 
@@ -488,7 +488,7 @@ const RegistrationDeskPopUp = () => {
 
                   <div className="w-full flex p-2  gap-2 tab:flex-col items-center">
                     <div className="w-1/2 tab:w-full flex items-center px-2">
-                      <div className="w-1/2">
+                      {/* <div className="w-1/2">
                         <label
                           style={Styles.label}
                           htmlFor="contestantNumber"
@@ -507,7 +507,7 @@ const RegistrationDeskPopUp = () => {
                         {error && (
                           <span className="text-sm text-red-500">{error}</span>
                         )}
-                      </div>
+                      </div> */}
 
                       <div className="w-1/2 flex flex-col">
                         <label

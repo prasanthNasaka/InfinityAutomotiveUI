@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState,  useEffect } from "react";
 import MainSideBar from "./MainSideBar";
 import Newheader from "./Newheader";
 import { BASE_URL } from "../constants/global-const";
@@ -42,10 +42,10 @@ const Add_Employee = () => {
     );
   });
 
-  // Calculate total pages
+  
   const totalPages = Math.ceil(filteredData.length / recordsPerPage);
 
-  // Get current records based on pagination
+  
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const currentRecords = filteredData.slice(
@@ -61,10 +61,10 @@ const Add_Employee = () => {
 
   const handleOptionClick = (value) => {
     setRecordsPerPage(value);
-    setCurrentPage(1); // Reset to the first page when changing records per page
-    setIsDropdownOpen(false); // Close the dropdown
+    setCurrentPage(1); 
+    setIsDropdownOpen(false); 
   };
-  // Handle Input Change
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -73,7 +73,7 @@ const Add_Employee = () => {
     }
   };
 
-  // Validate Form
+  
   const validateForm = () => {
     let formErrors = {};
     if (!formData.empName.trim())
@@ -238,7 +238,7 @@ const Add_Employee = () => {
             <MainSideBar />
           </div>
           <div className="flex-1 p-2  overflow-y-auto">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-full mx-auto">
               <div className="bg-white   mb-6">
                 <div className="bg-white  flex flex-col ">
                   <div className="p-2 ml-2 flex">
@@ -385,7 +385,7 @@ const Add_Employee = () => {
                     </h3>
                   </div>
 
-                  <div className="w-full h-auto flex justify-between items-center p-2">
+                  <div className="w-full h-auto border flex justify-between items-center p-2">
                     {/* Search Input */}
                     <div className="w-1/2 ">
                       <input
@@ -512,9 +512,7 @@ const Add_Employee = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        {filteredData.length > 0 && (
+            {filteredData.length > 0 && (
           <div className="flex justify-end px-2 items-center space-x-2 m-4">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -555,6 +553,9 @@ const Add_Employee = () => {
             </button>
           </div>
         )}
+          </div>
+        </div>
+       
       </section>
     </>
   );

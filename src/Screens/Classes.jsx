@@ -250,7 +250,7 @@ const Classes = () => {
             <MainSideBar />
           </div>
           <div className="flex-1 p-3 overflow-y-auto">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-full mx-auto">
               <div className="bg-white p-2 mb-6">
                 <div className="p-2 flex">
                   <h3
@@ -264,7 +264,7 @@ const Classes = () => {
                 <div className="w-full tab:w-full">
                   <label className="text-sm font-medium text-white">Event Name</label>
                   <div className="w-full flex flex-col gap-2">
-                    <div className="w-full h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
+                    <div className="w-full h-full border-1 p-2 border mb-4 rounded-lg">
                       <div className="w-1/2">
                         <label className="text-sm font-medium text-gray-700">Event Name</label>
                         <select
