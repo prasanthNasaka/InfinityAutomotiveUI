@@ -74,7 +74,7 @@ const Registration = () => {
     formData.append("dlValidTill", dlValidTill);
     formData.append("dob", dob);
     formData.append("bloodGroup", bloodGroup);
-    formData.append("teamMemberOf", 0);
+    formData.append("teamMemberOf", 1);
     if (file) formData.append("driverPhoto", file);
     if (upload) formData.append("fmsciLicPhoto", upload);
     if (image) formData.append("dlPhoto", image);
@@ -92,7 +92,7 @@ const Registration = () => {
         }
 
         response = await AxiosInstance.put(
-          `/api/drivers/${selecteddetails.driverId}`,
+          `${BASE_URL}/api/drivers/${selecteddetails.driverId}`,
           formData,
           {
             headers: {
@@ -106,11 +106,15 @@ const Registration = () => {
           throw new Error("Driver name, phone, and email are required.");
         }
 
-        response = await AxiosInstance.post("/api/drivers", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        response = await AxiosInstance.post(
+          `${BASE_URL}/api/drivers`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         toast.success("Driver registered successfully:", response.data);
       }
     } catch (error) {

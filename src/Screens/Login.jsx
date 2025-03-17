@@ -8,8 +8,8 @@ import { BASE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
 
 const Login = () => {
-  const [email, setEmail] = useState("KMI");
-  const [password, setPassword] = useState("Hyd@12345");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();

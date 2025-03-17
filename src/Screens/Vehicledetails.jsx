@@ -100,11 +100,15 @@ const Vehicledetails = () => {
         );
         toast.success("Vehicle updated successfully:", response.data);
       } else {
-        response = await AxiosInstance.post(`${BASE_URL}/api/Vehicle`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        response = await AxiosInstance.post(
+          `${BASE_URL}/api/Vehicle`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         toast.success("Vehicle registered successfully:", response.data);
       }
     } catch (error) {
