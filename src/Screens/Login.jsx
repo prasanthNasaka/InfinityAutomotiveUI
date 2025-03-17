@@ -12,6 +12,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   const navigate = useNavigate();
 
   const token = localStorage.getItem("authToken");
@@ -19,6 +21,13 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (rememberMe) {
+      localStorage.setItem("username", email);
+      localStorage.setItem("password", password);
+    } else {
+      localStorage.removeItem("username");
+      localStorage.removeItem("password");
+    }
     setError(null);
     try {
       const response = await axios.post(`${BASE_URL}/api/Auth/login`, {
@@ -65,11 +74,25 @@ const Login = () => {
     }
   };
 
+  const storedCredentials = () => {
+    const storedUsername = localStorage.getItem("username");
+    const storedPassword = localStorage.getItem("password");
+    if (storedUsername && storedPassword) {
+      setEmail(storedUsername);
+      setPassword(storedPassword);
+      setRememberMe(true);
+    }
+  };
+
   useEffect(() => {
     if (token) {
       navigate("/dashboard");
     }
   }, [token, navigate]);
+
+  useEffect(() => {
+    storedCredentials();
+  }, []);
 
   return (
     <>
@@ -194,8 +217,8 @@ const Login = () => {
                     id="remember"
                     type="checkbox"
                     className="w-4 h-4 text-black border-gray-300 rounded focus:ring-blue-500 hover:cursor-pointer accent-cyan-600"
-                    required
-                    checked
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
                   />
                   <label
                     htmlFor="remember"
@@ -213,12 +236,6 @@ const Login = () => {
                     >
                       Forgot password?
                     </Link>
-                    {/* <Link
-                    to={"/signup"}
-                    className="text-xs sm:text-sm md:text-base underline text-black/80 hover:text-sky-900"
-                  >
-                    Don&apos;t have an account?
-                  </Link> */}
                   </div>
                   <button
                     type="submit"
