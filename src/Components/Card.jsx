@@ -1,6 +1,6 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import { Calendar, Flag, MapPin, Timer } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import { IMAGE_URL } from "../constants/global-const";
 import { TfiCup } from "react-icons/tfi";
@@ -8,13 +8,19 @@ import { TfiCup } from "react-icons/tfi";
 const Card = ({ event, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleDetailsClick = (eventId) => {
+    const url = `/table/${eventId}`;
+    window.open(url, "_blank"); // Open the URL in a new tab
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with zero if needed
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-based) and pad with zero
-    const year = date.getFullYear(); // Get full year
-    return `${day}-${month}-${year}`; // Return formatted date as DD-MM-YYYY
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
+
   const handleClick = () => {
     setIsModalOpen(true);
   };
@@ -26,14 +32,10 @@ const Card = ({ event, type }) => {
   return (
     <>
       <div
-        
-          
-        className="min-w-max h-full  rounded-lg overflow-hidden shadow-lg cursor-pointer bg-white"
+        className="min-w-max h-full rounded-lg overflow-hidden shadow-lg cursor-pointer bg-white"
         onClick={handleClick}
       >
-        <div
-         
-        >
+        <div>
           {type === "live" && (
             <img
               src={`${IMAGE_URL}${event.banner}`}
@@ -74,7 +76,6 @@ const Card = ({ event, type }) => {
           />
         )}
 
-        {/* {event.banner} */}
         <div className="p-4">
           <h3 className="text-xl font-bold">{event.eventname}</h3>
           <p className="text-gray-600 flex items-center">
@@ -92,12 +93,11 @@ const Card = ({ event, type }) => {
           {type === "upcoming" && (
             <p className="text-gray-600 flex items-center">
               <Calendar className="mr-2" size={16} />
-              {formatDate(event.startdate)} {/* Displaying date only */}
-              <p className="text-gray-600  items-center flex text-wrap">
+              {formatDate(event.startdate)}
+              <p className="text-gray-600 items-center flex text-wrap">
                 <Calendar className="mr-2" size={20} />
-                Start Date: {formatDate(event.startdate)}{" "}
-                {/* Displaying start date */} - End Date:{" "}
-                {formatDate(event.enddate)} {/* Displaying end date */}
+                Start Date: {formatDate(event.startdate)} - End Date:{" "}
+                {formatDate(event.enddate)}
               </p>
             </p>
           )}
@@ -107,8 +107,7 @@ const Card = ({ event, type }) => {
               <div>
                 <p className="text-gray-600 flex items-center">
                   <Flag className="mr-2" size={16} />
-                  Completed on {formatDate(event.startdate)}{" "}
-                  {/* Displaying date only */}
+                  Completed on {formatDate(event.startdate)}
                 </p>
               </div>
               <div className="text-4xl text-yellow-600">
@@ -130,7 +129,6 @@ const Card = ({ event, type }) => {
                 onClick={closeModal}
                 className="bg-cyan-500 text-white p-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
               >
-                {/* Close Icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -201,7 +199,6 @@ const Card = ({ event, type }) => {
                   <Timer className="inline mr-2" size={16} /> Lap{" "}
                   {event.currentLap} of {event.totalLaps}
                 </p>
-                {/* More details can be added here */}
               </>
             )}
 
@@ -211,7 +208,6 @@ const Card = ({ event, type }) => {
                   <Calendar className="inline mr-2" size={16} />{" "}
                   {new Date(event.startdate).toLocaleString()}
                 </p>
-                {/* More details can be added here */}
               </>
             )}
 
@@ -227,19 +223,12 @@ const Card = ({ event, type }) => {
                 Close
               </button>
 
-              <Link
-                className="w-1/2"
-                target="_blank"
-                to={type === "upcoming" ? "/registrationdesk" : "/resultTable"}
+              <button
+                onClick={() => handleDetailsClick(event.eventid)} // Use event.eventid here
+                className="w-1/2 bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
               >
-                <button className="w-full bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300">
-                  {type === "upcoming"
-                    ? "Register Now"
-                    : type === "completed"
-                    ? "Results"
-                    : "Details"}
-                </button>
-              </Link>
+                Details
+              </button>
             </div>
           </div>
         </div>

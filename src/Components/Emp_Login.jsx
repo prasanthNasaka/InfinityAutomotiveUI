@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import MainSideBar from "./MainSideBar";
 import Newheader from "./Newheader";
@@ -7,6 +7,7 @@ import { CiEdit } from "react-icons/ci";
 import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
 // import { MdOutlineDelete } from "react-icons/md";
+import { Toaster, toast } from "react-hot-toast";
 
 const userTypeMapping = {
   102: "Manager",
@@ -34,13 +35,11 @@ const Emp_Login = () => {
   const fetchEmployees = async () => {
     try {
       const response = await AxiosInstance.get(`${BASE_URL}/api/Employee`);
-      console.log('rs',response);
-      
       const employees = response.data || [];
       setEmployeeList(employees);
     } catch (error) {
       console.error("Error fetching employee data:", error);
-      setEmployeeList([]);
+      toast.error("Error fetching employee data"); // Show toast on error
     }
   };
 
@@ -52,7 +51,7 @@ const Emp_Login = () => {
       setUserList(users);
     } catch (error) {
       console.error("Error fetching user data:", error);
-      setUserList([]);
+      toast.error("Error fetching user data"); // Show toast on error
     }
   };
 
@@ -105,19 +104,17 @@ const Emp_Login = () => {
 
     try {
       const response = isEdit
-        ? await axios.put(`${BASE_URL}/api/UserInfo`, employee)
-        : await axios.post(`${BASE_URL}/api/UserInfo/SignUp`, employee);
+        ? await AxiosInstance.put(`${BASE_URL}/api/UserInfo`, employee)
+        : await AxiosInstance.post(`${BASE_URL}/api/UserInfo/SignUp`, employee);
 
       if (response.status === 200 || response.status === 201) {
-        console.log("Operation successful:", response.data);
+        toast.success("User Created Successful!"); // Show success toast
         fetchUsers(); // Refresh user list
         resetForm();
       }
     } catch (error) {
       console.error("Error submitting data:", error.message);
-      setErrors({
-        submit: error.response?.data?.title || "Error submitting data",
-      });
+      toast.error(error.response?.data?.title || "Error submitting data"); // Show error toast
     }
   };
 
@@ -158,233 +155,250 @@ const Emp_Login = () => {
   }, []);
 
   return (
-    <section className="w-full h-screen flex flex-col">
-      <div className="overflow-y-hidden shadow-lg">
-        <Newheader />
-      </div>
+    <>
+      <Toaster position="bottom-center" reverseOrder={false} />
 
-      <div className="flex overflow-hidden h-[calc(100vh-1rem)]">
-        <div className="h-full">
-          <MainSideBar />
+      <section className="w-full h-screen flex flex-col">
+        <div className="overflow-y-hidden shadow-lg">
+          <Newheader />
         </div>
 
-        <div className="flex-1 p-2  overflow-y-auto">
-        <div className="max-w-7xl  mx-auto">
-        <div className="bg-white    mb-6">
-              <div className="bg-white w-full  flex flex-col items-center rounded-lg shadow-lg">
-                {errors.submit && (
-                  <p className="text-red-500 mb-4">{errors.submit}</p>
-                )}
-                <div className="space-y-4 w-full">
-                  <div className=" space-y-6 overflow-auto mb-2">
-                    <div className="bg-white flex flex-col items-center rounded-lg w-full">
-                      <div className="flex w-full p-2">
-                        <h3
-                          style={Styles.heading}
-                          className="text-2xl font-semibold mb-4 text-center text-cyan-700"
-                        >
-                          {isEdit ? "Edit Employee Login" : "Employee Login"}
-                        </h3>
-                      </div>
+        <div className="flex overflow-hidden h-[calc(100vh-1rem)]">
+          <div className="h-full">
+            <MainSideBar />
+          </div>
 
-                      {errors.submit && (
-                        <p className="text-red-500 mb-4">{errors.submit}</p>
-                      )}
+          <div className="flex-1 p-2 overflow-y-auto">
+            <div className="max-w-full mx-auto">
+              <div className="bg-white mb-6">
+                <div className="bg-white w-full flex flex-col items-center rounded-lg ">
+                  {errors.submit && (
+                    <p className="text-red-500 mb-4">{errors.submit}</p>
+                  )}
+                  <div className="space-y-4 w-full">
+                    <div className="space-y-6 overflow-auto mb-2">
+                      <div className="bg-white flex flex-col items-center rounded-lg w-full">
+                        <div className="flex w-full p-2">
+                          <h3
+                            style={Styles.heading}
+                            className="text-2xl font-semibold mb-4 text-center text-cyan-700"
+                          >
+                            {isEdit ? "Edit Employee Login" : "Employee Login"}
+                          </h3>
+                        </div>
 
-                      {/* Form Container */}
-                      <div className="w-full p-2">
-                        {/* First Row - Username & Employee Selection */}
-                        <div className="flex items-center gap-4">
-                          <div className="w-1/2">
-                            <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
-                              User Name
-                            </label>
-                            <input
-                            style={Styles.select}
-                              type="text"
-                              name="username"
-                              value={formData.username}
-                              onChange={handleChange}
-                              readOnly={isEdit}
-                              className={`w-full p-3 border-2 rounded-md ${
-                                errors.username
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } focus:outline-none focus:ring-2 focus:ring-black ${
-                                isEdit ? "bg-gray-100" : ""
-                              }`}
-                              placeholder="Enter User Name"
-                            />
-                            {errors.username && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {errors.username}
-                              </p>
-                            )}
+                        {/* Form Container */}
+                        <div className="w-full p-2">
+                          {/* First Row - Username & Employee Selection */}
+                          <div className="flex items-center gap-4">
+                            <div className="w-1/2">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-semibold text-gray-700 mb-1"
+                              >
+                                User Name
+                              </label>
+                              <input
+                                style={Styles.select}
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                readOnly={isEdit}
+                                className={`w-full p-3 border-2 rounded-md ${
+                                  errors.username
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } focus:outline-none focus:ring-2 focus:ring-black ${
+                                  isEdit ? "bg-gray-100" : ""
+                                }`}
+                                placeholder="Enter User Name"
+                              />
+                              {errors.username && (
+                                <p className="text-red-500 text-sm mt-1">
+                                  {errors.username}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="w-1/2">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-semibold text-gray-700"
+                              >
+                                Employee
+                              </label>
+                              <select
+                                style={Styles.select}
+                                name="employeeId"
+                                value={formData.employeeId}
+                                onChange={handleChange}
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                required
+                              >
+                                <option value="">Select Employee</option>
+                                {employeeList.map((employee) => (
+                                  <option
+                                    key={employee.empId}
+                                    value={employee.empId}
+                                  >
+                                    {employee.empName}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.employeeId && (
+                                <p className="text-red-500 text-sm mt-1">
+                                  {errors.employeeId}
+                                </p>
+                              )}
+                            </div>
                           </div>
 
-                          <div className="w-1/2">
-                            <label style={Styles.label} className="block text-sm font-semibold text-gray-700">
-                              Employee
+                          {/* Second Row - Password & Confirm Password */}
+                          <div className="flex gap-4 mt-4">
+                            {["password", "confirmPassword"].map((field) => (
+                              <div className="w-1/2" key={field}>
+                                <label
+                                  style={Styles.label}
+                                  className="block text-sm font-semibold text-gray-700 mb-1"
+                                >
+                                  {field === "password"
+                                    ? "Password"
+                                    : "Confirm Password"}
+                                  {isEdit &&
+                                    " (Leave blank to keep current password)"}
+                                </label>
+                                <input
+                                  style={Styles.select}
+                                  type="password"
+                                  name={field}
+                                  value={formData[field]}
+                                  onChange={handleChange}
+                                  className={`w-full p-3 border-2 rounded-md ${
+                                    errors[field]
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } focus:outline-none focus:ring-2 focus:ring-black`}
+                                  placeholder={`Enter ${
+                                    field === "password"
+                                      ? "Password"
+                                      : "Confirm Password"
+                                  }${isEdit ? " (optional)" : ""}`}
+                                />
+                                {errors[field] && (
+                                  <p className="text-red-500 text-sm mt-1">
+                                    {errors[field]}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Third Row - User Type */}
+                          <div className="w-full mt-4">
+                            <label
+                              style={Styles.label}
+                              className="block text-sm font-semibold text-gray-700"
+                            >
+                              User Type
                             </label>
                             <select
-                            style={Styles.select}
-                              name="employeeId"
-                              value={formData.employeeId}
+                              style={Styles.select}
+                              name="role"
+                              value={formData.role}
                               onChange={handleChange}
                               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
                               required
                             >
-                              <option value="">Select Employee</option>
-                              {employeeList.map((employee) => (
-                                <option
-                                  key={employee.empId}
-                                  value={employee.empId}
-                                >
-                                  {employee.empName}
-                                </option>
-                              ))}
+                              <option value={0}>Select Role</option>
+                              {Object.entries(userTypeMapping).map(
+                                ([key, value]) => (
+                                  <option key={key} value={key}>
+                                    {value}
+                                  </option>
+                                )
+                              )}
                             </select>
-                            {errors.employeeId && (
+                            {errors.role && (
                               <p className="text-red-500 text-sm mt-1">
-                                {errors.employeeId}
+                                {errors.role}
                               </p>
                             )}
                           </div>
-                        </div>
 
-                        {/* Second Row - Password & Confirm Password */}
-                        <div className="flex gap-4 mt-4">
-                          {["password", "confirmPassword"].map((field) => (
-                            <div className="w-1/2" key={field}>
-                              <label style={Styles.label} className="block text-sm font-semibold text-gray-700 mb-1">
-                                {field === "password"
-                                  ? "Password"
-                                  : "Confirm Password"}
-                                {isEdit &&
-                                  " (Leave blank to keep current password)"}
-                              </label>
-                              <input
-                              style={Styles.select}
-                                type="password"
-                                name={field}
-                                value={formData[field]}
-                                onChange={handleChange}
-                                className={`w-full p-3 border-2 rounded-md ${
-                                  errors[field]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } focus:outline-none focus:ring-2 focus:ring-black`}
-                                placeholder={`Enter ${
-                                  field === "password"
-                                    ? "Password"
-                                    : "Confirm Password"
-                                }${isEdit ? " (optional)" : ""}`}
-                              />
-                              {errors[field] && (
-                                <p className="text-red-500 text-sm mt-1">
-                                  {errors[field]}
-                                </p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Third Row - User Type */}
-                        <div className="w-full mt-4">
-                          <label style={Styles.label} className="block text-sm font-semibold text-gray-700">
-                            User Type
-                          </label>
-                          <select
-                          style={Styles.select}
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                            required
-                          >
-                            <option value={0}>Select Role</option>
-                            {Object.entries(userTypeMapping).map(
-                              ([key, value]) => (
-                                <option key={key} value={key}>
-                                  {value}
-                                </option>
-                              )
-                            )}
-                          </select>
-                          {errors.role && (
-                            <p className="text-red-500 text-sm mt-1">
-                              {errors.role}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Buttons */}
-                        <div className="flex w-full gap-4 mt-4">
-                          <button
-                            onClick={resetForm}
-                            className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={handleSubmit}
-                            className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
-                          >
-                            {isEdit ? "Update" : "Submit"}
-                          </button>
+                          {/* Buttons */}
+                          <div className="flex w-full gap-4 mt-4">
+                            <button
+                              onClick={resetForm}
+                              className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleSubmit}
+                              className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                            >
+                              {isEdit ? "Update" : "Submit"}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex-1 w-full p-1 space-y-6 overflow-auto">
-              {/* User List Table */}
-              <div className="bg-white flex flex-col items-center p-6 w-full rounded-lg shadow-lg ">
-                <div className="w-full h-auto flex">
-                <h3 style={Styles.tableheading} className="text-xl font-semibold text-cyan-700 mb-4">
-                  User List
-                </h3>
-                </div>
-                
-                <table className="w-full text-sm text-gray-700">
-                  <thead className="bg-gray-50 text-gray-600">
-                    <tr style={Styles.label}>
-                      <th className="px-4 py-2 text-left">Employee Name</th>
-                      <th className="px-4 py-2 text-left">Username</th>
-                      <th className="px-4 py-2 text-left">User Type</th>
-                      <th className="px-4 py-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {userList.map((user, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-4 py-2">{user.empName || "N/A"}</td>
-                        <td className="px-4 py-2">{user.username || "N/A"}</td>
-                        <td className="px-4 py-2">
-                          {userTypeMapping[user.usertype] || "N/A"}
-                        </td>
-                        <td className="py-2 text-center">
-                          <div className="flex justify-center gap-2">
-                            <button
-                              onClick={() => handleEdit(index)}
-                              className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                            >
-                              <CiEdit className="size-6" />
-                            </button>
-                          </div>
-                        </td>
+              <div className="flex-1 w-full p-1 space-y-6 overflow-auto">
+                {/* User List Table */}
+                <div className="bg-white flex flex-col items-center p-6 w-full rounded-lg shadow-lg">
+                  <div className="w-full h-auto flex">
+                    <h3
+                      style={Styles.tableheading}
+                      className="text-xl font-semibold text-cyan-700 mb-4"
+                    >
+                      User List
+                    </h3>
+                  </div>
+
+                  <table className="w-full text-sm text-gray-700">
+                    <thead className="bg-gray-50 text-gray-600">
+                      <tr style={Styles.label}>
+                        <th className="px-4 py-2 text-left">Employee Name</th>
+                        <th className="px-4 py-2 text-left">Username</th>
+                        <th className="px-4 py-2 text-left">User Type</th>
+                        <th className="px-4 py-2">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {userList.map((user, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-4 py-2">{user.empName || "N/A"}</td>
+                          <td className="px-4 py-2">
+                            {user.username || "N/A"}
+                          </td>
+                          <td className="px-4 py-2">
+                            {userTypeMapping[user.usertype] || "N/A"}
+                          </td>
+                          <td className="py-2 text-center">
+                            <div className="flex justify-center gap-2">
+                              <button
+                                onClick={() => handleEdit(index)}
+                                className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                              >
+                                <CiEdit className="size-6" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

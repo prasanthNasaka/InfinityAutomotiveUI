@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Newheader from "../Components/Newheader";
@@ -13,7 +12,7 @@ import { parse } from "date-fns";
 import { IMAGE_URL } from "../constants/global-const";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import { DataTable } from "simple-datatables";
+// import { DataTable } from "simple-datatables";
 import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
 
@@ -51,7 +50,7 @@ const EventForm = () => {
     direction: "none",
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [isHidden, setIsHidden] = useState(true);
   const options = [
     { value: 5, label: "5 per page" },
     { value: 10, label: "10 per page" },
@@ -144,6 +143,7 @@ const EventForm = () => {
     return pages;
   };
 
+  // eslint-disable-next-line react/prop-types
   const SortingIcon = ({ direction }) => {
     if (direction === "none") {
       return <FaSort className="w-4 h-4 ms-1" />;
@@ -238,7 +238,6 @@ const EventForm = () => {
       }
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -246,16 +245,16 @@ const EventForm = () => {
     formData.append("eventname", eventData.eventName);
     formData.append("startdate", eventData.dateRange.start.toISOString());
     formData.append("enddate", eventData.dateRange.end.toISOString());
-    formData.append("isactive", 1);
-    formData.append("eventstatus", 6);
+    formData.append("isactive", eventData.status); // Use eventData.status for isactive
+    formData.append("eventstatus", eventData.status); // Use the correct eventstatus
     formData.append("bankname", eventData.bankDetails.bankName);
     formData.append("ifsccode", eventData.bankDetails.ifscCode);
     formData.append("accountname", eventData.bankDetails.accountHolderName);
     formData.append("accountnum", eventData.bankDetails.accountNumber);
     formData.append("companyid", 1);
     formData.append("location", eventData.location || "");
-    console.log("Appending GmapLocation:", eventData.geoLocation);
     formData.append("GmapLocation", eventData.geoLocation || "");
+
     if (eventData.bannerImage) {
       formData.append("banner", eventData.bannerImage);
     }
@@ -320,43 +319,47 @@ const EventForm = () => {
         },
       });
       resetForm();
-    } else {
-      setEventId(event.eventid);
-      const eventId = event.eventid;
-      if (!eventId) {
-        console.error("No event ID found for editing:", event);
-        return;
-      }
-      setEditMode(true);
-      setEditId(eventId);
-
-      setEventData({
-        eventType: event.eventtype,
-        eventName: event.eventname,
-        dateRange: {
-          start: new Date(event.startdate),
-          end: new Date(event.enddate),
-        },
-        status: event.isactive,
-        location: event.location || "",
-        geoLocation: event.gmapLocation || "",
-        bannerImage: event.banner ? `${IMAGE_URL}${event.banner}` : null,
-        bankDetails: {
-          bankName: event.bankname,
-          accountHolderName: event.accountname,
-          accountNumber: event.accountnum,
-          ifscCode: event.ifsccode,
-          Qrpath: event.qrpath ? `${IMAGE_URL}${event.qrpath}` : null,
-        },
-      });
+      return;
     }
+
+    setEventId(event.eventid);
+    const eventId = event.eventid;
+    if (!eventId) {
+      console.error("No event ID found for editing:", event);
+      return;
+    }
+
+    setEditMode(true);
+    setEditId(eventId);
+
+    setEventData({
+      eventType: event.eventtype,
+      eventName: event.eventname,
+      dateRange: {
+        start: new Date(event.startdate),
+        end: new Date(event.enddate),
+      },
+      status: event.eventstatus, // Use eventstatus here
+      location: event.location || "",
+      geoLocation: event.gmapLocation || "",
+      bannerImage: event.banner ? `${IMAGE_URL}${event.banner}` : null,
+      bankDetails: {
+        bankName: event.bankname,
+        accountHolderName: event.accountname,
+        accountNumber: event.accountnum,
+        ifscCode: event.ifsccode,
+        Qrpath: event.qrpath ? `${IMAGE_URL}${event.qrpath}` : null,
+      },
+    });
+
+    // Show status options for all events when editing (except Pending)
+    setIsHidden(false);
   };
 
   const handleNavigate = (eventId) => {
     navigate(`/report/${eventId}`);
     console.log("World", eventId);
   };
-
   const handleUpdate = async (e) => {
     e.preventDefault();
 
@@ -370,8 +373,8 @@ const EventForm = () => {
     formData.append("eventname", eventData.eventName);
     formData.append("startdate", eventData.dateRange.start.toISOString());
     formData.append("enddate", eventData.dateRange.end.toISOString());
-    formData.append("isactive", eventData.status);
-    formData.append("eventstatus", eventData.status);
+    formData.append("isactive", eventData.status); // Use eventData.status for isactive
+    formData.append("eventstatus", eventData.status); // Use eventData.status for eventstatus
     formData.append("bankname", eventData.bankDetails.bankName);
     formData.append("ifsccode", eventData.bankDetails.ifscCode);
     formData.append("accountname", eventData.bankDetails.accountHolderName);
@@ -445,7 +448,7 @@ const EventForm = () => {
       } catch (error) {
         console.error("Failed to delete event:", error);
         console.error("Error details:", error.response?.data || error.message);
-        alert(
+        toast.error(
           `Failed to delete event: ${
             error.response?.data?.message || error.message
           }`
@@ -598,39 +601,52 @@ const EventForm = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-4">
-                        <h3 className="text-sm font-bold text-gray-700">
-                          Status
-                        </h3>
-                        <div className="flex gap-4">
-                          <label className="flex items-center">
-                            <input
-                              type="radio"
-                              name="status"
-                              value={8}
-                              checked={eventData.status == 8}
-                              onChange={(e) => handleInputChange(e, "status")}
-                              className="w-4 h-4 text-cyan-600 border-gray-300"
-                            />
-                            <span className="ml-2 text-sm font-bold text-gray-700">
-                              Active
-                            </span>
-                          </label>
-                          <label className="flex items-center">
-                            <input
-                              type="radio"
-                              name="status"
-                              value={9}
-                              checked={eventData.status == 9}
-                              onChange={(e) => handleInputChange(e, "status")}
-                              className="w-4 h-4 text-cyan-600 border-gray-300"
-                            />
-                            <span className="ml-2 text-sm font-bold text-gray-700">
-                              Inactive
-                            </span>
-                          </label>
-                        </div>
-                      </div>
+                      {!isHidden && (
+                        <>
+                          <div>Status</div>
+                          <div className="flex gap-2 ">
+                            <label className="flex items-center">
+                              <input
+                                type="radio"
+                                name="status"
+                                value={8}
+                                checked={eventData.status == 8}
+                                onChange={(e) => handleInputChange(e, "status")}
+                                className="w-3 h-4 text-cyan-600 border-gray-300"
+                              />
+                              <span className="ml-2 text-sm font-bold text-gray-700">
+                                Active
+                              </span>
+                            </label>
+                            <label className="flex items-center">
+                              <input
+                                type="radio"
+                                name="status"
+                                value={9}
+                                checked={eventData.status == 9}
+                                onChange={(e) => handleInputChange(e, "status")}
+                                className="w-3 h-4 text-cyan-600 border-gray-300"
+                              />
+                              <span className="ml-2 text-sm font-bold text-gray-700">
+                                Inactive
+                              </span>
+                            </label>
+                            <label className="flex items-center">
+                              <input
+                                type="radio"
+                                name="status"
+                                value={11}
+                                checked={eventData.status == 11}
+                                onChange={(e) => handleInputChange(e, "status")}
+                                className="w-3 h-4 text-cyan-600 border-gray-300"
+                              />
+                              <span className="ml-2 text-sm font-bold text-gray-700">
+                                Cancelled
+                              </span>
+                            </label>
+                          </div>
+                        </>
+                      )}
 
                       <div className="w-full">
                         <div className="w-full flex gap-2 bg-gray-100 rounded-lg p-1 h-auto">
@@ -688,7 +704,8 @@ const EventForm = () => {
                                   }
                                   alt="Uploaded Banner"
                                   className="w-full h-full object-cover rounded-lg"
-                                required/>
+                                  required
+                                />
                                 <button
                                   type="button"
                                   onClick={() =>
@@ -1072,14 +1089,41 @@ const EventForm = () => {
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <span
                                   className={`px-2 inline-flex text-xs leading-5 font-bold rounded-full ${
-                                    event.isactive == 8
+                                    event.eventstatus === 6
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : event.eventstatus === 7
+                                      ? "bg-blue-100 text-blue-800"
+                                      : event.eventstatus === 8
                                       ? "bg-green-100 text-green-800"
-                                      : "bg-red-100 text-red-800"
+                                      : event.eventstatus === 9
+                                      ? "bg-red-100 text-red-800"
+                                      : event.eventstatus === 10
+                                      ? "bg-gray-100 text-gray-800"
+                                      : event.eventstatus === 11
+                                      ? "bg-orange-100 text-orange-800"
+                                      : event.eventstatus === 12
+                                      ? "bg-purple-100 text-purple-800"
+                                      : "bg-gray-200 text-gray-600"
                                   }`}
                                 >
-                                  {event.isactive == 8 ? "Active" : "Inactive"}
+                                  {event.eventstatus === 6
+                                    ? "Pending"
+                                    : event.eventstatus === 7
+                                    ? "Approved"
+                                    : event.eventstatus === 8
+                                    ? "Active"
+                                    : event.eventstatus === 9
+                                    ? "Inactive"
+                                    : event.eventstatus === 10
+                                    ? "Completed"
+                                    : event.eventstatus === 11
+                                    ? "Cancelled"
+                                    : event.eventstatus === 12
+                                    ? "LIVE"
+                                    : "Unknown"}
                                 </span>
                               </td>
+
                               <td className="px-6 py-4 whitespace-nowrap">
                                 {event.lstcat?.$values?.length || 0}
                               </td>
@@ -1094,13 +1138,13 @@ const EventForm = () => {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    const eventId = event.id || event.eventId;
+                                    const eventId = event.eventid; // Use event.eventid here
                                     if (!eventId) {
                                       console.error(
                                         "No event ID found for deletion:",
                                         event
                                       );
-                                      alert(
+                                      toast.error(
                                         "Cannot delete event without an ID"
                                       );
                                       return;
