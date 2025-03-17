@@ -43,8 +43,8 @@ const Linkraceanddrive = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [paymentReference, setPaymentReference] = useState("");
   const [selectAll, setSelectAll] = useState(false);
-  const [addDocVerify, setAddDocVerify] = useState(98);
-  const [deletePop, setDeletePop] = useState(false);
+  const [addDocVerify, setAddDocVerify] = useState(false); 
+  const [deletePop, setDeletePop] = useState(false)
   const [entryPrice, setEntryPrice] = useState(null);
   const [updatedContestantNumbers, setUpdatedContestantNumbers] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -317,12 +317,17 @@ const Linkraceanddrive = () => {
       selectedCategory &&
       selectedDriver &&
       selectedVehicle &&
-      // addDocVerify &&
+      addDocVerify &&
       amountPaidChecked &&
       (!amountPaidChecked || (amountPaidChecked && referenceNumber)) && // Only need ref number if checked
       !error
     );
   };
+
+  const handleCheckboxChangedoc = (e) => {
+    setAddDocVerify(e.target.checked); // true if checked, false if unchecked
+  };
+  
 
   const handleCheckboxChange = (regId) => {
     setSelectedIds((prev) =>
@@ -373,7 +378,7 @@ const Linkraceanddrive = () => {
     }
 
     const payload = {
-      refNumb: paymentReference, // ✅ Correctly checks for an entered reference number
+      refNumb: paymentReference, 
       regId: selectedIds,
     };
 
@@ -388,7 +393,7 @@ const Linkraceanddrive = () => {
 
       toast.success("Amount status updated successfully!");
       setSelectedIds([]);
-      setPaymentReference(""); // ✅ Clears input after submission
+      setPaymentReference(""); 
       setDrvTableData([]);
       await fetchUpdatedData();
     } catch (error) {
@@ -558,9 +563,9 @@ const Linkraceanddrive = () => {
         eventcategoryId: parseInt(selectedCategory) || 0,
         contestantNo: parseInt(value) || 0,
         amountPaid: amountPaidChecked ? 92 : 91, // Map to 92 for paid, 91 for pending
-        referenceNo: referenceNumber || "",
+        referenceNo: referenceNumber || "" ,
         scrutinyStatus: 15, //15 pending 16 approved 17 rejected 18 N/A
-        documentStatus: parseInt(addDocVerify) || 98, //97 pending 98 verified
+        documentStatus : addDocVerify ? 98 : 97, //97 pending 98 verified
       };
       console.log("payload", payload);
 
@@ -634,7 +639,7 @@ const Linkraceanddrive = () => {
         </div>
 
         <div className="flex-1 p-2  overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className=" max-w-10xl mx-auto">
             <div className="bg-white mb-6">
               <div className="p-2 ml-2 flex">
                 <h3
@@ -651,7 +656,7 @@ const Linkraceanddrive = () => {
                     {entryPrice !== null && (
                       <div className="w-full flex  gap-2 justify-end tab:flex-col items-center">
                         <div className=" w-full justify-end items-center flex p-2 bg-gray-100 rounded-md">
-                          <strong style={Styles.label}>Entry Price:</strong>
+                          <span style={Styles.label}>Entry Price:</span>
                           <span className="text-green-600 flex text-lg">
                             <GiTakeMyMoney className="text-3xl" />
                             {entryPrice}
@@ -1404,9 +1409,9 @@ const Linkraceanddrive = () => {
                             <th className="px-6 py-3 whitespace-nowrap">
                               Payment Status
                             </th>
-                            <th className="px-6 py-3 whitespace-nowrap">
+                            {/* <th className="px-6 py-3 whitespace-nowrap">
                               Reference Number
-                            </th>
+                            </th> */}
                             <th className="px-6 py-3 whitespace-nowrap">
                               Documents
                             </th>
@@ -1447,9 +1452,9 @@ const Linkraceanddrive = () => {
                                   {event.amountPaid === 92 ? "Paid" : "Pending"}
                                 </span>
                               </td>
-                              <td className="px-6 py-2 whitespace-nowrap">
+                              {/* <td className="px-6 py-2 whitespace-nowrap">
                                 {event.referenceNo}
-                              </td>
+                              </td> */}
 
                               <td className="px-6 py-2 whitespace-nowrap">
                                 <span

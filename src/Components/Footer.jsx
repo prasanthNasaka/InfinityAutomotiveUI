@@ -1,6 +1,14 @@
-
 import { motion } from "framer-motion";
+
 import { useState } from "react";
+import { CiMail } from "react-icons/ci";
+import {
+  FaFacebook,
+  FaFlagCheckered,
+  FaInstagram,
+  FaLinkedin,
+  FaTwitter,
+} from "react-icons/fa";
 
 const textOptions = [
   ["Admin", "See", "See"],
@@ -17,127 +25,202 @@ const textOptions = [
   ["LinkedIn", "Connect", "Network"],
 ];
 
-
 const Footer = () => {
-
-  const [hoveredIndex, setHoveredIndex] = useState (null);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoverede, setHoverede] = useState(false);
 
   return (
+    <footer className="w-full bg-gray-900 text-white ">
+      <div className="w-full h-auto flex justify-between items-center bg-gray-800 p-2 ">
+        <motion.div className="flex gap-4 h-20 text-4xl items-center ">
+          <motion.div
+            whileHover={{
+              scale: 1.2,
+              backgroundColor: "#3b82f6",
+              color: "#ffffff",
+              borderRadius: "100%",
+            }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+          >
+            <FaFacebook />
+          </motion.div>
+          <motion.div
+            onMouseEnter={() => setHoverede(true)}
+            onMouseLeave={() => setHoverede(false)}
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="  rounded-lg text-white"
+            style={{
+              background:
+                hoverede && "linear-gradient(45deg, #f58529, #dd2a7b, #515bd4)",
+              transition: "background 0.5s ease-in-out",
+            }}
+          >
+            <FaInstagram size={30} />
+          </motion.div>
+          <motion.div
+            whileHover={{
+              scale: 1.2,
+              backgroundColor: "#3b82f6",
+              color: "#ffffff",
+              borderRadius: "10%",
+            }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+          >
+            <FaLinkedin />
+          </motion.div>
+          <motion.div
+           whileHover={{
+            scale: 1.2,
+            backgroundColor: "#3b82f6",
+            color: "#ffffff",
+            borderRadius: "100%",
+          }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+          >
+            <FaTwitter />
+          </motion.div>
+          <motion.div
+           whileHover={{
+            scale: 1.2,
+            backgroundColor: "#FFFD37",
+            color: "black",
+            borderRadius: "20%",
+          }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CiMail />
+          </motion.div>
+        </motion.div>
+        <div className="flex items-center">
+          <h1 className="text-3xl font-robotoMono font-bold text-cyan-500 flex gap-2">
+            <span>
+              <FaFlagCheckered className="text-3xl text-white" />
+            </span>
+            <span>Amon</span>
+            <span className="text-3xl font-robotoMono font-bold text-white">
+              Racing
+            </span>
+          </h1>
+        </div>
+      </div>
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 p-2">
+        {/* Column 1 */}
+        <div className="text-center">
+          <h3 className="text-xl font-bold mb-4"> Type Of Users:</h3>
+          <ul className="space-y-2">
+            {[0, 1, 2, 3].map((index) => (
+              <li key={index}>
+                <motion.div
+                  onHoverStart={() => setHoveredIndex(index)}
+                  onHoverEnd={() => setHoveredIndex(null)}
+                  className="relative h-8 overflow-hidden"
+                >
+                  <motion.div
+                    animate={{ y: hoveredIndex === index ? -24 : 0 }} // Rotate text
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="space-y-2"
+                  >
+                    {textOptions[index].map((text, i) => (
+                      <p key={i} className="text-lg">
+                        {text}
+                      </p>
+                    ))}
+                  </motion.div>
+                </motion.div>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-    <footer className="w-full bg-gray-900 text-white py-12">
-    <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-      {/* Column 1 */}
-      <div className="text-center">
-        <h3 className="text-xl font-bold mb-4"> Type Of Users:</h3>
-        <ul className="space-y-2">
-          {[0, 1, 2, 3].map((index) => (
-            <li key={index}>
+        {/* Column 2 */}
+        <div className="text-center">
+          <h3 className="text-xl font-bold mb-4">Resources</h3>
+          <ul className="space-y-2">
+            {[4, 5, 6, 7].map((index) => (
+              <li key={index}>
+                <motion.div
+                  onHoverStart={() => setHoveredIndex(index)}
+                  onHoverEnd={() => setHoveredIndex(null)}
+                  className="relative h-8 overflow-hidden"
+                >
+                  <motion.div
+                    animate={{ y: hoveredIndex === index ? -24 : 0 }} // Rotate text
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="space-y-2"
+                  >
+                    {textOptions[index].map((text, i) => (
+                      <p key={i} className="text-lg">
+                        {text}
+                      </p>
+                    ))}
+                  </motion.div>
+                </motion.div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Column 3 */}
+        <div className="text-center">
+          <h3 className="text-xl font-bold mb-4">Follow Us</h3>
+          <ul className="space-y-2">
+            {[8, 9, 10, 11].map((index) => (
+              <li key={index}>
+                <motion.div
+                  onHoverStart={() => setHoveredIndex(index)}
+                  onHoverEnd={() => setHoveredIndex(null)}
+                  className="relative h-8 overflow-hidden"
+                >
+                  <motion.div
+                    animate={{ y: hoveredIndex === index ? -24 : 0 }} // Rotate text
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="space-y-2"
+                  >
+                    {textOptions[index].map((text, i) => (
+                      <p key={i} className="text-lg">
+                        {text}
+                      </p>
+                    ))}
+                  </motion.div>
+                </motion.div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Column 4 */}
+        <div className="text-center">
+          <h3 className="text-xl font-bold mb-4">Fun Section</h3>
+          <ul className="space-y-2">
+            <li>
               <motion.div
-                onHoverStart={() => setHoveredIndex(index)}
+                onHoverStart={() => setHoveredIndex(12)}
                 onHoverEnd={() => setHoveredIndex(null)}
                 className="relative h-8 overflow-hidden"
               >
                 <motion.div
-                  animate={{ y: hoveredIndex === index ? -24 : 0 }} // Rotate text
+                  animate={{ y: hoveredIndex === 12 ? -24 : 0 }} // Rotate text
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   className="space-y-2"
                 >
-                  {textOptions[index].map((text, i) => (
-                    <p key={i} className="text-lg">
-                      {text}
-                    </p>
-                  ))}
+                  <p className="text-lg">Spin Me!</p>
+                  <p className="text-lg">Wow!</p>
+                  <p className="text-lg">Amazing!</p>
                 </motion.div>
               </motion.div>
             </li>
-          ))}
-        </ul>
+          </ul>
+        </div>
       </div>
 
-      {/* Column 2 */}
-      <div className="text-center">
-        <h3 className="text-xl font-bold mb-4">Resources</h3>
-        <ul className="space-y-2">
-          {[4, 5, 6, 7].map((index) => (
-            <li key={index}>
-              <motion.div
-                onHoverStart={() => setHoveredIndex(index)}
-                onHoverEnd={() => setHoveredIndex(null)}
-                className="relative h-8 overflow-hidden"
-              >
-                <motion.div
-                  animate={{ y: hoveredIndex === index ? -24 : 0 }} // Rotate text
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="space-y-2"
-                >
-                  {textOptions[index].map((text, i) => (
-                    <p key={i} className="text-lg">
-                      {text}
-                    </p>
-                  ))}
-                </motion.div>
-              </motion.div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Column 3 */}
-      <div className="text-center">
-        <h3 className="text-xl font-bold mb-4">Follow Us</h3>
-        <ul className="space-y-2">
-          {[8, 9, 10, 11].map((index) => (
-            <li key={index}>
-              <motion.div
-                onHoverStart={() => setHoveredIndex(index)}
-                onHoverEnd={() => setHoveredIndex(null)}
-                className="relative h-8 overflow-hidden"
-              >
-                <motion.div
-                  animate={{ y: hoveredIndex === index ? -24 : 0 }} // Rotate text
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="space-y-2"
-                >
-                  {textOptions[index].map((text, i) => (
-                    <p key={i} className="text-lg">
-                      {text}
-                    </p>
-                  ))}
-                </motion.div>
-              </motion.div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Column 4 */}
-      <div className="text-center">
-        <h3 className="text-xl font-bold mb-4">Fun Section</h3>
-        <ul className="space-y-2">
-          <li>
-            <motion.div
-              onHoverStart={() => setHoveredIndex(12)}
-              onHoverEnd={() => setHoveredIndex(null)}
-              className="relative h-8 overflow-hidden"
-            >
-              <motion.div
-                animate={{ y: hoveredIndex === 12 ? -24 : 0 }} // Rotate text
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="space-y-2"
-              >
-                <p className="text-lg">Spin Me!</p>
-                <p className="text-lg">Wow!</p>
-                <p className="text-lg">Amazing!</p>
-              </motion.div>
-            </motion.div>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    {/* Footer Bottom */}
-    
-  </footer>
+      {/* Footer Bottom */}
+    </footer>
     // <section className="w-full h-full">
     //   <div className="w-full sphone:w-full h-auto p-4 flex flex-wrap  items-center gap-3">
     //     <p className="text-base iphone:text-lg tab:text-xl lappy:text-xl text-black font-bold mb-4  2xl:text-2xl flex   ">

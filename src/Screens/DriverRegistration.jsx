@@ -82,7 +82,7 @@ const DriverRegistration = ({ closePopup }) => {
     formData.append("dlValidTill", dlValidTill);
     formData.append("dob", dob);
     formData.append("bloodGroup", bloodGroup);
-    formData.append("teamMemberOf", 0);
+    formData.append("teamMemberOf", 1);
     if (file) formData.append("driverPhoto", file);
     if (upload) formData.append("fmsciLicPhoto", upload);
     if (image) formData.append("dlPhoto", image);
