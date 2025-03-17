@@ -48,7 +48,10 @@ const Cardsection = () => {
         const response = await fetch(
           "https://c4pfntkn-7206.inc1.devtunnels.ms/api/LandingPage"
         );
+        
         const data = await response.json();
+        console.log('res',data);
+
         setLiveEvents(data.liveEvents);
         setUpcomingEvents(data.upcommingEvents);
         setCompletedEvents(data.completedEvents);

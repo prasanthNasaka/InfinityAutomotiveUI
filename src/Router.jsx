@@ -35,10 +35,10 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/table/:eventId" element={<Table />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgotpassword" element={<Forgotpassword />} />
         <Route path="/registrationdesk" element={<RegistrationDeskPopUp />} />
-
         <Route
           path="/dashboard"
           element={
@@ -47,6 +47,7 @@ const Router = () => {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/registration"
           element={
@@ -66,7 +67,7 @@ const Router = () => {
         <Route
           path="/eventsapproved"
           element={
-            <ProtectedRoute allowedRoles={["100"]}>
+            <ProtectedRoute>
               <EventsApproved />
             </ProtectedRoute>
           }
@@ -98,7 +99,7 @@ const Router = () => {
         <Route
           path="/status"
           element={
-            <ProtectedRoute allowedRoles={["100"]}>
+            <ProtectedRoute>
               <Status />
             </ProtectedRoute>
           }
@@ -138,7 +139,7 @@ const Router = () => {
         <Route
           path="/addcompany"
           element={
-            <ProtectedRoute allowedRoles={["100"]}>
+            <ProtectedRoute>
               <AddCompany />
             </ProtectedRoute>
           }
@@ -175,11 +176,9 @@ const Router = () => {
             </ProtectedRoute>
           }
         />
-
         <Route path="/pagenotfound" element={<PageNotFound />} />
         <Route path="/servernotfound" element={<ServerNotFound />} />
         <Route path="/loader" element={<Loader />} />
-
         <Route path="*" element={<Navigate to="/pagenotfound" />} />
       </Routes>
     </BrowserRouter>
