@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 import { IoPerson } from "react-icons/io5";
@@ -54,6 +54,22 @@ const Linkraceanddrive = () => {
     key: null,
     direction: "none",
   });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const options = [
+    { value: 5, label: "5 per page" },
+    { value: 10, label: "10 per page" },
+    { value: 15, label: "15 per page" },
+    { value: 20, label: "20 per page" },
+  ];
+
+  const handleOptionClick = (value) => {
+    setRecordsPerPage(value);
+    setCurrentPage(1); // Reset to the first page when changing records per page
+    setIsDropdownOpen(false);
+  };
+
+
   const filteredData = tableData.filter((event) =>
     Object.values(event).some((value) =>
       String(value).toLowerCase().includes(searchQuery.toLowerCase())
@@ -91,6 +107,7 @@ const Linkraceanddrive = () => {
   const startIndex = (currentPage - 1) * recordsPerPage;
   const endIndex = startIndex + recordsPerPage;
   const currentData = sortedData.slice(startIndex, endIndex);
+  const dropdownRef = useRef(null);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -134,6 +151,22 @@ const Linkraceanddrive = () => {
 
     return pages;
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false); // Close dropdown if clicked outside
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleSelectAll = () => {
     if (selectAll) {
@@ -600,7 +633,7 @@ const Linkraceanddrive = () => {
           <MainSideBar />
         </div>
 
-        <div className="flex-1 p-3 overflow-y-auto">
+        <div className="flex-1 p-2  overflow-y-auto">
           <div className="max-w-7xl mx-auto">
             <div className="bg-white mb-6">
               <div className="p-2 ml-2 flex">
@@ -612,8 +645,8 @@ const Linkraceanddrive = () => {
                 </h3>
               </div>
 
-              <div className="p-4 ">
-                <div className="w-full  h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
+              <div className=" mt-6 ">
+                <div className="w-full  h-full border-1  p-2 border mb-4 rounded-lg">
                   <div className="w-full h-auto">
                     {entryPrice !== null && (
                       <div className="w-full flex  gap-2 justify-end tab:flex-col items-center">
@@ -1224,40 +1257,75 @@ const Linkraceanddrive = () => {
             </div>
             {tableData && tableData.length > 0 && (
               <div className="min-h-auto border">
-                <div className="w-full h-14 flex justify-between items-center px-5">
-                  <input
-                    className="w-1/3 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setCurrentPage(1); // Reset to the first page on search
-                    }}
-                  />
-                  <div className="flex items-center space-x-3">
-                    <label
-                      htmlFor="pageType"
-                      className="font-medium text-gray-700"
-                    >
-                      Page Type:
-                    </label>
-                    <select
-                      id="pageType"
-                      className="border border-gray-300 bg-white text-gray-700 p-2 pl-3 pr-8 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300 ease-in-out hover:shadow-md"
-                      value={recordsPerPage}
-                      onChange={(e) => {
-                        setRecordsPerPage(Number(e.target.value));
-                        setCurrentPage(1); // Reset to the first page on records per page change
-                      }}
-                    >
-                      <option value="5">5 per page</option>
-                      <option value="10">10 per page</option>
-                      <option value="15">15 per page</option>
-                      <option value="20">20 per page</option>
-                    </select>
-                  </div>
-                </div>
+                <div className="w-full h-auto rounded-t-lg max-w-auto p-2  bg-gray-50 border-b">
+                        <h3 style={Styles.tableheading}>Event Classes</h3>
+                      </div>
+
+                      <div className="w-full h-auto flex justify-between items-center p-2">
+                      
+                        <div className="w-1/2">
+                          <input
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                            type="text"
+                            placeholder="Search..."
+                            value={searchQuery}
+                            onChange={(e) => {
+                              setSearchQuery(e.target.value);
+                              setCurrentPage(1); 
+                            }}
+                          />
+                        </div>
+
+                     
+                        <div className="w-1/2 flex justify-end">
+                          <div className="w-full flex relative  justify-end items-center">
+                            <label
+                            style={Styles.label}
+                              htmlFor="pageType-select"
+                              className="block text-sm font-medium text-gray-700 mb-1"
+                            >
+                              Page Type
+                            </label>
+                            <button
+                              id="pageType-select"
+                              className="w-1/2 rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              aria-haspopup="true"
+                              aria-expanded={isDropdownOpen}
+                              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span>{`${recordsPerPage} per page`}</span>
+                                <svg
+                                  className="h-4 w-4 text-gray-500"
+                                  fill="currentColor"
+                                  viewBox="0 0 16 16"
+                                  aria-hidden="true"
+                                >
+                                  <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
+                                </svg>
+                              </div>
+                            </button>
+
+                            {isDropdownOpen && (
+                              <div className="absolute mt-1 top-12 w-1/2 rounded-md bg-white shadow-lg">
+                                <ul className="py-1">
+                                  {options.map((option, index) => (
+                                    <li
+                                      key={index}
+                                      className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      onClick={() =>
+                                        handleOptionClick(option.value)
+                                      }
+                                    >
+                                      {option.label}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
 
                 {/* Display "No data found" message if filteredData is empty */}
                 {filteredData.length === 0 ? (
