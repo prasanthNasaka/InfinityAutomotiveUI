@@ -4,13 +4,19 @@ import { Calendar, Flag, MapPin, Timer } from "lucide-react";
 import { useState } from "react";
 import { IMAGE_URL } from "../constants/global-const";
 import { TfiCup } from "react-icons/tfi";
+import { useNavigate } from "react-router-dom"; // Use useNavigate hook for navigation
 
 const Card = ({ event, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   const handleDetailsClick = (eventId) => {
     const url = `/table/${eventId}`;
-    window.open(url, "_blank"); // Open the URL in a new tab
+    window.open(url, "_blank"); // Open the URL in a new tab for live and completed events
+  };
+
+  const handleRegisterClick = () => {
+    navigate("/registrationdesk"); // Redirect to /registrationdesk when clicked on upcoming events
   };
 
   const formatDate = (dateString) => {
@@ -48,33 +54,33 @@ const Card = ({ event, type }) => {
               }}
             />
           )}
+
+          {type === "upcoming" && (
+            <img
+              src={`${IMAGE_URL}${event.banner}`}
+              alt={event.eventname}
+              className="w-96 h-48 object-cover border"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/466.png";
+              }}
+            />
+          )}
+
+          {type === "completed" && (
+            <img
+              src={`${IMAGE_URL}${event.banner}`}
+              alt={event.eventname}
+              className="w-96 h-48 object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/433.png";
+              }}
+            />
+          )}
         </div>
-
-        {type === "upcoming" && (
-          <img
-            src={`${IMAGE_URL}${event.banner}`}
-            alt={event.eventname}
-            className="w-96 h-48 object-cover border"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src =
-                "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/466.png";
-            }}
-          />
-        )}
-
-        {type === "completed" && (
-          <img
-            src={`${IMAGE_URL}${event.banner}`}
-            alt={event.eventname}
-            className="w-96 h-48 object-cover"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src =
-                "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/433.png";
-            }}
-          />
-        )}
 
         <div className="p-4">
           <h3 className="text-xl font-bold">{event.eventname}</h3>
@@ -83,12 +89,10 @@ const Card = ({ event, type }) => {
             {event.location}
           </p>
           {type === "live" && (
-            <>
-              <p className="text-gray-600 flex items-center">
-                <Timer className="mr-2 " size={20} />
-                Lap {event.currentLap} of {event.totalLaps}
-              </p>
-            </>
+            <p className="text-gray-600 flex items-center">
+              <Timer className="mr-2 " size={20} />
+              Lap {event.currentLap} of {event.totalLaps}
+            </p>
           )}
           {type === "upcoming" && (
             <p className="text-gray-600 flex items-center">
@@ -194,21 +198,17 @@ const Card = ({ event, type }) => {
             </p>
 
             {type === "live" && (
-              <>
-                <p className="text-gray-600 mb-2">
-                  <Timer className="inline mr-2" size={16} /> Lap{" "}
-                  {event.currentLap} of {event.totalLaps}
-                </p>
-              </>
+              <p className="text-gray-600 mb-2">
+                <Timer className="inline mr-2" size={16} /> Lap{" "}
+                {event.currentLap} of {event.totalLaps}
+              </p>
             )}
 
             {type === "upcoming" && (
-              <>
-                <p className="text-gray-600 mb-2">
-                  <Calendar className="inline mr-2" size={16} />{" "}
-                  {new Date(event.startdate).toLocaleString()}
-                </p>
-              </>
+              <p className="text-gray-600 mb-2">
+                <Calendar className="inline mr-2" size={16} />{" "}
+                {new Date(event.startdate).toLocaleString()}
+              </p>
             )}
 
             {type === "completed" && (
@@ -223,12 +223,21 @@ const Card = ({ event, type }) => {
                 Close
               </button>
 
-              <button
-                onClick={() => handleDetailsClick(event.eventid)} // Use event.eventid here
-                className="w-1/2 bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
-              >
-                Details
-              </button>
+              {type === "upcoming" ? (
+                <button
+                  onClick={handleRegisterClick} // Use handleRegisterClick for upcoming events
+                  className="w-1/2 bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                >
+                  Register Now
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleDetailsClick(event.eventid)} // Use event.eventid here for live/completed events
+                  className="w-1/2 bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                >
+                  Details
+                </button>
+              )}
             </div>
           </div>
         </div>
