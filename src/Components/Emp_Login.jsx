@@ -104,11 +104,17 @@ const Emp_Login = () => {
 
     try {
       const response = isEdit
-        ? await AxiosInstance.put(`${BASE_URL}/api/UserInfo`, employee)
-        : await AxiosInstance.post(`${BASE_URL}/api/UserInfo/SignUp`, employee);
+        ? await AxiosInstance.put(`${BASE_URL}/api/UserInfo`, employee) // Update
+        : await AxiosInstance.post(`${BASE_URL}/api/UserInfo/SignUp`, employee); // Create
 
       if (response.status === 200 || response.status === 201) {
-        toast.success("User Created Successful!"); // Show success toast
+        // Show different success messages based on whether it's an update or create
+        if (isEdit) {
+          toast.success("User Updated Successfully!"); // Success message for update
+        } else {
+          toast.success("User Created Successfully!"); // Success message for creation
+        }
+
         fetchUsers(); // Refresh user list
         resetForm();
       }

@@ -16,7 +16,7 @@ const Classes = () => {
   const [newCategory, setNewCategory] = useState({
     evtClass: "",
     noOfVeh: "",
-    status: "w",
+    status: 1,
     nooflaps: "",
     entryprice: "",
     evtCategory: "",
@@ -455,69 +455,6 @@ const Classes = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* <div className="w-full p-4 bg-white mt-6 rounded-lg">
-                      <h3 style={Styles.tableheading}>Event Classes</h3>
-                      <div className="overflow-auto max-h-auto">
-                        <table className="w-full text-sm text-left text-gray-500">
-                          <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
-                            <tr>
-                              <th className="py-2 px-4 border-b">Class Name</th>
-                              <th className="py-2 px-4 border-b">Type</th>
-                              <th className="py-2 px-4 border-b">Participants</th>
-                              <th className="py-2 px-4 border-b">Laps</th>
-                              <th className="py-2 px-4 border-b">Price</th>
-                              <th className="py-2 px-4 border-b">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {currentRecords.map((category) => (
-                              <tr key={category.evtCatId}>
-                                <td className="py-2 px-4 border-b text-center">
-                                  {category.evtClass}
-                                </td>
-                                <td className="py-2 px-4 border-b text-center">
-                                  {category.evtCategory === 51
-                                    ? "TwoWheeler"
-                                    : category.evtCategory === 52
-                                    ? "FourWheeler"
-                                    : category.evtCategory === 53
-                                    ? "Karting"
-                                    : category.evtCategory === 54
-                                    ? "GrassRoots"
-                                    : "ESPORTS"}
-                                </td>
-                                <td className="py-2 px-4 border-b text-center">
-                                  {category.noOfVeh}
-                                </td>
-                                <td className="py-2 px-4 border-b text-center">
-                                  {category.nooflaps}
-                                </td>
-                                <td className="py-2 px-4 border-b text-center">
-                                  {category.entryprice}
-                                </td>
-                                <td className="py-2 px-4 border-b text-center">
-                                  <button
-                                    onClick={() => handleEditCategory(category)}
-                                    className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                                  >
-                                    <CiEdit className="size-6" />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteCategory(category.evtCatId)
-                                    }
-                                    className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
-                                  >
-                                    <MdOutlineDelete className="size-6" />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div> */}
                     <div className="w-full p-4 bg-white mt-6 rounded-lg">
                       <h3 style={Styles.tableheading}>Event Classes</h3>
                       <div className="overflow-auto max-h-auto">
