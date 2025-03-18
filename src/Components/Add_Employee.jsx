@@ -1,10 +1,10 @@
-import { useState,  useEffect } from "react";
+import { useState, useEffect } from "react";
 import MainSideBar from "./MainSideBar";
 import Newheader from "./Newheader";
 import { BASE_URL } from "../constants/global-const";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
-import toast, { Toaster } from "react-hot-toast"; // Importing toast
+import toast, { Toaster } from "react-hot-toast";
 import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
 
@@ -28,10 +28,10 @@ const Add_Employee = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // For global search
-  const [currentPage, setCurrentPage] = useState(1); // For pagination
-  const [recordsPerPage, setRecordsPerPage] = useState(10); // For page type (records per page)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // For dropdown visibility
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const filteredData = employeeList.filter((emp) => {
     return (
@@ -42,10 +42,7 @@ const Add_Employee = () => {
     );
   });
 
-  
   const totalPages = Math.ceil(filteredData.length / recordsPerPage);
-
-  
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const currentRecords = filteredData.slice(
@@ -61,10 +58,10 @@ const Add_Employee = () => {
 
   const handleOptionClick = (value) => {
     setRecordsPerPage(value);
-    setCurrentPage(1); 
-    setIsDropdownOpen(false); 
+    setCurrentPage(1);
+    setIsDropdownOpen(false);
   };
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -73,7 +70,6 @@ const Add_Employee = () => {
     }
   };
 
-  
   const validateForm = () => {
     let formErrors = {};
     if (!formData.empName.trim())
@@ -99,7 +95,6 @@ const Add_Employee = () => {
     return Object.keys(formErrors).length === 0;
   };
 
-  // Add Employee
   const handleAddEmployee = async () => {
     if (!validateForm()) return;
 
@@ -112,10 +107,13 @@ const Add_Employee = () => {
         otherInfo: formData.otherInfo.trim(),
         employeeType: formData.role,
         status: 0,
-        comId: 0,
+        comId: 2, // Set the comId to the required value
       };
 
-      const response = await AxiosInstance.post(`api/Employee`, payload);
+      const response = await AxiosInstance.post(
+        `${BASE_URL}/api/Employee`,
+        payload
+      );
       if (response.status === 201) {
         setEmployeeList((prev) => [...prev, response.data]);
         resetForm();
@@ -129,7 +127,6 @@ const Add_Employee = () => {
     }
   };
 
-  // Edit Employee
   const handleEdit = (employee) => {
     setFormData({
       empId: employee.empId,
@@ -141,7 +138,6 @@ const Add_Employee = () => {
     });
   };
 
-  // Update Employee
   const handleUpdateEmployee = async () => {
     if (!validateForm()) return;
 
@@ -154,7 +150,7 @@ const Add_Employee = () => {
         otherInfo: formData.otherInfo.trim(),
         employeeType: formData.role,
         status: 0,
-        comId: 0,
+        comId: 2, // Ensure comId is included for updates as well
       };
 
       const response = await AxiosInstance.put(
@@ -177,7 +173,6 @@ const Add_Employee = () => {
     }
   };
 
-  // Delete Employee
   const handleDeleteEmployee = async (id) => {
     try {
       setLoading(true);
@@ -192,7 +187,6 @@ const Add_Employee = () => {
     }
   };
 
-  // Reset form
   const resetForm = () => {
     setFormData({
       empId: null,
@@ -205,13 +199,11 @@ const Add_Employee = () => {
     setErrors({});
   };
 
-  // Fetch Employees
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         setLoading(true);
         const response = await AxiosInstance.get(`${BASE_URL}/api/Employee`);
-
         setEmployeeList(response.data);
       } catch (error) {
         console.error("Error fetching employees:", error);
@@ -227,20 +219,18 @@ const Add_Employee = () => {
   return (
     <>
       <Toaster position="bottom-center" reverseOrder={false} />
-
       <section className="w-full h-screen flex flex-col">
-        <div className=" overflow-y-hidden shadow-lg ">
+        <div className="overflow-y-hidden shadow-lg">
           <Newheader />
         </div>
-
         <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
-          <div className=" h-full">
+          <div className="h-full">
             <MainSideBar />
           </div>
-          <div className="flex-1 p-2  overflow-y-auto">
+          <div className="flex-1 p-2 overflow-y-auto">
             <div className="max-w-full mx-auto">
-              <div className="bg-white   mb-6">
-                <div className="bg-white  flex flex-col ">
+              <div className="bg-white mb-6">
+                <div className="bg-white flex flex-col">
                   <div className="p-2 ml-2 flex">
                     <h3
                       style={Styles.heading}
@@ -251,10 +241,9 @@ const Add_Employee = () => {
                         : "Organizing Committee Member"}
                     </h3>
                   </div>
-
-                  <div className="w-full  h-full border-1  p-2 border mb-4 rounded-lg">
-                    <div className="flex flex-wrap gap-4 w-full  p-4">
-                      {["employee Name", "phone", "email"].map((field) => (
+                  <div className="w-full h-full border-1 p-2 border mb-4 rounded-lg">
+                    <div className="flex flex-wrap gap-4 w-full p-4">
+                      {["empName", "phone", "email"].map((field) => (
                         <div key={field} className="w-1/3">
                           <label
                             style={Styles.label}
@@ -285,7 +274,6 @@ const Add_Employee = () => {
                           )}
                         </div>
                       ))}
-
                       <div className="w-1/3">
                         <label
                           style={Styles.label}
@@ -319,7 +307,6 @@ const Add_Employee = () => {
                           </p>
                         )}
                       </div>
-
                       <div className="w-1/3">
                         <label
                           style={Styles.label}
@@ -347,7 +334,6 @@ const Add_Employee = () => {
                         )}
                       </div>
                     </div>
-
                     <div className="flex w-1/2 gap-4 mt-4">
                       <button
                         onClick={resetForm}
@@ -374,8 +360,8 @@ const Add_Employee = () => {
                   </div>
                 </div>
               </div>
-              <div className="w-full     ">
-                <div className="w-full bg-white  rounded-lg ">
+              <div className="w-full">
+                <div className="w-full bg-white rounded-lg">
                   <div className="w-full h-auto rounded-t-lg p-2 flex justify-center items-center border bg-gray-50 border-b">
                     <h3
                       style={Styles.tableheading}
@@ -384,9 +370,7 @@ const Add_Employee = () => {
                       Employee List
                     </h3>
                   </div>
-
                   <div className="w-full h-auto border flex justify-between items-center p-2">
-                    {/* Search Input */}
                     <div className="w-1/2 ">
                       <input
                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
@@ -395,14 +379,12 @@ const Add_Employee = () => {
                         value={searchQuery}
                         onChange={(e) => {
                           setSearchQuery(e.target.value);
-                          setCurrentPage(1); // Reset to the first page on search
+                          setCurrentPage(1);
                         }}
                       />
                     </div>
-
-                    {/* Page Type Dropdown */}
                     <div className="w-1/2 flex justify-end">
-                      <div className="w-full flex relative  justify-end items-center">
+                      <div className="w-full flex relative justify-end items-center">
                         <label
                           htmlFor="pageType-select"
                           className="block text-sm font-medium text-gray-700 mb-1"
@@ -428,7 +410,6 @@ const Add_Employee = () => {
                             </svg>
                           </div>
                         </button>
-
                         {isDropdownOpen && (
                           <div className="absolute mt-1 top-12 w-1/2 rounded-md bg-white shadow-lg">
                             <ul className="py-1">
@@ -449,7 +430,6 @@ const Add_Employee = () => {
                       </div>
                     </div>
                   </div>
-
                   {employeeList.length > 0 ? (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm text-gray-700 border-collapse">
@@ -513,49 +493,52 @@ const Add_Employee = () => {
               </div>
             </div>
             {filteredData.length > 0 && (
-          <div className="flex justify-end px-2 items-center space-x-2 m-4">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className={`px-3 py-2 rounded-md ${
-                currentPage === 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-cyan-500 text-white hover:bg-cyan-700"
-              }`}
-            >
-              Prev
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-2 rounded-md ${
-                  currentPage === page
-                    ? "bg-cyan-700 text-white"
-                    : "bg-gray-200 hover:bg-gray-400"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className={`px-3 py-2 rounded-md ${
-                currentPage === totalPages
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-cyan-500 text-white hover:bg-cyan-700"
-              }`}
-            >
-              Next
-            </button>
-          </div>
-        )}
+              <div className="flex justify-end px-2 items-center space-x-2 m-4">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className={`px-3 py-2 rounded-md ${
+                    currentPage === 1
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-cyan-500 text-white hover:bg-cyan-700"
+                  }`}
+                >
+                  Prev
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === page
+                          ? "bg-cyan-700 text-white"
+                          : "bg-gray-200 hover:bg-gray-400"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-2 rounded-md ${
+                    currentPage === totalPages
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-cyan-500 text-white hover:bg-cyan-700"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
-       
       </section>
     </>
   );
