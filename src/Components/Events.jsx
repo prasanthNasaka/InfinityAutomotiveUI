@@ -500,7 +500,6 @@ const EventForm = () => {
         <div className="overflow-y-hidden shadow-lg">
           <Newheader />
         </div>
-
         <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
           <div className="bg-gray-100">
             <MainSideBar />
@@ -512,7 +511,7 @@ const EventForm = () => {
                 className="w-full flex border flex-col gap-6 rounded-lg bg-white shadow-lg p-4"
               >
                 <div className="flex">
-                  <h2 style={Styles.heading} className="  justify-start">
+                  <h2 style={Styles.heading} className="justify-start">
                     {editMode ? "Edit Event" : "Event Form"}
                   </h2>
                 </div>
@@ -603,7 +602,9 @@ const EventForm = () => {
 
                       {!isHidden && (
                         <>
-                          <div>Status</div>
+                          <div className="block w-full text-sm font-bold text-gray-700">
+                            Status
+                          </div>
                           <div className="flex gap-2 ">
                             <label className="flex items-center">
                               <input
@@ -1059,9 +1060,9 @@ const EventForm = () => {
                           <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Event Status
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                          {/* <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Categories
-                          </th>
+                          </th> */}
                           <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Actions
                           </th>
@@ -1124,9 +1125,9 @@ const EventForm = () => {
                                 </span>
                               </td>
 
-                              <td className="px-6 py-4 whitespace-nowrap">
+                              {/* <td className="px-6 py-4 whitespace-nowrap">
                                 {event.lstcat?.$values?.length || 0}
-                              </td>
+                              </td> */}
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
                                 <button
                                   onClick={() => handleEdit(event)}

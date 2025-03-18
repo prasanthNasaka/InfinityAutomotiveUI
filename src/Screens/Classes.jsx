@@ -130,7 +130,9 @@ const Classes = () => {
     setSelectedEvent(eventId);
     if (eventId) {
       try {
-        const response = await AxiosInstance.get(`${BASE_URL}/api/eventcategories?event_id=${eventId}`);
+        const response = await AxiosInstance.get(
+          `${BASE_URL}/api/eventcategories?event_id=${eventId}`
+        );
         setEventCategories(response.data || []);
       } catch (error) {
         console.error("Error fetching event categories:", error);
@@ -211,7 +213,9 @@ const Classes = () => {
 
   const handleDeleteCategory = async (categoryId) => {
     try {
-      await AxiosInstance.delete(`${BASE_URL}/api/eventcategories/${categoryId}`);
+      await AxiosInstance.delete(
+        `${BASE_URL}/api/eventcategories/${categoryId}`
+      );
       toast.success("Class deleted successfully!");
       handleEventChange({ target: { value: selectedEvent } });
     } catch (error) {
@@ -262,11 +266,15 @@ const Classes = () => {
                 </div>
 
                 <div className="w-full tab:w-full">
-                  <label className="text-sm font-medium text-white">Event Name</label>
+                  <label className="text-sm font-medium text-white">
+                    Event Name
+                  </label>
                   <div className="w-full flex flex-col gap-2">
                     <div className="w-full h-full border-1 p-2 border mb-4 rounded-lg">
                       <div className="w-1/2">
-                        <label className="text-sm font-medium text-gray-700">Event Name</label>
+                        <label className="text-sm font-medium text-gray-700">
+                          Event Name
+                        </label>
                         <select
                           style={Styles.select}
                           value={selectedEvent}
@@ -448,7 +456,7 @@ const Classes = () => {
                       </div>
                     </div>
 
-                    <div className="w-full p-4 bg-white mt-6 rounded-lg">
+                    {/* <div className="w-full p-4 bg-white mt-6 rounded-lg">
                       <h3 style={Styles.tableheading}>Event Classes</h3>
                       <div className="overflow-auto max-h-auto">
                         <table className="w-full text-sm text-left text-gray-500">
@@ -508,6 +516,81 @@ const Classes = () => {
                             ))}
                           </tbody>
                         </table>
+                      </div>
+                    </div> */}
+                    <div className="w-full p-4 bg-white mt-6 rounded-lg">
+                      <h3 style={Styles.tableheading}>Event Classes</h3>
+                      <div className="overflow-auto max-h-auto">
+                        {selectedEvent && currentRecords.length === 0 ? (
+                          <div className="text-center text-gray-500 py-4">
+                            Oops, No classes available for the selected event.
+                            Please add a new class.
+                          </div>
+                        ) : (
+                          <table className="w-full text-sm text-left text-gray-500">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                              <tr>
+                                <th className="py-2 px-4 border-b">
+                                  Class Name
+                                </th>
+                                <th className="py-2 px-4 border-b">Type</th>
+                                <th className="py-2 px-4 border-b">
+                                  Participants
+                                </th>
+                                <th className="py-2 px-4 border-b">Laps</th>
+                                <th className="py-2 px-4 border-b">Price</th>
+                                <th className="py-2 px-4 border-b">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {currentRecords.map((category) => (
+                                <tr key={category.evtCatId}>
+                                  <td className="py-2 px-4 border-b text-center">
+                                    {category.evtClass}
+                                  </td>
+                                  <td className="py-2 px-4 border-b text-center">
+                                    {category.evtCategory === 51
+                                      ? "TwoWheeler"
+                                      : category.evtCategory === 52
+                                      ? "FourWheeler"
+                                      : category.evtCategory === 53
+                                      ? "Karting"
+                                      : category.evtCategory === 54
+                                      ? "GrassRoots"
+                                      : "ESPORTS"}
+                                  </td>
+                                  <td className="py-2 px-4 border-b text-center">
+                                    {category.noOfVeh}
+                                  </td>
+                                  <td className="py-2 px-4 border-b text-center">
+                                    {category.nooflaps}
+                                  </td>
+                                  <td className="py-2 px-4 border-b text-center">
+                                    {category.entryprice}
+                                  </td>
+                                  <td className="py-2 px-4 border-b text-center">
+                                    <button
+                                      onClick={() =>
+                                        handleEditCategory(category)
+                                      }
+                                      className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                                    >
+                                      <CiEdit className="size-6" />
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteCategory(category.evtCatId)
+                                      }
+                                      className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                                    >
+                                      <MdOutlineDelete className="size-6" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
                       </div>
                     </div>
                   </div>
