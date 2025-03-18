@@ -64,7 +64,7 @@ const Contactus = () => {
       </motion.div>
 
       {/* Flag Animation CSS */}
-      <style>{`
+      {/* <style>{`
         .flag-container {
           position: relative;
           width: 200px;
@@ -84,7 +84,7 @@ const Contactus = () => {
           50% { transform: rotate(2deg) skewX(-5deg); }
           100% { transform: rotate(0deg) skewX(5deg); }
         }
-      `}</style>
+      `}</style> */}
     </div>
   );
 };

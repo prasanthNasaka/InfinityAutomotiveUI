@@ -54,7 +54,7 @@ const AboutUs = () => {
   };
 
   return (
-    <div ref={ref} className="w-full h-screen flex flex-col items-center ">
+    <div ref={ref} className="overflow-hidden w-full h-screen flex flex-col items-center ">
       {/* Heading */}
       <motion.h2
         variants={textVariants}

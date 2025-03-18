@@ -43,8 +43,8 @@ const Linkraceanddrive = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [paymentReference, setPaymentReference] = useState("");
   const [selectAll, setSelectAll] = useState(false);
-  const [addDocVerify, setAddDocVerify] = useState(false); 
-  const [deletePop, setDeletePop] = useState(false)
+  const [addDocVerify, setAddDocVerify] = useState(false);
+  const [deletePop, setDeletePop] = useState(false);
   const [entryPrice, setEntryPrice] = useState(null);
   const [updatedContestantNumbers, setUpdatedContestantNumbers] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,7 +68,6 @@ const Linkraceanddrive = () => {
     setCurrentPage(1); // Reset to the first page when changing records per page
     setIsDropdownOpen(false);
   };
-
 
   const filteredData = tableData.filter((event) =>
     Object.values(event).some((value) =>
@@ -327,7 +326,6 @@ const Linkraceanddrive = () => {
   const handleCheckboxChangedoc = (e) => {
     setAddDocVerify(e.target.checked); // true if checked, false if unchecked
   };
-  
 
   const handleCheckboxChange = (regId) => {
     setSelectedIds((prev) =>
@@ -378,7 +376,7 @@ const Linkraceanddrive = () => {
     }
 
     const payload = {
-      refNumb: paymentReference, 
+      refNumb: paymentReference,
       regId: selectedIds,
     };
 
@@ -393,7 +391,7 @@ const Linkraceanddrive = () => {
 
       toast.success("Amount status updated successfully!");
       setSelectedIds([]);
-      setPaymentReference(""); 
+      setPaymentReference("");
       setDrvTableData([]);
       await fetchUpdatedData();
     } catch (error) {
@@ -563,9 +561,9 @@ const Linkraceanddrive = () => {
         eventcategoryId: parseInt(selectedCategory) || 0,
         contestantNo: parseInt(value) || 0,
         amountPaid: amountPaidChecked ? 92 : 91, // Map to 92 for paid, 91 for pending
-        referenceNo: referenceNumber || "" ,
+        referenceNo: referenceNumber || "",
         scrutinyStatus: 15, //15 pending 16 approved 17 rejected 18 N/A
-        documentStatus : addDocVerify ? 98 : 97, //97 pending 98 verified
+        documentStatus: addDocVerify ? 98 : 97, //97 pending 98 verified
       };
       console.log("payload", payload);
 
@@ -669,7 +667,7 @@ const Linkraceanddrive = () => {
                     <div className="w-1/2 tab:w-full">
                       <label style={Styles.label}>Event Name</label>
                       <select
-                      style={Styles.select}
+                        style={Styles.select}
                         value={selectedEvent}
                         onChange={handleEventChange}
                         className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
@@ -686,7 +684,7 @@ const Linkraceanddrive = () => {
                     <div className="w-1/2 tab:w-full">
                       <label style={Styles.label}>Event Class</label>
                       <select
-                      style={Styles.select}
+                        style={Styles.select}
                         data-tooltip-id="my-tooltip-2"
                         value={selectedCategory}
                         onChange={handleCategoryChange}
@@ -703,7 +701,7 @@ const Linkraceanddrive = () => {
                             key={category.evtCatId}
                             value={category.evtCatId}
                           >
-                            {category.evtCategory}
+                            {category.evtClass}
                           </option>
                         ))}
                       </select>
@@ -1080,7 +1078,7 @@ const Linkraceanddrive = () => {
                                   {event.regNumb}
                                 </td>
                                 <td className="px-6 py-2 whitespace-nowrap">
-                                  {event.evtCategory}
+                                  {event.evtClass}
                                 </td>
                                 <td className="px-6 py-2 whitespace-nowrap flex gap-2 justify-center relative ">
                                   <div className="relative w-32 ">
@@ -1114,11 +1112,15 @@ const Linkraceanddrive = () => {
                                     className={`p-2 rounded-full text-xs ${
                                       event.amountPaid === 92
                                         ? "bg-green-100 text-green-800"
+                                        : event.amountPaid === 93
+                                        ? "bg-blue-100 text-blue-800"
                                         : "bg-yellow-100 text-yellow-800"
                                     }`}
                                   >
                                     {event.amountPaid === 92
                                       ? "Paid"
+                                      : event.amountPaid === 93
+                                      ? "Amount Refunded"
                                       : "Pending"}
                                   </span>
                                 </td>
@@ -1263,74 +1265,70 @@ const Linkraceanddrive = () => {
             {tableData && tableData.length > 0 && (
               <div className="min-h-auto border">
                 <div className="w-full h-auto rounded-t-lg max-w-auto p-2  bg-gray-50 border-b">
-                        <h3 style={Styles.tableheading}>Event Classes</h3>
-                      </div>
+                  <h3 style={Styles.tableheading}>Event Classes</h3>
+                </div>
 
-                      <div className="w-full h-auto flex justify-between items-center p-2">
-                      
-                        <div className="w-1/2">
-                          <input
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                            type="text"
-                            placeholder="Search..."
-                            value={searchQuery}
-                            onChange={(e) => {
-                              setSearchQuery(e.target.value);
-                              setCurrentPage(1); 
-                            }}
-                          />
+                <div className="w-full h-auto flex justify-between items-center p-2">
+                  <div className="w-1/2">
+                    <input
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                      type="text"
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                    />
+                  </div>
+
+                  <div className="w-1/2 flex justify-end">
+                    <div className="w-full flex relative  justify-end items-center">
+                      <label
+                        style={Styles.label}
+                        htmlFor="pageType-select"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Page Type
+                      </label>
+                      <button
+                        id="pageType-select"
+                        className="w-1/2 rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        aria-haspopup="true"
+                        aria-expanded={isDropdownOpen}
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>{`${recordsPerPage} per page`}</span>
+                          <svg
+                            className="h-4 w-4 text-gray-500"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                            aria-hidden="true"
+                          >
+                            <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
+                          </svg>
                         </div>
+                      </button>
 
-                     
-                        <div className="w-1/2 flex justify-end">
-                          <div className="w-full flex relative  justify-end items-center">
-                            <label
-                            style={Styles.label}
-                              htmlFor="pageType-select"
-                              className="block text-sm font-medium text-gray-700 mb-1"
-                            >
-                              Page Type
-                            </label>
-                            <button
-                              id="pageType-select"
-                              className="w-1/2 rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                              aria-haspopup="true"
-                              aria-expanded={isDropdownOpen}
-                              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span>{`${recordsPerPage} per page`}</span>
-                                <svg
-                                  className="h-4 w-4 text-gray-500"
-                                  fill="currentColor"
-                                  viewBox="0 0 16 16"
-                                  aria-hidden="true"
-                                >
-                                  <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
-                                </svg>
-                              </div>
-                            </button>
-
-                            {isDropdownOpen && (
-                              <div className="absolute mt-1 top-12 w-1/2 rounded-md bg-white shadow-lg">
-                                <ul className="py-1">
-                                  {options.map((option, index) => (
-                                    <li
-                                      key={index}
-                                      className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                      onClick={() =>
-                                        handleOptionClick(option.value)
-                                      }
-                                    >
-                                      {option.label}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </div>
+                      {isDropdownOpen && (
+                        <div className="absolute mt-1 top-12 w-1/2 rounded-md bg-white shadow-lg">
+                          <ul className="py-1">
+                            {options.map((option, index) => (
+                              <li
+                                key={index}
+                                className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => handleOptionClick(option.value)}
+                              >
+                                {option.label}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
                 {/* Display "No data found" message if filteredData is empty */}
                 {filteredData.length === 0 ? (
@@ -1361,6 +1359,10 @@ const Linkraceanddrive = () => {
                                 />
                               </div>
                             </th>
+                            <th className="px-6 py-3 whitespace-nowrap cursor-pointer">
+                              Driver Photo
+                            </th>
+
                             <th
                               className="px-6 py-3 whitespace-nowrap cursor-pointer"
                               onClick={() => handleSort("regNumb")}
@@ -1376,6 +1378,7 @@ const Linkraceanddrive = () => {
                                 />
                               </div>
                             </th>
+
                             <th
                               className="px-6 py-3 whitespace-nowrap cursor-pointer"
                               onClick={() => handleSort("evtCategory")}
@@ -1396,7 +1399,7 @@ const Linkraceanddrive = () => {
                               onClick={() => handleSort("contestantNo")}
                             >
                               <div className="flex items-center justify-center">
-                                Contestant Number
+                                Contestant Num
                                 <SortingIcon
                                   direction={
                                     sortConfig.key === "contestantNo"
@@ -1409,9 +1412,9 @@ const Linkraceanddrive = () => {
                             <th className="px-6 py-3 whitespace-nowrap">
                               Payment Status
                             </th>
-                            {/* <th className="px-6 py-3 whitespace-nowrap">
+                            <th className="px-6 py-3 whitespace-nowrap">
                               Reference Number
-                            </th> */}
+                            </th>
                             <th className="px-6 py-3 whitespace-nowrap">
                               Documents
                             </th>
@@ -1432,11 +1435,23 @@ const Linkraceanddrive = () => {
                               <td className="px-6 py-2 whitespace-nowrap text-gray-900">
                                 {event.drivername}
                               </td>
+                              <td className="px-6 py-2 whitespace-nowrap flex justify-center text-gray-900">
+                                {event.driverPhoto ? (
+                                  <img
+                                    src={`${IMAGE_URL}${event.driverPhoto}`}
+                                    className="h-14 w-14 border-2 border-cyan-500 rounded-full object-cover"
+                                    alt="Driver"
+                                  />
+                                ) : (
+                                  <IoPerson className="text-4xl border text-cyan-600 w-16 h-16 bg-white rounded-full flex items-center justify-center" />
+                                )}
+                              </td>
+
                               <td className="px-6 py-2 whitespace-nowrap">
                                 {event.regNumb}
                               </td>
                               <td className="px-6 py-2 whitespace-nowrap">
-                                {event.evtCategory}
+                                {event.evtClass}
                               </td>
                               <td className="px-6 py-2 whitespace-nowrap">
                                 {event.contestantNo}
@@ -1446,15 +1461,21 @@ const Linkraceanddrive = () => {
                                   className={`p-2 rounded-full text-xs ${
                                     event.amountPaid === 92
                                       ? "bg-green-100 text-green-800"
+                                      : event.amountPaid === 93
+                                      ? "bg-blue-100 text-blue-800"
                                       : "bg-yellow-100 text-yellow-800"
                                   }`}
                                 >
-                                  {event.amountPaid === 92 ? "Paid" : "Pending"}
+                                  {event.amountPaid === 92
+                                    ? "Paid"
+                                    : event.amountPaid === 93
+                                    ? "Amount Refunded"
+                                    : "Pending"}
                                 </span>
                               </td>
-                              {/* <td className="px-6 py-2 whitespace-nowrap">
+                              <td className="px-6 py-2 whitespace-nowrap">
                                 {event.referenceNo}
-                              </td> */}
+                              </td>
 
                               <td className="px-6 py-2 whitespace-nowrap">
                                 <span
