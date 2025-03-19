@@ -735,7 +735,7 @@ const Linkraceanddrive = () => {
                             {driverimageUrl ? (
                               <img
                                 src={driverimageUrl}
-                                className="h-32 w-48 rounded-lg object-cover flex lappydesk:justify-start"
+                                className="h-32 w-48 rounded-lg object-contain  flex lappydesk:justify-start"
                                 alt="No Photo is available"
                               />
                             ) : (

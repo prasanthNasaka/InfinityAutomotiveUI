@@ -531,12 +531,7 @@ const Classes = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {filteredData.length > 0 && (
+                  {filteredData.length > 0 && (
           <div className="flex justify-end px-2 items-center space-x-2 m-4">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -583,6 +578,12 @@ const Classes = () => {
             </button>
           </div>
         )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+       
       </section>
     </>
   );
