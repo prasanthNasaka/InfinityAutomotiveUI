@@ -2,9 +2,9 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { BASE_URL } from "../constants/global-const";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const DriverRegistration = ({ closePopup }) => {
   const [name, setName] = useState("");
@@ -90,7 +90,7 @@ const DriverRegistration = ({ closePopup }) => {
     console.log("Data being sent:", formData);
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/drivers`, formData, {
+      const response = await AxiosInstance.post(`${BASE_URL}/api/drivers`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
