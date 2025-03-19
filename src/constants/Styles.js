@@ -34,7 +34,7 @@ const Styles = {
     height: "40px",
     backgroundColor: "#F9FAFB", // Light gray background
     border: "1px solid #D1D5DB", // Gray border
-    color: "#E5E7EB", // Very light gray text
+    color: "#000000", 
     fontSize: "14px",
     borderRadius: "8px",
     padding: "10px",
