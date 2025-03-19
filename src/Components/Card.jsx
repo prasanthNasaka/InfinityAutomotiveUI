@@ -1,22 +1,21 @@
-/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import { Calendar, Flag, MapPin, Timer } from "lucide-react";
 import { useState } from "react";
 import { IMAGE_URL } from "../constants/global-const";
 import { TfiCup } from "react-icons/tfi";
-import { useNavigate } from "react-router-dom"; // Use useNavigate hook for navigation
+import { useNavigate } from "react-router-dom"; 
 
 const Card = ({ event, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate(); // Initialize the useNavigate hook
+  const navigate = useNavigate(); 
 
   const handleDetailsClick = (eventId) => {
     const url = `/table/${eventId}`;
-    window.open(url, "_blank"); // Open the URL in a new tab for live and completed events
+    window.open(url, "_blank"); 
   };
 
-  const handleRegisterClick = () => {
-    navigate("/registrationdesk"); // Redirect to /registrationdesk when clicked on upcoming events
+  const handleRegisterClick = (eventData) => {
+    navigate("/registrationdesk", { state: eventData });
   };
 
   const formatDate = (dateString) => {
@@ -225,7 +224,7 @@ const Card = ({ event, type }) => {
 
               {type === "upcoming" ? (
                 <button
-                  onClick={handleRegisterClick} // Use handleRegisterClick for upcoming events
+                  onClick={() => handleRegisterClick(event)}
                   className="w-1/2 bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
                 >
                   Register Now
