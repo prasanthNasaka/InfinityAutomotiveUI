@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown} from "lucide-react";
 import dodge from "../assets/dodge.mp4"
 import { AnimatePresence, motion } from "framer-motion";
 import  { useEffect, useState } from "react";
@@ -45,8 +45,24 @@ const Videoclickland = () => {
     Your browser does not support the video tag.
   </motion.video>
 
+  
+
   {/* Overlay Section with Blurred Background */}
   <div className="relative z-10 flex flex-col w-full h-screen items-center justify-center text-center px-4 bg-black bg-opacity-30 backdrop-blur-sm">
+  {/* <div className="relative w-full h-auto flex justify-between ">
+      <motion.div className="ml-24"
+        animate={{ y: [0, -30, 0] }} // Moves up and down
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+      >
+        <Trophy size="80" className="text-yellow-500" />
+      </motion.div>
+      <motion.div cl
+        animate={{ y: [0, -20, 0] }} // Moves up and down
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+      >
+        <Medal size="80" className="text-yellow-500 mb-10" />
+        </motion.div>
+    </div> */}
     <motion.h1
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
@@ -160,8 +176,32 @@ const Videoclickland = () => {
           </motion.button>
         )}
       </AnimatePresence>
+      
+     
     </div>
+    {/* <div className="w-full  flex h-auto items-center justify-around">
+      <motion.div className=" mt-6"
+        animate={{ y: [0, -30, 0] }} // Moves up and down
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+      >
+        <Flag  size="80" className="text-yellow-500" />
+      </motion.div>
+      <motion.div className=" mt-6"
+        animate={{ y: [0, -20, 0] }} // Moves up and down
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+      >
+        <Car   size="80" className="text-yellow-500" />
+      </motion.div>
+      <motion.div className=" mt-6"
+        animate={{ y: [0, -15, 0] }} // Moves up and down
+        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+      >
+      <Bike size="80" className="text-yellow-500 opacity-50"  />
+
+      </motion.div>
+      </div> */}
   </div>
+  
 </div>
 
   );

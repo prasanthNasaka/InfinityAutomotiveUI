@@ -8,6 +8,7 @@ import axios from "axios";
 import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import Styles from "../constants/Styles";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 const RegistrationDeskPopUp = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
@@ -18,25 +19,27 @@ const RegistrationDeskPopUp = () => {
   const [driverimageUrl, setDriverImageUrl] = useState("");
   const [vehicleimageUrl, setVehicleImageUrl] = useState("");
   const [events, setEvents] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [value, setValue] = useState(0);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [DrvtableData, setDrvTableData] = useState([]);
-  const [eventId, setEventId] = useState(false);
   const [addDocVerify, setAddDocVerify] = useState(97);
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [selectedEvent, setSelectedEvent] = useState("");
+  const [eventId, setEventId] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "none",
   });
-
+  const location = useLocation();
+  const eventData = location.state;
   const filteredData = tableData.filter((event) =>
     Object.values(event).some((value) =>
       String(value).toLowerCase().includes(searchQuery.toLowerCase())
@@ -111,57 +114,56 @@ const RegistrationDeskPopUp = () => {
     return pages;
   };
 
-  const handleEventChange = (event) => {
-    const selectedEventId = event.target.value;
+  // const handleEventChange = (event) => {
+  //   const selectedEventId = event.target.value;
+  //   setEventId(selectedEventId);
+  //   setSelectedEvent(selectedEventId);
+  //   setSelectedCategory("");
+  //   setTableData([]);
 
-    setEventId(selectedEventId);
-    setSelectedEvent(selectedEventId);
-    setSelectedCategory("");
-    setTableData([]);
+  //   if (selectedEventId) {
+  //     fetch(`${BASE_URL}/api/eventcategories?event_id=${selectedEventId}`)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         if (data && Array.isArray(data)) {
+  //           setCategories(data);
+  //         } else {
+  //           setCategories([]);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching event categories:", error);
+  //         setCategories([]);
+  //       });
 
-    if (selectedEventId) {
-      fetch(`${BASE_URL}/api/eventcategories?event_id=${selectedEventId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && Array.isArray(data)) {
-            setCategories(data);
-          } else {
-            setCategories([]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching event categories:", error);
-          setCategories([]);
-        });
+  //     fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         if (data && Array.isArray(data)) {
+  //           const updatedData = data.map((item) => ({
+  //             ...item,
+  //             driverPhotoUrl: item.driverPhoto
+  //               ? `${IMAGE_URL}${item.driverPhoto}`
+  //               : null,
+  //             hasPhoto: !!item.driverPhoto,
+  //           }));
 
-      fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && Array.isArray(data)) {
-            const updatedData = data.map((item) => ({
-              ...item,
-              driverPhotoUrl: item.driverPhoto
-                ? `${IMAGE_URL}${item.driverPhoto}`
-                : null,
-              hasPhoto: !!item.driverPhoto,
-            }));
+  //           console.log("Updated Data:", updatedData);
+  //           setTableData(updatedData);
+  //         } else {
+  //           setTableData([]);
+  //         }
+  //       })
+  //       .catch((error) => console.error("Error fetching table data:", error));
+  //   } else {
+  //     setCategories([]);
+  //     setTableData([]);
+  //   }
+  // };
 
-            console.log("Updated Data:", updatedData);
-            setTableData(updatedData);
-          } else {
-            setTableData([]);
-          }
-        })
-        .catch((error) => console.error("Error fetching table data:", error));
-    } else {
-      setCategories([]);
-      setTableData([]);
-    }
-  };
-
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-  };
+  // const handleCategoryChange = (e) => {
+  //   setSelectedCategory(e.target.value);
+  // };
 
   const handleDataReceived = (type, data) => {
     if (type === "driver") {
@@ -192,18 +194,7 @@ const RegistrationDeskPopUp = () => {
     }
   };
 
-  // const numberInput = (e) => {
-  //   const inputValue = e.target.value;
-
-  //   if (/^\d*$/.test(inputValue) && inputValue.length <= 3) {
-  //     setValue(inputValue);
-  //     setError("");
-  //   } else if (inputValue.length > 3) {
-  //     setError("Maximum 3 digits");
-  //   } else {
-  //     setError("Only numbers are accepted");
-  //   }
-  // };
+ 
 
   const isFormValid = () => {
     return (
@@ -211,8 +202,7 @@ const RegistrationDeskPopUp = () => {
       selectedCategory &&
       selectedDriver &&
       selectedVehicle &&
-      referenceNumber &&
-      !error
+      referenceNumber
     );
   };
 
@@ -227,10 +217,10 @@ const RegistrationDeskPopUp = () => {
         eventId: parseInt(selectedEvent) || 0,
         eventcategoryId: parseInt(selectedCategory) || 0,
         contestantNo: parseInt(value) || 0,
-       amountPaid: amountPaidChecked ? 92 : 91, // Default 91 (pending), 92 if paid
-        referenceNo: referenceNumber ,
+        amountPaid: amountPaidChecked ? 92 : 91, // Default 91 (pending), 92 if paid
+        referenceNo: referenceNumber || "",
         scrutinyStatus: 15, //15 pending 16 approved 17 rejected 18 N/A
-        documentStatus:  97, //97 pending 98 verified (parseInt(addDocVerify) ||)
+        documentStatus: 97, //97 pending 98 verified (parseInt(addDocVerify) ||)
       };
       console.log("payload", payload);
 
@@ -248,7 +238,7 @@ const RegistrationDeskPopUp = () => {
         toast.success("Successfully added");
         console.log("response", response);
 
-        // await setTableData(response);
+        await fetchUpdatedData(response);
       }
 
       setSelectedCategory("");
@@ -282,8 +272,29 @@ const RegistrationDeskPopUp = () => {
   };
 
   useEffect(() => {
+
     fetchUpdatedData();
-  }, []);
+    if (eventData?.eventid) {
+      setEventId(eventData.eventid);
+      setSelectedEvent(eventData.eventname);
+      console.log("eventData", eventData);
+
+
+      fetch(`${BASE_URL}/api/eventcategories?event_id=${eventData.eventid}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && Array.isArray(data)) {
+            setCategories(data);
+          } else {
+            setCategories([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching event categories:", error);
+          setCategories([]);
+        });
+    }
+  }, [eventData]);
 
   return (
     <section className="w-full h-screen flex flex-col">
@@ -305,38 +316,25 @@ const RegistrationDeskPopUp = () => {
               <div className="p-4">
                 <div className="w-full h-full border-1 shadow-md p-2 border mb-4 rounded-lg">
                   <div className="w-full flex p-2 gap-2 tab:flex-col">
+                    {/* Event Name (Displayed as Text) */}
                     <div className="w-1/2 tab:w-full">
-                      <label
-                        style={Styles.label}
-                        className="text-sm font-medium text-gray-900"
-                      >
-                        Event Name
+                      <label className="text-sm font-medium text-gray-900">
+                        Selected Event Name
                       </label>
-                      <select
-                        value={selectedEvent}
-                        onChange={handleEventChange}
-                        className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
-                      >
-                        <option value="">Choose Event</option>
-                        {events.map((event) => (
-                          <option key={event.eventid} value={event.eventid}>
-                            {event.eventname}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="w-full h-10 flex items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
+                        {selectedEvent || "No Event Selected"}
+                      </div>
                     </div>
 
+                    {/* Event Class Selection */}
                     <div className="w-1/2 tab:w-full">
-                      <label
-                        style={Styles.label}
-                        className="text-sm font-medium text-gray-900"
-                      >
+                      <label className="text-sm font-medium text-gray-900">
                         Event Class
                       </label>
                       <select
                         value={selectedCategory}
-                        onChange={handleCategoryChange}
-                        disabled={!selectedEvent || categories.length === 0}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        disabled={!eventId || categories.length === 0}
                         className={`w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 ${
                           categories.length === 0
                             ? "cursor-not-allowed opacity-50"

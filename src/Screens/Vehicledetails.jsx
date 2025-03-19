@@ -8,6 +8,8 @@ import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import AxiosInstance from "../Components/AxiosInstance";
+import Styles from "../constants/Styles";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const Vehicledetails = () => {
   const [vehicleData, setVehicleData] = useState([]);
@@ -235,40 +237,57 @@ const Vehicledetails = () => {
     <>
       <Toaster position="bottom-center" reverseOrder={false} />
 
-      <section className="w-full min-h-screen">
-        <div className="h-24 w-full shadow-md p-1">
-          <Newheader />
+      <section className="w-full h-screen flex flex-col">
+        <div className=" overflow-y-hidden shadow-lg ">
+          <Newheader  />
         </div>
 
-        <div className="flex h-[calc(100vh-6rem)] w-full">
-          <div className="bg-gray-100">
+        <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
+          <div className="h-full">
             <MainSideBar />
           </div>
-          <div className="w-full bg-white shadow-lg p-8 rounded-lg overflow-auto">
-            <div className="w-full flex justify-center">
+
+          <div className="flex-1 p-2  overflow-y-auto">
+          <div className=" max-w-full mx-auto">
+          <div className="w-full  bg-white   rounded-lg overflow-auto">
+            
+
+            <form className="w-full mx-auto p-3 border rounded-lg  shadow-lg">
+              <div className="w-full flex">
+              <h2 style={Styles.heading} className="text-3xl font-bold mb-6 text-center">
+                Vehicle Details
+              </h2>
+              </div>
+             
+              <div className="w-full flex justify-center">
               <form className="w-1/2 ">
                 <label className="mb-2 text-sm font-medium text-gray-900 sr-only  ">
                   Search
                 </label>
+                <div data-tooltip-id="my-tooltip-1">
                 <AutoCompleteSearch
                   searchType="vehicle"
                   onDataReceived={handleVehicleDataReceived}
                   onSelect={handleVehicleSelect}
                 />
+                </div>
+                
+                <ReactTooltip
+                          id="my-tooltip-1"
+                          place="bottom"
+                          variant="info"
+                          content="Search for vehicles"
+                        />
               </form>
             </div>
-
-            <form className="w-full mx-auto p-3 rounded-md shadow-lg">
-              <h2 className="text-3xl font-bold mb-6 text-center">
-                Vehicle Details
-              </h2>
               <div className="w-full flex gap-8 items-center">
                 <div className="flex flex-col gap-5 w-1/3">
                   <div>
-                    <label className="block text-sm font-bold">
+                    <label style={Styles.label} className="block text-sm font-bold">
                       Vehicle Make
                     </label>
                     <input
+                     style={Styles.input}
                       type="text"
                       className="w-full p-2 border rounded"
                       value={vehicleMake}
@@ -278,18 +297,20 @@ const Vehicledetails = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold">Model</label>
+                    <label style={Styles.label} className="block text-sm font-bold">Model</label>
                     <input
+                     style={Styles.input}
                       type="text"
-                      className="w-full p-2 border rounded"
+                      className="text-black w-full p-2 border rounded"
                       value={model}
                       onChange={(e) => setModel(e.target.value)}
                       placeholder="Enter model"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold">CC</label>
+                    <label style={Styles.label} className="block text-sm font-bold">CC</label>
                     <input
+                    style={Styles.input}
                       type="text"
                       className="w-full p-2 border rounded"
                       value={cc}
@@ -301,10 +322,11 @@ const Vehicledetails = () => {
 
                 <div className="flex flex-col gap-5 w-1/3">
                   <div>
-                    <label className="block text-sm font-bold">
+                    <label style={Styles.label} className="block text-sm font-bold">
                       Registration No
                     </label>
                     <input
+                     style={Styles.input}
                       type="text"
                       className="w-full p-2 border rounded"
                       value={regNo}
@@ -313,8 +335,9 @@ const Vehicledetails = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold">Engine No</label>
+                    <label style={Styles.label} className="block text-sm font-bold">Engine No</label>
                     <input
+                     style={Styles.input}
                       type="text"
                       className="w-full p-2 border rounded"
                       value={engineNo}
@@ -323,10 +346,11 @@ const Vehicledetails = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold">
+                    <label style={Styles.label} className="block text-sm font-bold">
                       Chassis No
                     </label>
                     <input
+                     style={Styles.input}
                       type="text"
                       className="w-full p-2 border rounded"
                       value={chasisNo}
@@ -337,10 +361,12 @@ const Vehicledetails = () => {
                 </div>
 
                 <div className="flex flex-col items-center justify-center w-1/3">
-                  <label className="block text-sm font-bold mb-2">
+                
+                  <label style={Styles.label} className="block text-sm font-bold mb-2">
                     Upload Vehicle Image
                   </label>
                   <input
+                  data-tooltip-id="my-tooltip-2"
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -348,8 +374,10 @@ const Vehicledetails = () => {
                     onChange={handleFileChange}
                   />
                   <label
+
+                  style={Styles.label}
                     htmlFor="file-upload"
-                    className="flex flex-col items-center justify-center w-full h-52 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    className="flex flex-col items-center justify-center w-full h-52 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50"
                   >
                     <svg
                       className="w-6 h-6 text-gray-500"
@@ -368,6 +396,7 @@ const Vehicledetails = () => {
                     </svg>
                     {file ? (
                       <img
+                      
                         src={
                           file instanceof File
                             ? URL.createObjectURL(file)
@@ -388,14 +417,15 @@ const Vehicledetails = () => {
                 </div>
               </div>
               <div className="flex flex-col lg:flex-row gap-2">
-                <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
+                <div className="p-4 rounded-lg shadow-md mt-6 w-full border-2 lg:w-1/2">
                   <div className="flex gap-6 items-center ">
                     <div className="w-1/2">
-                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                      <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-2">
                         Upload RC Book
                       </label>
-                      <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
                         <input
+                        style={Styles.label}
                           type="file"
                           accept="image/*,application/pdf"
                           className="hidden"
@@ -423,13 +453,14 @@ const Vehicledetails = () => {
                           </svg>
                           {image ? (
                             <img
+                            style={Styles.input}
                               src={
                                 image instanceof File
                                   ? URL.createObjectURL(image)
                                   : image
                               }
                               alt=" RC Image Preview"
-                              className="w-full h-full object-contain"
+                              className=" w-full h-full object-contain"
                             />
                           ) : (
                             <p className="text-gray-500 text-sm">
@@ -445,12 +476,13 @@ const Vehicledetails = () => {
                       )}
                     </div>
 
-                    <div className="w-1/2">
-                      <div className="mb-4">
-                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                    <div className="w-1/2 flex flex-col gap-6">
+                      <div className="">
+                        <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
                           RC Number
                         </label>
                         <input
+                        style={Styles.input}
                           type="text"
                           className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                           value={rcNumb}
@@ -460,10 +492,11 @@ const Vehicledetails = () => {
                       </div>
 
                       <div className="mb-4">
-                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                        <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
                           Till Date
                         </label>
                         <input
+                        style={Styles.input}
                           type="date"
                           className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                           value={RCValidTill}
@@ -474,21 +507,22 @@ const Vehicledetails = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6 w-full lg:w-1/2">
+                <div className=" border-6  p-4 rounded-lg shadow-md border-2 mt-6 w-full lg:w-1/2">
                   <div className="flex gap-6 items-center">
                     <div className="w-1/2">
-                      <label className="block text-sm font-bold text-gray-700 mb-2">
+                      <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-2">
                         Upload Insurance
                       </label>
-                      <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
                         <input
+                          style={Styles.input}
                           type="file"
                           accept="image/*,application/pdf"
-                          className="hidden"
+                          className="hidden "
                           id="fmsci-file-upload"
                           onChange={handleUploadChange}
                         />
-                        <label
+                        <label style={Styles.label}
                           htmlFor="fmsci-file-upload"
                           className="flex flex-col items-center justify-center w-full h-full"
                         >
@@ -509,6 +543,7 @@ const Vehicledetails = () => {
                           </svg>
                           {upload ? (
                             <img
+                             style={Styles.input}
                               src={
                                 upload instanceof File
                                   ? URL.createObjectURL(upload)
@@ -531,12 +566,13 @@ const Vehicledetails = () => {
                       )}
                     </div>
 
-                    <div className="w-1/2">
-                      <div className="mb-4">
-                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                    <div className="w-1/2 flex flex-col gap-6">
+                      <div className="">
+                        <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
                           Insurance Number
                         </label>
                         <input
+                        style={Styles.input}
                           type="text"
                           className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                           value={insuranceNumb}
@@ -546,10 +582,11 @@ const Vehicledetails = () => {
                       </div>
 
                       <div className="mb-4">
-                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                        <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
                           Till Date
                         </label>
                         <input
+                        style={Styles.input}
                           type="date"
                           className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                           value={insuranceValidTill}
@@ -571,6 +608,7 @@ const Vehicledetails = () => {
                   onChange={(e) => setIsAgreed(e.target.checked)}
                 />
                 <label
+                style={Styles.label}
                   htmlFor="link-checkbox"
                   className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                 >
@@ -602,6 +640,8 @@ const Vehicledetails = () => {
                 </button>
               </div>
             </form>
+          </div>
+          </div>
           </div>
         </div>
       </section>

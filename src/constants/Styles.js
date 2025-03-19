@@ -22,20 +22,24 @@ const Styles = {
     fontWeight: "bold",
   },
 
+//   input: {
+//     backgroundColor: "#F9FAFB", // Light gray background
+//     padding: "10px",
+//     borderRadius: "8px",
+//     color: "#000000", // Black text
+//  },
+
   select: {
     width: "100%",
     height: "40px",
     backgroundColor: "#F9FAFB", // Light gray background
     border: "1px solid #D1D5DB", // Gray border
-    color: "#374151", // Dark gray text
+    color: "#E5E7EB", // Very light gray text
     fontSize: "14px",
     borderRadius: "8px",
     padding: "10px",
     outline: "none",
     transition: "all 0.2s ease-in-out",
-
-
-
 
     // Disabled state
     ":disabled": {
@@ -62,9 +66,9 @@ const Styles = {
 
   input: {
     width: "100%",
-    padding: "12px",
+    padding: "8px",
     borderRadius: "8px",
-    backgroundColor: "#F3F7F6",
+    backgroundColor: "#F9FAFB",
     border: "1px solid #D1D5DB",
     outline: "none",
   },
