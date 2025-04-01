@@ -7,6 +7,8 @@ import { MdOutlineDelete } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
 import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+
 
 const EmployeeTypes = {
   OTHERS: 0,
@@ -241,100 +243,113 @@ const Add_Employee = () => {
                         : "Organizing Committee Member"}
                     </h3>
                   </div>
-                  <div className="w-full h-full border-1 p-2 border mb-4 rounded-lg">
-                    <div className="flex flex-wrap gap-4 w-full p-4">
-                      {["empName", "phone", "email"].map((field) => (
-                        <div key={field} className="w-1/3">
+                  <div className="w-full h-full border-1 p-4  border mb-4 rounded-lg">
+                    <div className="w-full h-auto flex gap-2 ">
+                      <div className="flex flex-col gap-2 w-1/2  ">
+                        {["empName", "phone", "email"].map((field) => (
+                          <div key={field} className="w-full">
+                            <label
+                              style={Styles.label}
+                              className="block text-sm font-semibold text-gray-700 mb-1"
+                            >
+                              {field.charAt(0).toUpperCase() + field.slice(1)}
+                            </label>
+                            <input
+                              style={Styles.input}
+                              type={field === "email" ? "email" : "text"}
+                              name={field}
+                              value={formData[field]}
+                              onChange={handleChange}
+                              maxLength={field === "phone" ? 10 : undefined}
+                              className={`w- p-3 border-2 rounded-md ${
+                                errors[field]
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } focus:outline-none `}
+                              placeholder={`Enter ${
+                                field.charAt(0).toUpperCase() + field.slice(1)
+                              }`}
+                            />
+                            {errors[field] && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors[field]}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="w-1/2 flex flex-col gap-2">
+                        <div className="w-full flex-items-center ">
                           <label
                             style={Styles.label}
                             className="block text-sm font-semibold text-gray-700 mb-1"
                           >
-                            {field.charAt(0).toUpperCase() + field.slice(1)}
+                            Type
                           </label>
-                          <input
+                          <select
+                          data-tooltip-id="my-tooltip-1"
                             style={Styles.select}
-                            type={field === "email" ? "email" : "text"}
-                            name={field}
-                            value={formData[field]}
+                            name="role"
+                            value={formData.role}
                             onChange={handleChange}
-                            maxLength={field === "phone" ? 10 : undefined}
-                            className={`w-full p-3 border-2 rounded-md ${
-                              errors[field]
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            } focus:outline-none `}
-                            placeholder={`Enter ${
-                              field.charAt(0).toUpperCase() + field.slice(1)
-                            }`}
-                          />
-                          {errors[field] && (
+                            className="w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none "
+                          >
+                            <option value={EmployeeTypes.OTHERS}>
+                              Select Type
+                            </option>
+                            <option value={EmployeeTypes.EMPLOYEE}>
+                              Employee
+                            </option>
+                            <option value={EmployeeTypes.ORGANISER}>
+                              Organiser
+                            </option>
+                            <option value={EmployeeTypes.SCRUTINEER}>
+                              Scrutineer
+                            </option>
+                          </select>
+                          {errors.role && (
                             <p className="text-red-500 text-sm mt-1">
-                              {errors[field]}
+                              {errors.role}
                             </p>
                           )}
                         </div>
-                      ))}
-                      <div className="w-1/3">
-                        <label
-                          style={Styles.label}
-                          className="block text-sm font-semibold text-gray-700 mb-1"
-                        >
-                          Type
-                        </label>
-                        <select
-                          style={Styles.select}
-                          name="role"
-                          value={formData.role}
-                          onChange={handleChange}
-                          className="w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none "
-                        >
-                          <option value={EmployeeTypes.OTHERS}>
-                            Select Type
-                          </option>
-                          <option value={EmployeeTypes.EMPLOYEE}>
-                            Employee
-                          </option>
-                          <option value={EmployeeTypes.ORGANISER}>
-                            Organiser
-                          </option>
-                          <option value={EmployeeTypes.SCRUTINEER}>
-                            Scrutineer
-                          </option>
-                        </select>
-                        {errors.role && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.role}
-                          </p>
-                        )}
-                      </div>
-                      <div className="w-1/3">
-                        <label
-                          style={Styles.label}
-                          className="block text-sm font-semibold text-gray-700 mb-1"
-                        >
-                          Other Info
-                        </label>
-                        <input
-                          style={Styles.select}
-                          type="text"
-                          name="otherInfo"
-                          value={formData.otherInfo}
-                          onChange={handleChange}
-                          className={`w-full p-3 border-2 rounded-md ${
-                            errors.otherInfo
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } focus:outline-none `}
-                          placeholder="Enter Other Info"
+                        <ReactTooltip
+                          id="my-tooltip-1"
+                          place="bottom"
+                          variant="info"
+                          content="Please Select Type"
                         />
-                        {errors.otherInfo && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.otherInfo}
-                          </p>
-                        )}
+                        <div className="w-full">
+                          <label
+                            style={Styles.label}
+                            className="block text-sm font-semibold text-gray-700 mb-1"
+                          >
+                            Other Info
+                          </label>
+                          <input
+                            style={Styles.input}
+                            type="text"
+                            name="otherInfo"
+                            value={formData.otherInfo}
+                            onChange={handleChange}
+                            className={`  w-full p-3 border-2 rounded-md ${
+                              errors.otherInfo
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } focus:outline-none `}
+                            placeholder="Enter Other Info"
+                          />
+                          {errors.otherInfo && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.otherInfo}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex w-1/2 gap-4 mt-4">
+                   <div className="w-full flex justify-end">
+                   <div className="flex w-1/2 justify-end  gap-4 mt-4">
                       <button
                         onClick={resetForm}
                         className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
@@ -357,6 +372,8 @@ const Add_Employee = () => {
                           : "Submit"}
                       </button>
                     </div>
+                   </div>
+                   
                   </div>
                 </div>
               </div>

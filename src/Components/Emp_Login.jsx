@@ -8,6 +8,8 @@ import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
 // import { MdOutlineDelete } from "react-icons/md";
 import { Toaster, toast } from "react-hot-toast";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+
 
 const userTypeMapping = {
   102: "Manager",
@@ -184,7 +186,7 @@ const Emp_Login = () => {
                   <div className="space-y-4 w-full">
                     <div className="space-y-6 overflow-auto mb-2">
                       <div className="bg-white flex flex-col items-center rounded-lg w-full">
-                        <div className="flex w-full p-2">
+                        <div className="flex w-full ml-2  p-2">
                           <h3
                             style={Styles.heading}
                             className="text-2xl font-semibold mb-4 text-center text-cyan-700"
@@ -194,40 +196,30 @@ const Emp_Login = () => {
                         </div>
 
                         {/* Form Container */}
-                        <div className="w-full p-2">
-                          {/* First Row - Username & Employee Selection */}
-                          <div className="flex items-center gap-4">
-                            <div className="w-1/2">
-                              <label
-                                style={Styles.label}
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                              >
-                                User Name
-                              </label>
-                              <input
-                                style={Styles.select}
-                                type="text"
-                                name="username"
-                                value={formData.username}
-                                onChange={handleChange}
-                                readOnly={isEdit}
-                                className={`w-full p-3 border-2 rounded-md ${
-                                  errors.username
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } focus:outline-none focus:ring-2 focus:ring-black ${
-                                  isEdit ? "bg-gray-100" : ""
-                                }`}
-                                placeholder="Enter User Name"
-                              />
-                              {errors.username && (
-                                <p className="text-red-500 text-sm mt-1">
-                                  {errors.username}
-                                </p>
-                              )}
-                            </div>
+                        <div className="w-full p-3 gap-2 border rounded-lg">
 
-                            <div className="w-1/2">
+                          <div className="w-full flex justify-center">
+                          <ReactTooltip
+                          id="my-tooltip-1"
+                          place="bottom"
+                          variant="info"
+                          content="Please Select Employee Name"
+                        />
+
+<ReactTooltip
+                          id="my-tooltip-2"
+                          place="bottom"
+                          variant="info"
+                          content="Please Enter Username"
+                        />
+
+<ReactTooltip
+                          id="my-tooltip-3"
+                          place="bottom"
+                          variant="info"
+                          content="Please Select Role"
+                        />
+                          <div className="w-1/2">
                               <label
                                 style={Styles.label}
                                 className="block text-sm font-semibold text-gray-700"
@@ -235,6 +227,7 @@ const Emp_Login = () => {
                                 Employee
                               </label>
                               <select
+                              data-tooltip-id="my-tooltip-1"
                                 style={Styles.select}
                                 name="employeeId"
                                 value={formData.employeeId}
@@ -259,9 +252,75 @@ const Emp_Login = () => {
                               )}
                             </div>
                           </div>
+                         
 
-                          {/* Second Row - Password & Confirm Password */}
-                          <div className="flex gap-4 mt-4">
+                          <div className="flex items-end justify-center gap-3 w-full ">
+                            <div className="w-1/2 ">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-semibold text-gray-700 mb-1"
+                              >
+                                User Name
+                              </label>
+                              <input
+                              data-tooltip-id="my-tooltip-2"
+                                style={Styles.select}
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                readOnly={isEdit}
+                                className={`w-full p-3 border-2 rounded-md ${
+                                  errors.username
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } focus:outline-none focus:ring-2 focus:ring-black ${
+                                  isEdit ? "bg-gray-100" : ""
+                                }`}
+                                placeholder="Enter User Name"
+                              />
+                              {errors.username && (
+                                <p className="text-red-500 text-sm mt-1">
+                                  {errors.username}
+                                </p>
+                              )}
+                            </div>
+                            <div className="w-1/2 ">
+                            <label
+                              style={Styles.label}
+                              className="block text-sm font-semibold text-gray-700"
+                            >
+                              User Type
+                            </label>
+                            <select
+                            data-tooltip-id="my-tooltip-3"
+                              style={Styles.select}
+                              name="role"
+                              value={formData.role}
+                              onChange={handleChange}
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                              required
+                            >
+                              <option value={0}>Select Role</option>
+                              {Object.entries(userTypeMapping).map(
+                                ([key, value]) => (
+                                  <option key={key} value={key}>
+                                    {value}
+                                  </option>
+                                )
+                              )}
+                            </select>
+                            {errors.role && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {errors.role}
+                              </p>
+                            )}
+                          </div>
+                           
+                          </div>
+
+                        
+                          <div className="flex gap-3">
                             {["password", "confirmPassword"].map((field) => (
                               <div className="w-1/2" key={field}>
                                 <label
@@ -300,40 +359,12 @@ const Emp_Login = () => {
                             ))}
                           </div>
 
-                          {/* Third Row - User Type */}
-                          <div className="w-full mt-4">
-                            <label
-                              style={Styles.label}
-                              className="block text-sm font-semibold text-gray-700"
-                            >
-                              User Type
-                            </label>
-                            <select
-                              style={Styles.select}
-                              name="role"
-                              value={formData.role}
-                              onChange={handleChange}
-                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              required
-                            >
-                              <option value={0}>Select Role</option>
-                              {Object.entries(userTypeMapping).map(
-                                ([key, value]) => (
-                                  <option key={key} value={key}>
-                                    {value}
-                                  </option>
-                                )
-                              )}
-                            </select>
-                            {errors.role && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {errors.role}
-                              </p>
-                            )}
-                          </div>
+                        
+                        
 
                           {/* Buttons */}
-                          <div className="flex w-full gap-4 mt-4">
+                          <div className="w-full flex justify-end mt-3 " >
+                          <div className="flex w-1/2  gap-4 ">
                             <button
                               onClick={resetForm}
                               className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
@@ -347,6 +378,8 @@ const Emp_Login = () => {
                               {isEdit ? "Update" : "Submit"}
                             </button>
                           </div>
+                          </div>
+                          
                         </div>
                       </div>
                     </div>

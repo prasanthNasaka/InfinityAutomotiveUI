@@ -9,6 +9,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 import AxiosInstance from "../Components/AxiosInstance";
+import Styles from "../constants/Styles";
 
 const AddCompany = () => {
   const [formData, setFormData] = useState({
@@ -228,268 +229,328 @@ const AddCompany = () => {
   }, []);
 
   return (
-    <div>
+    <section className="w-full h-screen flex flex-col">
       <Toaster position="bottom-center" reverseOrder={false} />
 
-      <div className="h-24 w-full shadow-md p-1">
+      <div className=" overflow-y-hidden shadow-lg ">
         <Newheader />
       </div>
 
-      <div className="flex h-[calc(100vh-6rem)]">
-        <div className="bg-gray-100">
+      <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
+        <div className=" h-full">
           <MainSideBar />
         </div>
-        <div className="flex w-full p-8 h-auto flex-col  overflow-auto">
-          <form
-            className="w-full mx-auto p-3 rounded-md shadow-lg h-fit "
-            onSubmit={handleSubmit}
-          >
-            <h2 className="text-3xl font-bold mb-6 text-center">
-              Company Details
-            </h2>
-
-            <div className="mb-4">
-              <label className="block text-sm font-bold mb-1">
-                Company Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-1/2 p-2 border rounded"
-                placeholder="Enter company name"
-                required
-              />
-
-              <div className="mt-2">
-                <label className=" text-sm font-bold mb-1 flex">
-                  Abbrivation
-                </label>
+        <div className="flex-1 p-2  overflow-y-auto">
+          <div className=" max-w-10xl mx-auto">
+            <form className="bg-white mb-6  " onSubmit={handleSubmit}>
+              <div className="p-2 ml-2 flex ">
+                <h2
+                  style={Styles.heading}
+                  className="text-3xl font-bold  text-center"
+                >
+                  Company Details
+                </h2>
               </div>
-              <input
-                type="text"
-                name="abbr"
-                value={formData.abbr}
-                onChange={handleChange}
-                className="w-1/2 p-2 border rounded"
-                placeholder="Enter Abbr name"
-                maxLength={3}
-                required
-              />
-              {validationErrors.CompanyName && (
-                <p className="text-red-500 text-sm">
-                  {validationErrors.CompanyName[0]}
-                </p>
-              )}
-            </div>
 
-            <div className="flex space-x-4">
-              <div className="flex-1 p-4 border rounded-md shadow">
-                <h3 className="text-lg font-semibold mb-2">Address</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {["street", "city", "state", "zip", "country", "website"].map(
-                    (field) => (
-                      <div key={field}>
-                        <label className="block text-sm font-bold capitalize mb-1">
-                          {field}
+              <div className="mt-4">
+                <div className="w-full  h-full border-1  p-2 border mb-4 rounded-lg">
+                  <div className="w-full h-auto gap-3 flex items-center p-1">
+                    <div className="w-1/2 h-auto flex flex-col gap-2 ">
+                      <div className="w-full h-auto">
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold mb-1"
+                        >
+                          Company Name
                         </label>
                         <input
+                          style={Styles.input}
                           type="text"
-                          name={`address.${field}`}
-                          value={formData.address[field]}
+                          name="name"
+                          value={formData.name}
                           onChange={handleChange}
-                          className="w-full p-2 border rounded"
-                          placeholder={`Enter ${field}`}
+                          className="w-1/2 p-2 border rounded"
+                          placeholder="Enter company name"
                           required
                         />
                       </div>
-                    )
-                  )}
-                </div>
+                      <div className="w-full h-auto">
+                        <label
+                          style={Styles.label}
+                          className=" text-sm font-bold mb-1 flex"
+                        >
+                          Abbrivation
+                        </label>
 
-                {isEditing && (
-                  <div className="flex justify-end mt-4">
-                    <button
-                      type="button"
-                      className="px-6 py-3 bg-cyan-600 text-white rounded"
-                      onClick={() => {
-                        const companyId = formData.companyId;
-                        updateCompany(companyId);
-                        setIsEditing(false);
-                      }}
-                    >
-                      Update
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 p-4 border rounded-md shadow">
-                <h3 className="text-lg font-semibold mb-2">
-                  Contact Information
-                </h3>
-                <div className="grid grid-cols-1 gap-4">
-                  {["contactPerson", "phone", "email"].map((field) => (
-                    <div key={field}>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        {field === "contactPerson" ? "Contact Person" : field}
-                      </label>
-                      <input
-                        type={
-                          field === "email"
-                            ? "email"
-                            : field === "phone"
-                            ? "tel"
-                            : "text"
-                        }
-                        name={`contact.${field}`}
-                        value={formData.contact[field]}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder={`Enter ${field}`}
-                        maxLength={field === "phone" ? 10 : undefined}
-                        required
-                      />
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="abbr"
+                          value={formData.abbr}
+                          onChange={handleChange}
+                          className="w-1/2 p-2 border rounded"
+                          placeholder="Enter Abbr name"
+                          maxLength={3}
+                          required
+                        />
+                        {validationErrors.CompanyName && (
+                          <p className="text-red-500 text-sm">
+                            {validationErrors.CompanyName[0]}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  ))}
+                    <div className="w-1/2 h-auto flex flex-col gap-4 ">
+                      <div className=" w-full">
+                        <div className="grid grid-cols-1 gap-2">
+                          {["username", "password"].map((field) => (
+                            <div key={field}>
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold capitalize mb-1"
+                              >
+                                Enter {field}
+                              </label>
+                              <input
+                                style={Styles.input}
+                                type={
+                                  field.includes("password")
+                                    ? "password"
+                                    : "text"
+                                }
+                                name={`login.${field}`}
+                                value={formData.login[field]}
+                                onChange={handleChange}
+                                className="w-full p-2 border rounded"
+                                placeholder={`Enter ${field}`}
+                                required
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-4 mt-4">
+                    <div className="flex-1 p-4 border rounded-md ">
+                      <h3
+                        style={Styles.tableheading}
+                        className="text-lg font-semibold mb-2"
+                      >
+                        Address
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        {[
+                          "street",
+                          "city",
+                          "state",
+                          "zip",
+                          "country",
+                          "website",
+                        ].map((field) => (
+                          <div key={field}>
+                            <label
+                              style={Styles.label}
+                              className="block text-sm font-bold capitalize mb-1"
+                            >
+                              {field}
+                            </label>
+                            <input
+                              style={Styles.input}
+                              type="text"
+                              name={`address.${field}`}
+                              value={formData.address[field]}
+                              onChange={handleChange}
+                              className="w-full p-2 border rounded"
+                              placeholder={`Enter ${field}`}
+                              required
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      {isEditing && (
+                        <div className="flex justify-end mt-4">
+                          <button
+                            type="button"
+                            className="px-6 py-3 bg-cyan-600 text-white rounded"
+                            onClick={() => {
+                              const companyId = formData.companyId;
+                              updateCompany(companyId);
+                              setIsEditing(false);
+                            }}
+                          >
+                            Update
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 p-4 border rounded-md ">
+                      <h3
+                        style={Styles.tableheading}
+                        className="text-lg font-semibold mb-2"
+                      >
+                        Contact Information
+                      </h3>
+                      <div className="grid grid-cols-1 gap-4">
+                        {["contactPerson", "phone", "email"].map((field) => (
+                          <div key={field}>
+                            <label
+                              style={Styles.label}
+                              className="block text-sm font-bold capitalize mb-1"
+                            >
+                              {field === "contactPerson"
+                                ? "Contact Person"
+                                : field}
+                            </label>
+                            <input
+                              style={Styles.input}
+                              type={
+                                field === "email"
+                                  ? "email"
+                                  : field === "phone"
+                                  ? "tel"
+                                  : "text"
+                              }
+                              name={`contact.${field}`}
+                              value={formData.contact[field]}
+                              onChange={handleChange}
+                              className="w-full p-2 border rounded"
+                              placeholder={`Enter ${field}`}
+                              maxLength={field === "phone" ? 10 : undefined}
+                              required
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-full h-auto flex justify-end items-center">
+                    <div className="w-1/2 justify-end  mt-3 flex gap-4">
+                      <button
+                        type="button"
+                        className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                        onClick={() =>
+                          setFormData({
+                            name: "",
+                            abbr: "",
+                            address: {
+                              street: "",
+                              city: "",
+                              state: "",
+                              zip: "",
+                              country: "",
+                              website: "",
+                            },
+                            contact: {
+                              phone: "",
+                              email: "",
+                              contactPerson: "",
+                            },
+                            login: { username: "", password: "" },
+                          })
+                        }
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </form>
+            <div className="flex w-full p-8 h-auto">
+              <div className="w-full">
+                <h3 className="text-2xl font-bold mb-4">Company List</h3>
 
-            <div className="mt-6 p-4 border rounded-md shadow w-1/2">
-              <h3 className="text-lg font-semibold mb-2">Login Details</h3>
-              <div className="grid grid-cols-1 gap-4">
-                {["username", "password"].map((field) => (
-                  <div key={field}>
-                    <input
-                      type={field.includes("password") ? "password" : "text"}
-                      name={`login.${field}`}
-                      value={formData.login[field]}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder={`Enter ${field}`}
-                      required
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+                {loading && (
+                  <p>
+                    <Loader />
+                  </p>
+                )}
+                {error && <p className="text-red-500">{error}</p>}
 
-            <div className="flex justify-end mt-6 gap-5">
-              <button
-                type="button"
-                className="px-6 py-3 bg-gray-300 text-black rounded"
-                onClick={() =>
-                  setFormData({
-                    name: "",
-                    abbr: "",
-                    address: {
-                      street: "",
-                      city: "",
-                      state: "",
-                      zip: "",
-                      country: "",
-                      website: "",
-                    },
-                    contact: { phone: "", email: "", contactPerson: "" },
-                    login: { username: "", password: "" },
-                  })
-                }
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-3 bg-cyan-600 text-white rounded"
-              >
-                Save
-              </button>
-            </div>
-          </form>
-          <div className="flex w-full p-8 h-auto">
-            <div className="w-full">
-              <h3 className="text-2xl font-bold mb-4">Company List</h3>
-
-              {loading && (
-                <p>
-                  <Loader />
-                </p>
-              )}
-              {error && <p className="text-red-500">{error}</p>}
-
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="border p-2">Company Name</th>
-                    <th className="border p-2">State</th>
-                    <th className="border p-2">Street</th>
-                    <th className="border p-2">Website</th>
-                    <th className="border p-2">City</th>
-                    <th className="border p-2">Country</th>
-                    <th className="border p-2">Status</th>
-                    <th className="border p-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {companies.length > 0 ? (
-                    companies.map((company) => (
-                      <tr key={company.companyId}>
-                        <td className="border p-2 text-center">
-                          {company.companyName}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {company.state}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {company.street}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {company.website}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {company.city}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {company.country}
-                        </td>
-                        <td className="border p-2 text-center">
-                          {company.status || "Active"}
-                        </td>
-                        <td className="border p-2 text-center">
-                          <div className="flex gap-2 justify-center">
-                            <button
-                              type="button"
-                              className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                              onClick={() => handleEdit(company)}
-                            >
-                              <CiEdit className="w-6 h-6" />
-                            </button>
-                            <button
-                              type="button"
-                              className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
-                              onClick={() => handleDelete(company.companyId)}
-                            >
-                              <MdOutlineDelete className="w-6 h-6" />
-                            </button>
-                          </div>
+                <table className="w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="border p-2">Company Name</th>
+                      <th className="border p-2">State</th>
+                      <th className="border p-2">Street</th>
+                      <th className="border p-2">Website</th>
+                      <th className="border p-2">City</th>
+                      <th className="border p-2">Country</th>
+                      <th className="border p-2">Status</th>
+                      <th className="border p-2">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {companies.length > 0 ? (
+                      companies.map((company) => (
+                        <tr key={company.companyId}>
+                          <td className="border p-2 text-center">
+                            {company.companyName}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {company.state}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {company.street}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {company.website}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {company.city}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {company.country}
+                          </td>
+                          <td className="border p-2 text-center">
+                            {company.status || "Active"}
+                          </td>
+                          <td className="border p-2 text-center">
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                type="button"
+                                className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                                onClick={() => handleEdit(company)}
+                              >
+                                <CiEdit className="w-6 h-6" />
+                              </button>
+                              <button
+                                type="button"
+                                className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                                onClick={() => handleDelete(company.companyId)}
+                              >
+                                <MdOutlineDelete className="w-6 h-6" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="8" className="text-center p-2">
+                          No companies to display
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="8" className="text-center p-2">
-                        No companies to display
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -66,6 +66,7 @@ const Styles = {
 
   input: {
     width: "100%",
+    height: "40px",
     padding: "8px",
     borderRadius: "8px",
     backgroundColor: "#F9FAFB",
@@ -75,7 +76,7 @@ const Styles = {
 
   description: {
     fontFamily: "Poppins, sans-serif",
-    color: "#1A1A1A"
+    
   },
 
   button: {

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 // import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
 import AxiosInstance from "../Components/AxiosInstance";
+import Styles from "../constants/Styles";
 
 const EventsApproved = () => {
   const [events, setEvents] = useState([]);
@@ -23,13 +24,12 @@ const EventsApproved = () => {
 
   const handleApprove = (event) => {
     const eventId = event.eventid;
-    AxiosInstance
-      .put(
-        `${BASE_URL}/api/EventRegistration/ApproveEvents?EventId=${eventId}`,
-        {
-          approved: true,
-        }
-      )
+    AxiosInstance.put(
+      `${BASE_URL}/api/EventRegistration/ApproveEvents?EventId=${eventId}`,
+      {
+        approved: true,
+      }
+    )
       .then((response) => {
         if (response.status === 200) {
           setEvents((prevEvents) =>
@@ -48,8 +48,7 @@ const EventsApproved = () => {
   };
 
   const fetchEvents = () => {
-    AxiosInstance
-      .get(`${BASE_URL}/api/EventRegistration/EventsToApprove`)
+    AxiosInstance.get(`${BASE_URL}/api/EventRegistration/EventsToApprove`)
       .then((response) => {
         setEvents(response.data);
       })
@@ -65,31 +64,32 @@ const EventsApproved = () => {
 
   return (
     <section className="w-full h-screen flex flex-col">
-      <div className="w-full h-24 overflow-y-hidden shadow-lg">
+      <div className=" overflow-y-hidden shadow-lg ">
         <Newheader />
       </div>
 
-      <div className="flex h-[calc(100vh-6rem)] overflow-hidden">
-        <div className=" h-full">
-          <div className="h-full ">
-            <MainSideBar />
-          </div>
+      <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
+        <div className="h-full ">
+          <MainSideBar />
         </div>
 
-        <div className="flex-1 p-3 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg border mb-6">
-              <div className="p-2">
-                <h3 className="text-2xl font-semibold text-center text-gray-900">
+        <div className="flex-1 p-2  overflow-y-auto">
+          <div className=" max-w-10xl mx-auto">
+            <div className="bg-white mb-6">
+              <div className="p-2 ml-2 flex ">
+                <h3
+                  style={Styles.heading}
+                  className="text-2xl font-semibold text-center text-gray-900"
+                >
                   Approve Events
                 </h3>
               </div>
 
-              <div className="min-h-auto p-2">
+              <div className="mt-4">
                 <div className="border rounded-lg overflow-hidden bg-white shadow-md">
                   <div className="overflow-x-auto ">
                     <table className="w-full text-sm text-left text-gray-500">
-                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50  top-0 text-center">
                         <tr>
                           <th className="px-6 py-3 whitespace-nowrap">SL.No</th>
                           <th className="px-6 py-3 whitespace-nowrap">

@@ -65,7 +65,7 @@ const MainSideBar = () => {
           {(userRole === "101" || userRole === "102") && (
             <Link
               to="/dashboard"
-              className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                 isActive("/dashboard") ? "bg-cyan-600 rounded-lg" : ""
               }`}
             >
@@ -78,7 +78,7 @@ const MainSideBar = () => {
             <>
               <Link
                 to="/addcompany"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/addcompany") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -87,7 +87,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/eventsapproved"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/eventsapproved") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -96,7 +96,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/status"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/status") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -112,16 +112,20 @@ const MainSideBar = () => {
             <>
               <Link
                 to="/events"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/events") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
                 <FaCalendarAlt />
                 {!isCollapsed && <span style={Styles.side}>Events</span>}
               </Link>
+
+              
+             
+
               <Link
                 to="/classes"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/classes") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -130,7 +134,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/driverracelink"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/driverracelink") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -141,7 +145,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/addemployee"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/addemployee") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -152,7 +156,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/emplogin"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/emplogin") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -161,7 +165,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/template"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/template") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -175,7 +179,7 @@ const MainSideBar = () => {
             <>
               <Link
                 to="/events"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/events") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -184,7 +188,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/classes"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/classes") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -193,7 +197,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/driverracelink"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/driverracelink") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -204,7 +208,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/addemployee"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/addemployee") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -215,7 +219,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/emplogin"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/emplogin") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -224,7 +228,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/template"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/template") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -248,7 +252,7 @@ const MainSideBar = () => {
               </div>
               <Link
                 to="/registration"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/registration") ? "bg-cyan-600 rounded-lg" : ""
                 }`}
               >
@@ -257,7 +261,7 @@ const MainSideBar = () => {
               </Link>
               <Link
                 to="/vehicle_registration"
-                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+                className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                   isActive("/vehicle_registration")
                     ? "bg-cyan-600 rounded-lg"
                     : ""
@@ -274,7 +278,7 @@ const MainSideBar = () => {
           {userRole === "104" && (
             <Link
               to="/driverracelink"
-              className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                 isActive("/driverracelink") ? "bg-cyan-600 rounded-lg" : ""
               }`}
             >
@@ -288,7 +292,7 @@ const MainSideBar = () => {
           {userRole === "105" && (
             <Link
               to="/scrutiny"
-              className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-600 flex items-center gap-3 hover:rounded-lg ${
+              className={`p-2 text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg ${
                 isActive("/scrutiny") ? "bg-cyan-600 rounded-lg" : ""
               }`}
             >

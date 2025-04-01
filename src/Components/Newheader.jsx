@@ -1,25 +1,32 @@
 /* eslint-disable no-unused-vars */
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+
 import { AiOutlineClose } from "react-icons/ai";
-import { FaFlagCheckered } from "react-icons/fa";
-import { Ellipsis } from "lucide-react";
+import { FaBars, FaFlagCheckered, FaTimes } from "react-icons/fa";
+// import { Ellipsis } from "lucide-react";
 import Styles from "../constants/Styles";
+import Rightbar from "./Rightbar";
+import { useState } from "react";
+import { IoIosNotifications } from "react-icons/io";
+
+
 
 const Header = () => {
-  const navigate = useNavigate();
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+ 
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const logOutHandler = () => {
-    localStorage.removeItem("authToken");
-    setIsLoggedOut(true);
-    navigate("/login");
+  
+
+  // const toggleMenu = () => {
+  //   setIsMenuOpen(!isMenuOpen);
+  // };
+
+  
+  
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   return (
     <section className="w-full h-20 flex justify-between items-center text-center bg-white shadow-lg">
@@ -38,6 +45,7 @@ const Header = () => {
           </div>
         </div>
       </div>
+      <Rightbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <div className="h-full w-1/2 flex items-center phone:hidden  iphone:hidden"></div>
 
@@ -51,22 +59,30 @@ const Header = () => {
               alt=""
             />
           </div>
+
+          <IoIosNotifications className="size-6 hover:text-cyan-500 cursor-pointer" />
+
           <div className="tab:w-full  tab:h-full flex tab:justify-end tab:items-center">
-            <Ellipsis
-              className="size-8 cursor-pointer text-black hover:text-cyan-500   "
+            <button className="hover:text-cyan-500" onClick={toggleSidebar}>
+            {isSidebarOpen ? <FaTimes  /> : <FaBars />}
+              </button>
+
+
+            {/* <Ellipsis
+              className="size-8 border cursor-pointer text-black hover:text-cyan-500   "
               onClick={toggleMenu}
-            />
+            /> */}
           </div>
         </div>
       </div>
 
-      {isMenuOpen && (
+      {/* {isMenuOpen && (
         <div
           className={`absolute top-14 right-0 w-28 tab:w-1/3  bg-white shadow-lg p-4 rounded-lg 
     flex flex-col items-center gap-6 transition-all duration-700 ease-in-out transform lappy:hidden
     ${isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}`}
         >
-          {/* Close Button */}
+         
           <div className="w-full flex justify-end">
             <AiOutlineClose
               className="text-black cursor-pointer text-2xl"
@@ -74,7 +90,7 @@ const Header = () => {
             />
           </div>
 
-          {/* Profile Section */}
+        
           <div className="flex flex-col items-center">
             <ul className="font-serif text-black text-lg cursor-pointer">
               <li className="w-full hover:text-cyan-600 text-center py-2">
@@ -83,15 +99,10 @@ const Header = () => {
             </ul>
           </div>
 
-          {/* Logout Button */}
-          <button
-            onClick={logOutHandler}
-            className="w-full text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-5 py-2.5"
-          >
-            Logout
-          </button>
+        
+         
         </div>
-      )}
+      )} */}
 
       {/* {isMenuOpen && (
         <div
@@ -136,6 +147,7 @@ const Header = () => {
           </button>
         </div>
       )} */}
+      
     </section>
   );
 };
