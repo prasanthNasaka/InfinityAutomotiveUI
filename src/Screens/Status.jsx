@@ -7,6 +7,7 @@ import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import AxiosInstance from "../Components/AxiosInstance";
+import Styles from "../constants/Styles";
 
 const Status = () => {
   const [drivers, setDrivers] = useState([]);
@@ -55,7 +56,9 @@ const Status = () => {
 
   const handleDeactivateVehicle = async (vehicleId) => {
     try {
-      await AxiosInstance.put(`${BASE_URL}/api/Vehicle/DeActivate/${vehicleId}`);
+      await AxiosInstance.put(
+        `${BASE_URL}/api/Vehicle/DeActivate/${vehicleId}`
+      );
       toast.success("Vehicle Deactivated Successfully");
       fetchVehicles();
     } catch (error) {
@@ -78,28 +81,32 @@ const Status = () => {
   }, []);
 
   return (
-    <>
+    <section className="w-full h-screen flex flex-col">
       <Toaster position="bottom-center" reverseOrder={false} />
 
-      <div className="h-24 w-full shadow-md p-1">
+      <div className=" overflow-y-hidden shadow-lg ">
         <Newheader />
       </div>
 
-      <div className="flex h-[calc(100vh-6rem)]">
-        <div className="bg-gray-100">
+
+      <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
+      <div className=" h-full">
           <MainSideBar />
         </div>
 
-        <div className="flex w-full p-8 h-full flex-col">
+        <div className="flex-1 p-2  overflow-y-auto">
+        <div className=" max-w-10xl mx-auto">
           <form className="w-full mx-auto p-3 rounded-md shadow-lg h-fit overflow-auto">
-            <div className="flex w-full gap-5 ">
-              <div className="w-1/2">
-                <h1 className="flex justify-center text-3xl font-bold w-full">
+            <div className="flex w-full gap-3 ">
+              <div className="w-1/2 border-1  p-2 border mb-4 rounded-lg">
+              <div className="p-2 ml-2 flex ">
+                <h1 style={Styles.heading} className="flex justify-center text-3xl font-bold w-full">
                   Racer Details
                 </h1>
+                </div>
 
-                <table className="w-full border-collapse border border-gray-300 mt-10 h-screen overflow-auto ">
-                  <thead>
+                <table className="w-full rounded-lg  border border-gray-300  h-auto overflow-auto ">
+                  <thead className="rounded-t-lg border border-red-700">
                     <tr className="bg-gray-200">
                       <th className="border p-2">Driver Name</th>
                       <th className="border p-2">Phone No</th>
@@ -158,12 +165,14 @@ const Status = () => {
                 </table>
               </div>
 
-              <div className="w-1/2">
-                <h1 className="flex justify-center text-3xl font-bold w-full ">
+              <div className="w-1/2 border-1  p-2 border mb-4 rounded-lg">
+              <div className="p-2  flex ">
+                <h1 style={Styles.heading} className="flex justify-center text-3xl font-bold w-full ">
                   Vehicle Details
                 </h1>
+                </div>
 
-                <table className="w-full border-collapse border border-gray-300 mt-10">
+                <table className="w-full border-collapse border border-gray-300 ">
                   <thead>
                     <tr className="bg-gray-200">
                       <th className="border p-2">Vehicle Make</th>
@@ -225,9 +234,10 @@ const Status = () => {
               </div>
             </div>
           </form>
+          </div>
         </div>
       </div>
-    </>
+    </section>
   );
 };
 

@@ -8,6 +8,7 @@ import { CiEdit } from "react-icons/ci";
 import toast, { Toaster } from "react-hot-toast";
 import Styles from "../constants/Styles";
 import AxiosInstance from "../Components/AxiosInstance";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const Classes = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -253,10 +254,16 @@ const Classes = () => {
           <div className="h-full">
             <MainSideBar />
           </div>
-          <div className="flex-1 p-3 overflow-y-auto">
-            <div className="max-w-full mx-auto">
-              <div className="bg-white p-2 mb-6">
-                <div className="p-2 flex">
+          <div className="flex-1 p-2 overflow-y-auto">
+            <div className=" max-w-10xl mx-auto">
+              <ReactTooltip
+                id="my-tooltip-1"
+                place="bottom"
+                variant="info"
+                content="Please Select Event Name"
+              />
+              <div className="bg-white mb-6 ">
+                <div className="flex w-full ml-2 mb-4  p-2">
                   <h3
                     style={Styles.heading}
                     className="text-2xl font-bold text-gray-800 text-center"
@@ -265,37 +272,34 @@ const Classes = () => {
                   </h3>
                 </div>
 
-                <div className="w-full tab:w-full">
-                  <label className="text-sm font-medium text-white">
-                    Event Name
-                  </label>
+                <div className="w-full tab:w-full ">
                   <div className="w-full flex flex-col gap-2">
                     <div className="w-full h-full border-1 p-2 border mb-4 rounded-lg">
-                      <div className="w-1/2">
-                        <label className="text-sm font-medium text-gray-700">
-                          Event Name
-                        </label>
-                        <select
-                          style={Styles.select}
-                          value={selectedEvent}
-                          onChange={handleEventChange}
-                          className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
-                        >
-                          <option value="">Choose Event</option>
-                          {events.map((event) => (
-                            <option key={event.eventid} value={event.eventid}>
-                              {event.eventname}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="w-full h-auto flex justify-center items-center">
+                        <div className="w-1/2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Event Name
+                          </label>
+                          <select
+                            data-tooltip-id="my-tooltip-1"
+                            style={Styles.select}
+                            value={selectedEvent}
+                            onChange={handleEventChange}
+                            className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                          >
+                            <option value="">Choose Event</option>
+                            {events.map((event) => (
+                              <option key={event.eventid} value={event.eventid}>
+                                {event.eventname}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
 
-                      <div className="w-full p-3 bg-white">
-                        <div
-                          disabled={!selectedEvent}
-                          className="flex items-end gap-4 mb-4 flex-wrap"
-                        >
-                          <div className="flex-1 min-w-[150px]">
+                      <div className="w-full p-2 gap-2 h-auto flex flex-col">
+                        <div className="w-full h-auto  gap-3 flex">
+                          <div className=" w-1/2">
                             <label
                               style={Styles.label}
                               className="block text-sm font-semibold text-gray-700 mb-1"
@@ -323,7 +327,7 @@ const Classes = () => {
                             </select>
                           </div>
 
-                          <div className="flex-1 min-w-[150px]">
+                          <div className=" w-1/2">
                             <label
                               style={Styles.label}
                               className="block text-sm font-semibold text-gray-700 mb-1"
@@ -350,8 +354,9 @@ const Classes = () => {
                               ))}
                             </select>
                           </div>
-
-                          <div className="flex-1 min-w-[150px]">
+                        </div>
+                        <div className="w-full h-auto  gap-3 flex">
+                          <div className="w-1/2">
                             <label
                               style={Styles.label}
                               className="block text-sm font-semibold text-gray-700 mb-1"
@@ -374,7 +379,7 @@ const Classes = () => {
                             />
                           </div>
 
-                          <div className="flex-1 min-w-[80px]">
+                          <div className="w-1/2">
                             <label
                               style={Styles.label}
                               className="block text-sm font-semibold text-gray-700 mb-1"
@@ -396,8 +401,10 @@ const Classes = () => {
                               min="1"
                             />
                           </div>
+                        </div>
 
-                          <div className="flex-1 min-w-[80px]">
+                        <div className="w-full h-auto  gap-3 flex">
+                          <div className="w-1/2">
                             <label
                               style={Styles.label}
                               className="block text-sm font-semibold text-gray-700 mb-1"
@@ -420,7 +427,7 @@ const Classes = () => {
                             />
                           </div>
 
-                          <div className="flex-1 min-w-[80px]">
+                          <div className="w-1/2">
                             <label
                               style={Styles.label}
                               className="block text-sm font-semibold text-gray-700 mb-1"
@@ -442,12 +449,14 @@ const Classes = () => {
                               min="0"
                             />
                           </div>
+                        </div>
 
-                          <div className="flex items-end">
+                        <div className="flex justify-end   w-full ">
+                          <div className="w-1/2 flex justify-end">
                             <button
                               type="button"
                               onClick={handleSubmitCategory}
-                              className="bg-cyan-500 text-white py-2 px-4 rounded-lg hover:bg-cyan-600 transition-colors duration-300 shadow-md"
+                              className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
                             >
                               {editCategory ? "Update Class" : "Add Class"}
                             </button>
@@ -532,58 +541,61 @@ const Classes = () => {
                     </div>
                   </div>
                   {filteredData.length > 0 && (
-          <div className="flex justify-end px-2 items-center space-x-2 m-4">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className={`px-3 py-2 rounded-md ${
-                currentPage === 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-cyan-500 text-white hover:bg-cyan-700"
-              }`}
-            >
-              Prev
-            </button>
-            {getPageNumbers().map((page, index) =>
-              page === "..." ? (
-                <span key={index} className="px-3 py-2">
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={index}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-3 py-2 rounded-md ${
-                    currentPage === page
-                      ? "bg-cyan-700 text-white"
-                      : "bg-gray-200 hover:bg-gray-400"
-                  }`}
-                >
-                  {page}
-                </button>
-              )
-            )}
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className={`px-3 py-2 rounded-md ${
-                currentPage === totalPages
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-cyan-500 text-white hover:bg-cyan-700"
-              }`}
-            >
-              Next
-            </button>
-          </div>
-        )}
+                    <div className="flex justify-end px-2 items-center space-x-2 m-4">
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        disabled={currentPage === 1}
+                        className={`px-3 py-2 rounded-md ${
+                          currentPage === 1
+                            ? "bg-gray-300 cursor-not-allowed"
+                            : "bg-cyan-500 text-white hover:bg-cyan-700"
+                        }`}
+                      >
+                        Prev
+                      </button>
+                      {getPageNumbers().map((page, index) =>
+                        page === "..." ? (
+                          <span key={index} className="px-3 py-2">
+                            ...
+                          </span>
+                        ) : (
+                          <button
+                            key={index}
+                            onClick={() => handlePageChange(page)}
+                            className={`px-3 py-2 rounded-md ${
+                              currentPage === page
+                                ? "bg-cyan-700 text-white"
+                                : "bg-gray-200 hover:bg-gray-400"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        )
+                      )}
+                      <button
+                        onClick={() =>
+                          setCurrentPage((prev) =>
+                            Math.min(prev + 1, totalPages)
+                          )
+                        }
+                        disabled={currentPage === totalPages}
+                        className={`px-3 py-2 rounded-md ${
+                          currentPage === totalPages
+                            ? "bg-gray-300 cursor-not-allowed"
+                            : "bg-cyan-500 text-white hover:bg-cyan-700"
+                        }`}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
-       
       </section>
     </>
   );

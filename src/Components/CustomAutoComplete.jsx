@@ -8,6 +8,7 @@ import { FaCar, FaUser } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 import DriverRegistration from "../Screens/DriverRegistration";
 import VehicleRegistration from "../Screens/VehicleRegistration";
+import Styles from "../constants/Styles";
 
 const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from,disabled}) => {
   const [inputValue, setInputValue] = useState("");
@@ -142,6 +143,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from,disable
     <div className="relative w-full">
       <div className="relative flex items-center w-full">
       <input
+      style={Styles.input}
       type="text"
       value={inputValue}
       onChange={handleInputChange}
@@ -177,7 +179,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from,disable
         {from === "myComponent" && (
           <button
             onClick={openPopup}
-            className="ml-2 flex px-2 py-3 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white hover:scale-105 transition duration-300 ease-in-out hover:text-white text-lg"
+            className="ml-2 flex px-2 py-3 rounded-md bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
           >
             {searchType === "vehicle" ? <FaCar /> : <FaUser />}
             <GoPlus />

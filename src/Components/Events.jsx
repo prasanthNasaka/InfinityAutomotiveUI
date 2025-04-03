@@ -15,6 +15,7 @@ import toast, { Toaster } from "react-hot-toast";
 // import { DataTable } from "simple-datatables";
 import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const EventForm = () => {
   const [eventData, setEventData] = useState({
@@ -497,723 +498,808 @@ const EventForm = () => {
       <Toaster position="bottom-center" reverseOrder={false} />
 
       <section className="w-full h-screen flex flex-col">
-        <div className="overflow-y-hidden shadow-lg">
+        <div className=" overflow-y-hidden shadow-lg ">
           <Newheader />
         </div>
         <div className="flex h-[calc(100vh-1rem)] overflow-hidden">
-          <div className="bg-gray-100">
+          <div className=" h-full">
             <MainSideBar />
           </div>
-          <div id="form" className="w-full overflow-auto flex flex-col">
-            <section className="h-auto w-full flex p-6 justify-center items-center">
-              <form
-                onSubmit={editMode ? handleUpdate : handleSubmit}
-                className="w-full flex border flex-col gap-6 rounded-lg bg-white shadow-lg p-4"
-              >
-                <div className="flex">
-                  <h2 style={Styles.heading} className="justify-start">
-                    {editMode ? "Edit Event" : "Event Form"}
-                  </h2>
-                </div>
 
-                <div className="flex gap-4">
-                  <div className="w-1/2 gap-2 flex flex-col">
-                    <label className="block text-sm font-bold text-gray-700">
-                      Event Type
-                    </label>
-                    <select
-                      value={eventData.eventType}
-                      onChange={(e) => handleInputChange(e, "eventType")}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                      required
-                    >
-                      <option value="">Select Event Type</option>
-                      <option value={21}>Autocross</option>
-                      <option value={22}>DragRacing</option>
-                      <option value={23}>RallySprint</option>
-                      <option value={24}>StageRally</option>
-                    </select>
+          <div className="flex-1 p-2  overflow-y-auto">
+            <div className=" max-w-10xl mx-auto">
+              <div id="form" className="w-full overflow-auto flex flex-col">
+                <section className="bg-white mb-6">
+                  <div className="flex ml-2 p-2">
+                    <h2 style={Styles.heading} className="justify-start">
+                      {editMode ? "Edit Event" : "Events"}
+                    </h2>
                   </div>
-
-                  <div className="w-1/2 gap-2 flex flex-col">
-                    <label className="block text-sm font-bold text-gray-700">
-                      Event Name
-                    </label>
-                    <input
-                      type="text"
-                      value={eventData.eventName}
-                      onChange={(e) => handleInputChange(e, "eventName")}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                      placeholder="Enter Event Name"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex w-full gap-2">
-                  <div className="w-1/2 flex gap-2 bg-gray-100 rounded-lg p-3 h-auto">
-                    <div className="flex w-1/2 flex-col gap-2">
-                      <div className="flex items-center">
-                        <label className="block w-full text-sm font-bold text-gray-700">
-                          Event Duration
+                  <form
+                    onSubmit={editMode ? handleUpdate : handleSubmit}
+                    className="w-full flex border flex-col  rounded-lg bg-white gap-2  p-3"
+                  >
+                    <div className="flex gap-4 items-center justify-center ">
+                      <div className="w-1/2 gap-2 flex flex-col">
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold text-gray-700"
+                        >
+                          Event Type
                         </label>
+                        <select
+                          data-tooltip-id="my-tooltip-2"
+                          style={Styles.select}
+                          value={eventData.eventType}
+                          onChange={(e) => handleInputChange(e, "eventType")}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                          required
+                        >
+                          <option value="">Select Event Type</option>
+                          <option value={21}>Autocross</option>
+                          <option value={22}>DragRacing</option>
+                          <option value={23}>RallySprint</option>
+                          <option value={24}>StageRally</option>
+                        </select>
                       </div>
-                      <div className="flex items-center gap-2 w-full">
-                        <div className="flex flex-col w-full gap-3 ">
-                          <div className="relative w-full">
-                            <DatePicker
-                              selected={eventData.dateRange.start}
-                              onChange={(date) =>
-                                handleDateChange(date, "start")
-                              }
-                              dateFormat="dd-MM-yyyy"
-                              className="w-full p-2 pl-8 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              placeholderText="Start Date (dd-mm-yyyy)"
-                              minDate={new Date()}
-                              required
-                              onChangeRaw={(e) => handleDateInput(e, "start")}
-                              onBlur={(e) => {
-                                if (!e.target.value)
-                                  handleDateChange(null, "start");
-                              }}
-                            />
-                            <FaCalendarAlt className="absolute left-3 top-3 text-gray-500 pointer-events-none" />
+
+                      <ReactTooltip
+                        id="my-tooltip-2"
+                        place="bottom"
+                        variant="info"
+                        content="Please Select The Event"
+                      />
+
+                      <div className="w-1/2 gap-2 flex flex-col">
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold text-gray-700"
+                        >
+                          Event Name
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          value={eventData.eventName}
+                          onChange={(e) => handleInputChange(e, "eventName")}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                          placeholder="Enter Event Name"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="w-full h-auto  flex">
+                      <div className="w-1/2 h-auto">
+                        <span style={Styles.tableheading}>Venue Details</span>
+                      </div>
+
+                      <div className="w-1/2 h-auto  ml-2">
+                        <span style={Styles.tableheading}>Bank Details</span>
+                      </div>
+                    </div>
+
+                    <div className="flex w-full gap-2  ">
+                      <div className="w-1/2 flex-col  flex gap-2 bg-gray-100  rounded-lg p-3 h-auto">
+                        <div className="w-full">
+                          <div className="flex flex-col gap-3 ">
+                            <h3 className="text-lg font-bold font-poppins">
+                              Upload Banner
+                            </h3>
+                            <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-100">
+                              <label className="cursor-pointer w-full h-full flex items-center justify-center">
+                                {eventData.bannerImage ? (
+                                  <div className="relative w-full h-full">
+                                    <img
+                                      src={
+                                        typeof eventData.bannerImage ===
+                                        "string"
+                                          ? eventData.bannerImage
+                                          : URL.createObjectURL(
+                                              eventData.bannerImage
+                                            )
+                                      }
+                                      alt="Uploaded Banner"
+                                      className="w-full h-full object-cover rounded-lg"
+                                      required
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setEventData({
+                                          ...eventData,
+                                          bannerImage: null,
+                                        })
+                                      }
+                                      className="absolute bottom-2 right-2 bg-white text-gray-700 px-4 py-2 rounded-md shadow-md hover:bg-gray-200"
+                                    >
+                                      Re-upload
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="text-center">
+                                    <svg
+                                      className="w-8 h-8 mb-2 text-gray-500 mx-auto"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 20 16"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                                      />
+                                    </svg>
+                                    <p className="text-sm text-gray-500">
+                                      <span className="font-bold">
+                                        Click to upload
+                                      </span>{" "}
+                                      or drag and drop
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      SVG, PNG, JPG, or GIF (MAX. 800x400px)
+                                    </p>
+                                  </div>
+                                )}
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  onChange={handleBannerImageChange}
+                                  accept="image/*"
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="w-full h-auto items-center flex ">
+                          <div className="w-1/2 h-auto">
+                            <label
+                              style={Styles.label}
+                              className="block w-full text-sm font-bold text-gray-700"
+                            >
+                              Event Duration
+                            </label>
+
+                            <div className="flex flex-col gap-2 w-full">
+                              {" "}
+                              {/* Changed flex direction to column */}
+                              <div className="relative w-full">
+                                <DatePicker
+                                  selected={eventData.dateRange.start}
+                                  onChange={(date) =>
+                                    handleDateChange(date, "start")
+                                  }
+                                  dateFormat="dd-MM-yyyy"
+                                  className="w-full p-2 h-[40px] pl-8 border border-gray-300 rounded-[8px] focus:ring-cyan-500 focus:border-cyan-500"
+                                  placeholderText="Start Date (dd-mm-yyyy)"
+                                  minDate={new Date()}
+                                  required
+                                  onChangeRaw={(e) =>
+                                    handleDateInput(e, "start")
+                                  }
+                                  onBlur={(e) => {
+                                    if (!e.target.value)
+                                      handleDateChange(null, "start");
+                                  }}
+                                />
+                                <FaCalendarAlt className="absolute left-3 top-3 text-gray-500 pointer-events-none" />
+                              </div>
+                              <div className="relative w-full">
+                                <DatePicker
+                                  selected={eventData.dateRange.end}
+                                  onChange={(date) =>
+                                    handleDateChange(date, "end")
+                                  }
+                                  dateFormat="dd-MM-yyyy"
+                                  className="w-full p-2 h-[40px] pl-8 border border-gray-300 rounded-[8px] focus:ring-cyan-500 focus:border-cyan-500"
+                                  placeholderText="End Date (dd-mm-yyyy)"
+                                  minDate={
+                                    eventData.dateRange.start || new Date()
+                                  }
+                                  required
+                                  onChangeRaw={(e) => handleDateInput(e, "end")}
+                                  onBlur={(e) => {
+                                    if (!e.target.value)
+                                      handleDateChange(null, "end");
+                                  }}
+                                />
+                                <FaCalendarAlt className="absolute left-3 top-3 text-gray-500 pointer-events-none" />
+                              </div>
+                            </div>
                           </div>
 
-                          <div className="relative w-full">
-                            <DatePicker
-                              selected={eventData.dateRange.end}
-                              onChange={(date) => handleDateChange(date, "end")}
-                              dateFormat="dd-MM-yyyy"
-                              className="w-full p-2 pl-8 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              placeholderText="End Date (dd-mm-yyyy)"
-                              minDate={eventData.dateRange.start || new Date()}
-                              required
-                              onChangeRaw={(e) => handleDateInput(e, "end")}
-                              onBlur={(e) => {
-                                if (!e.target.value)
-                                  handleDateChange(null, "end");
-                              }}
-                            />
-                            <FaCalendarAlt className="absolute left-3 top-3 text-gray-500 pointer-events-none" />
+                          <div className="w-1/2 h-auto">
+                            <div className="w-full">
+                              <div className="w-full flex gap-2 bg-gray-100 rounded-lg p-1 h-auto">
+                                <div className="flex flex-col gap-2 w-full">
+                                  <div className="w-full">
+                                    <label
+                                      style={Styles.label}
+                                      className="block text-sm font-bold text-gray-700"
+                                    >
+                                      Location
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={eventData.location || ""}
+                                      onChange={(e) =>
+                                        handleInputChange(e, "location")
+                                      }
+                                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                      placeholder="Enter Event Location"
+                                      required
+                                    />
+                                  </div>
+
+                                  <div className="w-full">
+                                    {/* <label className="block text-sm font-bold text-gray-700">
+                                Geo Location (URL)
+                              </label> */}
+                                    <input
+                                      data-tooltip-id="my-tooltip-1"
+                                      type="text"
+                                      value={eventData.geoLocation || ""}
+                                      onChange={(e) =>
+                                        handleInputChange(e, "geoLocation")
+                                      }
+                                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                      placeholder="Enter Geo Location URL"
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex  w-full flex-col gap-2 ">
+                          {!isHidden && (
+                            <>
+                              <div className="block w-full justify-around text-sm font-bold text-gray-700">
+                                Status
+                              </div>
+                              <div className="flex gap-2 w-full justify-evenly  ">
+                                <label className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    name="status"
+                                    value={8}
+                                    checked={eventData.status == 8}
+                                    onChange={(e) =>
+                                      handleInputChange(e, "status")
+                                    }
+                                    className="w-3 h-4 text-cyan-600 border-gray-300"
+                                  />
+                                  <span className="ml-2 text-md font-bold text-gray-700">
+                                    Active
+                                  </span>
+                                </label>
+                                <label className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    name="status"
+                                    value={9}
+                                    checked={eventData.status == 9}
+                                    onChange={(e) =>
+                                      handleInputChange(e, "status")
+                                    }
+                                    className="w-3 h-4 text-cyan-600 border-gray-300"
+                                  />
+                                  <span className="ml-2 text-md font-bold text-gray-700">
+                                    Inactive
+                                  </span>
+                                </label>
+                                <label className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    name="status"
+                                    value={11}
+                                    checked={eventData.status == 11}
+                                    onChange={(e) =>
+                                      handleInputChange(e, "status")
+                                    }
+                                    className="w-3 h-4 text-cyan-600 border-gray-300"
+                                  />
+                                  <span className="ml-2 text-md font-bold text-gray-700">
+                                    Cancelled
+                                  </span>
+                                </label>
+                              </div>
+                            </>
+                          )}
+
+                          <ReactTooltip
+                            id="my-tooltip-1"
+                            place="bottom"
+                            variant="info"
+                            content="Please Enter the Geo Location URL"
+                          />
+                        </div>
+                      </div>
+                      <div className="w-1/2 bg-gray-100 p-3 rounded-lg">
+                        <div className="w-full">
+                          <div className="flex flex-col gap-3">
+                            <h3 className="text-lg font-bold font-poppins">
+                              Upload QR Code
+                            </h3>
+
+                            <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-white hover:bg-gray-100">
+                              <label className="cursor-pointer w-full h-full flex items-center justify-center">
+                                {eventData.bankDetails.Qrpath ? (
+                                  <div className="relative w-full h-full">
+                                    <img
+                                      src={
+                                        typeof eventData.bankDetails.Qrpath ===
+                                        "string"
+                                          ? eventData.bankDetails.Qrpath
+                                          : URL.createObjectURL(
+                                              eventData.bankDetails.Qrpath
+                                            )
+                                      }
+                                      alt="Uploaded QR Code"
+                                      className="w-full h-full object-cover rounded-lg"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setEventData({
+                                          ...eventData,
+                                          bankDetails: {
+                                            ...eventData.bankDetails,
+                                            Qrpath: null,
+                                          },
+                                        })
+                                      }
+                                      className="absolute bottom-2 right-2 bg-white text-gray-700 px-4 py-2 rounded-md shadow-md hover:bg-gray-200"
+                                    >
+                                      Re-upload
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="text-center">
+                                    <svg
+                                      className="w-8 h-8 mb-2 text-gray-500 mx-auto"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 20 16"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                                      />
+                                    </svg>
+                                    <p className="text-sm text-gray-500">
+                                      <span className="font-bold">
+                                        Click to upload
+                                      </span>{" "}
+                                      or drag and drop
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      SVG, PNG, JPG, or GIF (MAX. 800x400px)
+                                    </p>
+                                  </div>
+                                )}
+
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  onChange={handleQRCodeChange}
+                                  accept="image/*"
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="w-full h-auto flex gap-3 p-2">
+                          <div className="w-1/2 h-auto  gap-2 flex flex-col">
+                            <div className="w-full">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700"
+                              >
+                                Bank Name
+                              </label>
+                              <input
+                                type="text"
+                                value={eventData.bankDetails.bankName}
+                                onChange={(e) =>
+                                  handleBankDetailsChange(e, "bankName")
+                                }
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                placeholder="Enter Bank Name"
+                                required
+                              />
+                            </div>
+                            <div className="w-full">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700"
+                              >
+                                IFSC Code
+                              </label>
+                              <input
+                                type="text"
+                                value={eventData.bankDetails.ifscCode}
+                                onChange={(e) =>
+                                  handleBankDetailsChange(e, "ifscCode")
+                                }
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                placeholder="Enter IFSC Code"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="w-1/2 h-auto  gap-2 flex flex-col">
+                            <div className="w-full">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700"
+                              >
+                                Account Holder Name
+                              </label>
+                              <input
+                                type="text"
+                                value={eventData.bankDetails.accountHolderName}
+                                onChange={(e) =>
+                                  handleBankDetailsChange(
+                                    e,
+                                    "accountHolderName"
+                                  )
+                                }
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                placeholder="Enter Account Holder Name"
+                                required
+                              />
+                            </div>
+                            <div className="w-full">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700"
+                              >
+                                Account Number
+                              </label>
+                              <input
+                                type="text"
+                                value={eventData.bankDetails.accountNumber}
+                                onChange={(e) =>
+                                  handleBankDetailsChange(e, "accountNumber")
+                                }
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                placeholder="Enter Account Number"
+                                required
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
+                    </div>
 
-                      {!isHidden && (
+                    <div className="flex justify-end  gap-2">
+                      {editMode && (
                         <>
-                          <div className="block w-full text-sm font-bold text-gray-700">
-                            Status
+                          <div className="w-1/2 h-auto gap-4 flex ">
+                            <button
+                              type="button"
+                              onClick={() => handleNavigate(eventId)} // Pass eventId to handleNavigate
+                              className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                            >
+                              Managing Organizer Committee
+                            </button>
+
+                            {/* Cancel button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditMode(false);
+                                setEditId(null);
+                                resetForm();
+                              }}
+                              className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                            >
+                              Cancel
+                            </button>
                           </div>
-                          <div className="flex gap-2 ">
-                            <label className="flex items-center">
-                              <input
-                                type="radio"
-                                name="status"
-                                value={8}
-                                checked={eventData.status == 8}
-                                onChange={(e) => handleInputChange(e, "status")}
-                                className="w-3 h-4 text-cyan-600 border-gray-300"
-                              />
-                              <span className="ml-2 text-sm font-bold text-gray-700">
-                                Active
-                              </span>
-                            </label>
-                            <label className="flex items-center">
-                              <input
-                                type="radio"
-                                name="status"
-                                value={9}
-                                checked={eventData.status == 9}
-                                onChange={(e) => handleInputChange(e, "status")}
-                                className="w-3 h-4 text-cyan-600 border-gray-300"
-                              />
-                              <span className="ml-2 text-sm font-bold text-gray-700">
-                                Inactive
-                              </span>
-                            </label>
-                            <label className="flex items-center">
-                              <input
-                                type="radio"
-                                name="status"
-                                value={11}
-                                checked={eventData.status == 11}
-                                onChange={(e) => handleInputChange(e, "status")}
-                                className="w-3 h-4 text-cyan-600 border-gray-300"
-                              />
-                              <span className="ml-2 text-sm font-bold text-gray-700">
-                                Cancelled
-                              </span>
-                            </label>
-                          </div>
+                          {/* Go to Event Page button */}
                         </>
                       )}
-
-                      <div className="w-full">
-                        <div className="w-full flex gap-2 bg-gray-100 rounded-lg p-1 h-auto">
-                          <div className="flex flex-col gap-2 w-full">
-                            <div className="w-full">
-                              <label className="block text-sm font-bold text-gray-700">
-                                Location
-                              </label>
-                              <input
-                                type="text"
-                                value={eventData.location || ""}
-                                onChange={(e) =>
-                                  handleInputChange(e, "location")
-                                }
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                                placeholder="Enter Event Location"
-                                required
-                              />
-                            </div>
-
-                            <div className="w-full">
-                              <label className="block text-sm font-bold text-gray-700">
-                                Geo Location (URL)
-                              </label>
-                              <input
-                                type="text"
-                                value={eventData.geoLocation || ""}
-                                onChange={(e) =>
-                                  handleInputChange(e, "geoLocation")
-                                }
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                                placeholder="Enter Geo Location URL"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
+                      <div className="w-1/2 flex justify-end">
+                        <button
+                          type="submit"
+                          className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                        >
+                          {editMode ? "Update " : "Submit "}
+                        </button>
                       </div>
                     </div>
+                  </form>
+                </section>
 
-                    <div className="w-1/2">
-                      <div className="flex flex-col gap-3 mt-10">
-                        <h3 className="text-lg font-bold">Upload Banner</h3>
-                        <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
-                          <label className="cursor-pointer w-full h-full flex items-center justify-center">
-                            {eventData.bannerImage ? (
-                              <div className="relative w-full h-full">
-                                <img
-                                  src={
-                                    typeof eventData.bannerImage === "string"
-                                      ? eventData.bannerImage
-                                      : URL.createObjectURL(
-                                          eventData.bannerImage
-                                        )
-                                  }
-                                  alt="Uploaded Banner"
-                                  className="w-full h-full object-cover rounded-lg"
-                                  required
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setEventData({
-                                      ...eventData,
-                                      bannerImage: null,
-                                    })
-                                  }
-                                  className="absolute bottom-2 right-2 bg-white text-gray-700 px-4 py-2 rounded-md shadow-md hover:bg-gray-200"
-                                >
-                                  Re-upload
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="text-center">
+                {submittedEvents.length > 0 && (
+                  <section className="p-6">
+                    <div className="w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+                      <h2
+                        style={Styles.tableheading}
+                        className="text-xl font-bold p-4 bg-gray-50 border-b"
+                      >
+                        Submitted Events
+                      </h2>
+
+                      <div className="w-full h-20 flex justify-between items-center px-5 gap-5">
+                        {/* Search Input */}
+                        <input
+                          className="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                          type="text"
+                          placeholder="Search..."
+                          onChange={(e) => {
+                            const query = e.target.value;
+                            setSearchQuery(query);
+                          }}
+                        />
+
+                        {/* Page Type Dropdown */}
+                        <div
+                          ref={dropdownRef}
+                          className="relative w-1/2 flex justify-end"
+                        >
+                          <div className="w-2/3 relative">
+                            <label
+                              htmlFor="pageType-select"
+                              className=" text-sm font-medium text-gray-700"
+                            >
+                              Page Type
+                            </label>
+
+                            <button
+                              id="pageType-select"
+                              className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              aria-haspopup="true"
+                              aria-expanded={isDropdownOpen}
+                              onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
+                            >
+                              <div className="flex items-center justify-between">
+                                <span>{`${recordsPerPage} per page`}</span>
                                 <svg
-                                  className="w-8 h-8 mb-2 text-gray-500 mx-auto"
+                                  className="h-4 w-4 text-gray-500"
+                                  fill="currentColor"
+                                  viewBox="0 0 16 16"
                                   aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 20 16"
                                 >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                                  />
+                                  <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
                                 </svg>
-                                <p className="text-sm text-gray-500">
-                                  <span className="font-bold">
-                                    Click to upload
-                                  </span>{" "}
-                                  or drag and drop
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  SVG, PNG, JPG, or GIF (MAX. 800x400px)
-                                </p>
+                              </div>
+                            </button>
+
+                            {/* Dropdown List */}
+                            {isDropdownOpen && (
+                              <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
+                                <ul className="py-1">
+                                  {options.map((option, index) => (
+                                    <li
+                                      key={index}
+                                      className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      onClick={() =>
+                                        handleOptionClick(option.value)
+                                      } // Handle selection
+                                    >
+                                      {option.label}
+                                    </li>
+                                  ))}
+                                </ul>
                               </div>
                             )}
-                            <input
-                              type="file"
-                              className="hidden"
-                              onChange={handleBannerImageChange}
-                              accept="image/*"
-                            />
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-1/2 bg-gray-100 p-3 rounded-lg">
-                    <div className="text-xl font-bold mb-4">Bank Details</div>
-
-                    <div className="flex gap-4">
-                      {/* Left Side - Bank Details */}
-                      <div className="flex w-1/2">
-                        <div className="flex flex-col gap-3 w-full">
-                          <div className="space-y-2">
-                            <label className="block text-sm font-bold text-gray-700">
-                              Bank Name
-                            </label>
-                            <input
-                              type="text"
-                              value={eventData.bankDetails.bankName}
-                              onChange={(e) =>
-                                handleBankDetailsChange(e, "bankName")
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              placeholder="Enter Bank Name"
-                              required
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="block text-sm font-bold text-gray-700">
-                              IFSC Code
-                            </label>
-                            <input
-                              type="text"
-                              value={eventData.bankDetails.ifscCode}
-                              onChange={(e) =>
-                                handleBankDetailsChange(e, "ifscCode")
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              placeholder="Enter IFSC Code"
-                              required
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="block text-sm font-bold text-gray-700">
-                              Account Holder Name
-                            </label>
-                            <input
-                              type="text"
-                              value={eventData.bankDetails.accountHolderName}
-                              onChange={(e) =>
-                                handleBankDetailsChange(e, "accountHolderName")
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              placeholder="Enter Account Holder Name"
-                              required
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="block text-sm font-bold text-gray-700">
-                              Account Number
-                            </label>
-                            <input
-                              type="text"
-                              value={eventData.bankDetails.accountNumber}
-                              onChange={(e) =>
-                                handleBankDetailsChange(e, "accountNumber")
-                              }
-                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              placeholder="Enter Account Number"
-                              required
-                            />
                           </div>
                         </div>
                       </div>
 
-                      {/* Right Side - Upload QR Code */}
-                      <div className="w-1/2">
-                        <div className="flex flex-col gap-3">
-                          <h3 className="text-lg font-bold">Upload QR Code</h3>
-
-                          <div className="flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100">
-                            <label className="cursor-pointer w-full h-full flex items-center justify-center">
-                              {eventData.bankDetails.Qrpath ? (
-                                <div className="relative w-full h-full">
-                                  <img
-                                    src={
-                                      typeof eventData.bankDetails.Qrpath ===
-                                      "string"
-                                        ? eventData.bankDetails.Qrpath
-                                        : URL.createObjectURL(
-                                            eventData.bankDetails.Qrpath
-                                          )
+                      <div className="overflow-auto max-h-auto">
+                        <table ref={tableRef} className="w-full">
+                          <thead className="text-xs text-gray-700 uppercase bg-gray-50 top-0 text-center">
+                            <tr>
+                              <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                S.No
+                              </th>
+                              <th
+                                onClick={() => handleSort("eventname")}
+                                className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
+                              >
+                                <div className="flex items-center justify-center">
+                                  Event Name
+                                  <SortingIcon
+                                    direction={
+                                      sortConfig.key === "eventname"
+                                        ? sortConfig.direction
+                                        : "none"
                                     }
-                                    alt="Uploaded QR Code"
-                                    className="w-full h-full object-cover rounded-lg"
                                   />
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setEventData({
-                                        ...eventData,
-                                        bankDetails: {
-                                          ...eventData.bankDetails,
-                                          Qrpath: null,
-                                        },
-                                      })
+                                </div>
+                              </th>
+                              <th
+                                onClick={() => handleSort("eventtype")}
+                                className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
+                              >
+                                <div className="flex items-center justify-center">
+                                  Event Type
+                                  <SortingIcon
+                                    direction={
+                                      sortConfig.key === "eventtype"
+                                        ? sortConfig.direction
+                                        : "none"
                                     }
-                                    className="absolute bottom-2 right-2 bg-white text-gray-700 px-4 py-2 rounded-md shadow-md hover:bg-gray-200"
-                                  >
-                                    Re-upload
-                                  </button>
+                                  />
                                 </div>
-                              ) : (
-                                <div className="text-center">
-                                  <svg
-                                    className="w-8 h-8 mb-2 text-gray-500 mx-auto"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 20 16"
-                                  >
-                                    <path
-                                      stroke="currentColor"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                                    />
-                                  </svg>
-                                  <p className="text-sm text-gray-500">
-                                    <span className="font-bold">
-                                      Click to upload
-                                    </span>{" "}
-                                    or drag and drop
-                                  </p>
-                                  <p className="text-xs text-gray-500">
-                                    SVG, PNG, JPG, or GIF (MAX. 800x400px)
-                                  </p>
-                                </div>
-                              )}
-
-                              <input
-                                type="file"
-                                className="hidden"
-                                onChange={handleQRCodeChange}
-                                accept="image/*"
-                              />
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end p-2 gap-2">
-                  {editMode && (
-                    <>
-                      {/* Go to Event Page button */}
-                      <button
-                        type="button"
-                        onClick={() => handleNavigate(eventId)} // Pass eventId to handleNavigate
-                        className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
-                      >
-                        Managing Organizer Committee
-                      </button>
-
-                      {/* Cancel button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditMode(false);
-                          setEditId(null);
-                          resetForm();
-                        }}
-                        className="bg-gray-300 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-400 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="bg-cyan-500 text-white py-2 px-6 rounded-lg hover:bg-cyan-600 transition-colors"
-                  >
-                    {editMode ? "Update Event" : "Submit Event"}
-                  </button>
-                </div>
-              </form>
-            </section>
-
-            {submittedEvents.length > 0 && (
-              <section className="p-6">
-                <div className="w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-                  <h2 className="text-xl font-bold p-4 bg-gray-50 border-b">
-                    Submitted Events
-                  </h2>
-
-                  <div className="w-full h-20 flex justify-between items-center px-5 gap-5">
-                    {/* Search Input */}
-                    <input
-                      className="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                      type="text"
-                      placeholder="Search..."
-                      onChange={(e) => {
-                        const query = e.target.value;
-                        setSearchQuery(query);
-                      }}
-                    />
-
-                    {/* Page Type Dropdown */}
-                    <div
-                      ref={dropdownRef}
-                      className="relative w-1/2 flex justify-end"
-                    >
-                      <div className="w-2/3 relative">
-                        <label
-                          htmlFor="pageType-select"
-                          className=" text-sm font-medium text-gray-700"
-                        >
-                          Page Type
-                        </label>
-
-                        <button
-                          id="pageType-select"
-                          className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          aria-haspopup="true"
-                          aria-expanded={isDropdownOpen}
-                          onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
-                        >
-                          <div className="flex items-center justify-between">
-                            <span>{`${recordsPerPage} per page`}</span>
-                            <svg
-                              className="h-4 w-4 text-gray-500"
-                              fill="currentColor"
-                              viewBox="0 0 16 16"
-                              aria-hidden="true"
-                            >
-                              <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
-                            </svg>
-                          </div>
-                        </button>
-
-                        {/* Dropdown List */}
-                        {isDropdownOpen && (
-                          <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                            <ul className="py-1">
-                              {options.map((option, index) => (
-                                <li
-                                  key={index}
-                                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                  onClick={() =>
-                                    handleOptionClick(option.value)
-                                  } // Handle selection
-                                >
-                                  {option.label}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="overflow-auto max-h-auto">
-                    <table ref={tableRef} className="w-full">
-                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 top-0 text-center">
-                        <tr>
-                          <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            S.No
-                          </th>
-                          <th
-                            onClick={() => handleSort("eventname")}
-                            className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
-                          >
-                            <div className="flex items-center justify-center">
-                              Event Name
-                              <SortingIcon
-                                direction={
-                                  sortConfig.key === "eventname"
-                                    ? sortConfig.direction
-                                    : "none"
-                                }
-                              />
-                            </div>
-                          </th>
-                          <th
-                            onClick={() => handleSort("eventtype")}
-                            className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
-                          >
-                            <div className="flex items-center justify-center">
-                              Event Type
-                              <SortingIcon
-                                direction={
-                                  sortConfig.key === "eventtype"
-                                    ? sortConfig.direction
-                                    : "none"
-                                }
-                              />
-                            </div>
-                          </th>
-                          <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            Event Status
-                          </th>
-                          {/* <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                              </th>
+                              <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                Event Status
+                              </th>
+                              {/* <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Categories
                           </th> */}
-                          <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {currentData.map((event, index) => {
-                          const globalIndex =
-                            (currentPage - 1) * recordsPerPage + index + 1;
+                              <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {currentData.map((event, index) => {
+                              const globalIndex =
+                                (currentPage - 1) * recordsPerPage + index + 1;
 
-                          return (
-                            <tr key={index} className="text-center">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {globalIndex}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {event.eventname.length > 10
-                                  ? `${event.eventname.slice(0, 10)}...`
-                                  : event.eventname}
-                              </td>
+                              return (
+                                <tr key={index} className="text-center">
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    {globalIndex}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    {event.eventname.length > 10
+                                      ? `${event.eventname.slice(0, 10)}...`
+                                      : event.eventname}
+                                  </td>
 
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                {eventTypeMapping[event.eventtype] || "Unknown"}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span
-                                  className={`px-2 inline-flex text-xs leading-5 font-bold rounded-full ${
-                                    event.eventstatus === 6
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : event.eventstatus === 7
-                                      ? "bg-blue-100 text-blue-800"
-                                      : event.eventstatus === 8
-                                      ? "bg-green-100 text-green-800"
-                                      : event.eventstatus === 9
-                                      ? "bg-red-100 text-red-800"
-                                      : event.eventstatus === 10
-                                      ? "bg-gray-100 text-gray-800"
-                                      : event.eventstatus === 11
-                                      ? "bg-orange-100 text-orange-800"
-                                      : event.eventstatus === 12
-                                      ? "bg-purple-100 text-purple-800"
-                                      : "bg-gray-200 text-gray-600"
-                                  }`}
-                                >
-                                  {event.eventstatus === 6
-                                    ? "Pending"
-                                    : event.eventstatus === 7
-                                    ? "Approved"
-                                    : event.eventstatus === 8
-                                    ? "Active"
-                                    : event.eventstatus === 9
-                                    ? "Inactive"
-                                    : event.eventstatus === 10
-                                    ? "Completed"
-                                    : event.eventstatus === 11
-                                    ? "Cancelled"
-                                    : event.eventstatus === 12
-                                    ? "LIVE"
-                                    : "Unknown"}
-                                </span>
-                              </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    {eventTypeMapping[event.eventtype] ||
+                                      "Unknown"}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                      className={`px-2 inline-flex text-xs leading-5 font-bold rounded-full ${
+                                        event.eventstatus === 6
+                                          ? "bg-yellow-100 text-yellow-800"
+                                          : event.eventstatus === 7
+                                          ? "bg-blue-100 text-blue-800"
+                                          : event.eventstatus === 8
+                                          ? "bg-green-100 text-green-800"
+                                          : event.eventstatus === 9
+                                          ? "bg-red-100 text-red-800"
+                                          : event.eventstatus === 10
+                                          ? "bg-gray-100 text-gray-800"
+                                          : event.eventstatus === 11
+                                          ? "bg-orange-100 text-orange-800"
+                                          : event.eventstatus === 12
+                                          ? "bg-purple-100 text-purple-800"
+                                          : "bg-gray-200 text-gray-600"
+                                      }`}
+                                    >
+                                      {event.eventstatus === 6
+                                        ? "Pending"
+                                        : event.eventstatus === 7
+                                        ? "Approved"
+                                        : event.eventstatus === 8
+                                        ? "Active"
+                                        : event.eventstatus === 9
+                                        ? "Inactive"
+                                        : event.eventstatus === 10
+                                        ? "Completed"
+                                        : event.eventstatus === 11
+                                        ? "Cancelled"
+                                        : event.eventstatus === 12
+                                        ? "LIVE"
+                                        : "Unknown"}
+                                    </span>
+                                  </td>
 
-                              {/* <td className="px-6 py-4 whitespace-nowrap">
+                                  {/* <td className="px-6 py-4 whitespace-nowrap">
                                 {event.lstcat?.$values?.length || 0}
                               </td> */}
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
-                                <button
-                                  onClick={() => handleEdit(event)}
-                                  className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                                >
-                                  <CiEdit className="size-6" />
-                                </button>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                                    <button
+                                      onClick={() => handleEdit(event)}
+                                      className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                                    >
+                                      <CiEdit className="size-6" />
+                                    </button>
 
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const eventId = event.eventid; // Use event.eventid here
-                                    if (!eventId) {
-                                      console.error(
-                                        "No event ID found for deletion:",
-                                        event
-                                      );
-                                      toast.error(
-                                        "Cannot delete event without an ID"
-                                      );
-                                      return;
-                                    }
-                                    handleDelete(eventId, event.eventname);
-                                  }}
-                                  className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
-                                >
-                                  <MdOutlineDelete className="size-6" />
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const eventId = event.eventid; // Use event.eventid here
+                                        if (!eventId) {
+                                          console.error(
+                                            "No event ID found for deletion:",
+                                            event
+                                          );
+                                          toast.error(
+                                            "Cannot delete event without an ID"
+                                          );
+                                          return;
+                                        }
+                                        handleDelete(eventId, event.eventname);
+                                      }}
+                                      className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                                    >
+                                      <MdOutlineDelete className="size-6" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
 
-                  <div className="flex justify-end px-2 items-center space-x-2 m-4">
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPage === 1}
-                      className={`px-3 py-2 rounded-md ${
-                        currentPage === 1
-                          ? "bg-gray-300 cursor-not-allowed"
-                          : "bg-cyan-500 text-white hover:bg-cyan-700"
-                      }`}
-                    >
-                      Prev
-                    </button>
-                    {getPageNumbers().map((page, index) =>
-                      page === "..." ? (
-                        <span key={index} className="px-3 py-2">
-                          ...
-                        </span>
-                      ) : (
+                      <div className="flex justify-end px-2 items-center space-x-2 m-4">
                         <button
-                          key={index}
-                          onClick={() => handlePageChange(page)}
+                          onClick={() =>
+                            setCurrentPage((prev) => Math.max(prev - 1, 1))
+                          }
+                          disabled={currentPage === 1}
                           className={`px-3 py-2 rounded-md ${
-                            currentPage === page
-                              ? "bg-cyan-700 text-white"
-                              : "bg-gray-200 hover:bg-gray-400"
+                            currentPage === 1
+                              ? "bg-gray-300 cursor-not-allowed"
+                              : "bg-cyan-500 text-white hover:bg-cyan-700"
                           }`}
                         >
-                          {page}
+                          Prev
                         </button>
-                      )
-                    )}
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                      disabled={currentPage === totalPages}
-                      className={`px-3 py-2 rounded-md ${
-                        currentPage === totalPages
-                          ? "bg-gray-300 cursor-not-allowed"
-                          : "bg-cyan-500 text-white hover:bg-cyan-700"
-                      }`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              </section>
-            )}
+                        {getPageNumbers().map((page, index) =>
+                          page === "..." ? (
+                            <span key={index} className="px-3 py-2">
+                              ...
+                            </span>
+                          ) : (
+                            <button
+                              key={index}
+                              onClick={() => handlePageChange(page)}
+                              className={`px-3 py-2 rounded-md ${
+                                currentPage === page
+                                  ? "bg-cyan-700 text-white"
+                                  : "bg-gray-200 hover:bg-gray-400"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          )
+                        )}
+                        <button
+                          onClick={() =>
+                            setCurrentPage((prev) =>
+                              Math.min(prev + 1, totalPages)
+                            )
+                          }
+                          disabled={currentPage === totalPages}
+                          className={`px-3 py-2 rounded-md ${
+                            currentPage === totalPages
+                              ? "bg-gray-300 cursor-not-allowed"
+                              : "bg-cyan-500 text-white hover:bg-cyan-700"
+                          }`}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>

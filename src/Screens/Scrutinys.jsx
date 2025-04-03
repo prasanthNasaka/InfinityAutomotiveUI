@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../constants/global-const";
 import toast, { Toaster } from "react-hot-toast";
 import AxiosInstance from "../Components/AxiosInstance";
+import Styles from "../constants/Styles";
 
 function Scrutinys() {
   const navigate = useNavigate();
@@ -169,7 +170,7 @@ function Scrutinys() {
       <div className="bg-cyan-600 text-white py-4 px-4 w-full">
         <div className="w-full mx-auto">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Technical Scrutiny Checklist</h1>
+            <h1  className="text-3xl font-poppins font-bold">Technical Scrutiny Checklist</h1>
             <button
               onClick={logOutHandler}
               className="w-fit text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-5 py-2.5"
@@ -181,10 +182,11 @@ function Scrutinys() {
       </div>
       <div className="w-full flex p-2 gap-2 tab:flex-col">
         <div className="w-1/3 tab:w-full mt-3 ">
-          <label className="text-l font-bold text-black flex w-full pl-2 ">
+          <label style={Styles.label} className="text-l font-bold text-black flex w-full pl-2 ">
             Event Name
           </label>
           <select
+          style={Styles.select}
             value={selectedEvent}
             onChange={handleEventChange}
             className="w-full h-10 bg-gray-50 border border-l-2 text-gray-900 text-sm rounded-lg p-2 "

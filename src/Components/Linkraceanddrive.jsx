@@ -639,7 +639,7 @@ const Linkraceanddrive = () => {
         <div className="flex-1 p-2  overflow-y-auto">
           <div className=" max-w-10xl mx-auto">
             <div className="bg-white mb-6">
-              <div className="p-2 ml-2 flex">
+              <div className="p-2 ml-2 flex ">
                 <h3
                   style={Styles.heading}
                   className="text-2xl font-semibold text-center text-gray-900"
@@ -648,7 +648,7 @@ const Linkraceanddrive = () => {
                 </h3>
               </div>
 
-              <div className=" mt-6 ">
+              <div className=" mt-4 ">
                 <div className="w-full  h-full border-1  p-2 border mb-4 rounded-lg">
                   <div className="w-full h-auto">
                     {entryPrice !== null && (
@@ -663,7 +663,8 @@ const Linkraceanddrive = () => {
                       </div>
                     )}
                   </div>
-                  <div className="w-full flex p-2 gap-2 tab:flex-col">
+
+                  <div className="w-full justify-center flex h-auto p-2">
                     <div className="w-1/2 tab:w-full">
                       <label style={Styles.label}>Event Name</label>
                       <select
@@ -680,7 +681,8 @@ const Linkraceanddrive = () => {
                         ))}
                       </select>
                     </div>
-
+                  </div>
+                  <div className="w-full flex p-2 gap-2 tab:flex-col">
                     <div className="w-1/2 tab:w-full">
                       <label style={Styles.label}>Event Class</label>
                       <select
@@ -705,6 +707,52 @@ const Linkraceanddrive = () => {
                           </option>
                         ))}
                       </select>
+                    </div>
+                    <div className="w-1/2 tab:w-full items-end gap-2  flex">
+                      <div className="w-5/6">
+                        <label
+                          style={Styles.label}
+                          htmlFor="contestantNumber"
+                          className=" text-md"
+                        >
+                          Contestant Number
+                        </label>
+                        <input
+                          style={Styles.input}
+                          data-tooltip-id="my-tooltip-2"
+                          disabled={!selectedEvent}
+                          id="contestantNumber"
+                          type="text"
+                          value={value}
+                          onChange={numberInput}
+                          className=" w-full   border-gray-300 rounded-lg"
+                        />
+                        {error && (
+                          <span className="text-sm text-red-500">{error}</span>
+                        )}
+                      </div>
+
+                      <div className="w-1/6 flex items-end">
+                        <button
+                          data-tooltip-id="my-tooltip-2"
+                          type="button"
+                          disabled={!selectedEvent}
+                          onClick={Popup}
+                          className={`w-full py-2.5  text-white font-semibold rounded-md hover:text-black transition-all duration-300 ${
+                            selectedEvent
+                              ? "bg-cyan-500 hover:bg-cyan-600 hover:text-black"
+                              : "bg-gray-400 cursor-not-allowed"
+                          }`}
+                        >
+                          Show List
+                        </button>
+                        <ReactTooltip
+                          id="my-tooltip-2"
+                          place="top"
+                          variant="info"
+                          content="Please Select Event Name"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -845,116 +893,79 @@ const Linkraceanddrive = () => {
                   </div>
 
                   <div className="w-full flex p-2 gap-2 tab:flex-col items-center">
-                    <div className="w-1/2 tab:w-full flex items-end justify-around px-2">
-                      <div className="w-1/2">
-                        <label
-                          style={Styles.label}
-                          htmlFor="contestantNumber"
-                          className="block text-md"
-                        >
-                          Contestant Number
-                        </label>
-                        <input
-                          data-tooltip-id="my-tooltip-2"
-                          disabled={!selectedEvent}
-                          id="contestantNumber"
-                          type="text"
-                          value={value}
-                          onChange={numberInput}
-                          className="p-2 w-full bg-gray-50 border border-gray-300 rounded-lg"
-                        />
-                        {error && (
-                          <span className="text-sm text-red-500">{error}</span>
-                        )}
-                      </div>
+                    <div className="w-1/2 flex  items-center gap-14">
+                    <div className="flex items-center">
+                    <input
+                        checked={addDocVerify}
+                        onChange={(e) => setAddDocVerify(e.target.checked)}
+                        type="checkbox"
+                        id="documentVerified"
+                        className="accent-cyan-600 w-4 h-4 border-gray-100 hover:cursor-pointer"
+                      />
+                      <label
+                        htmlFor="documentVerified"
+                        style={Styles.label}
+                        className="text-md text-black ml-2 hover:cursor-pointer"
+                      >
+                        Document Verified
+                      </label>
+                    </div>
+                      
 
-                      <div className="w-1/3 flex justify-end">
-                        <button
-                          data-tooltip-id="my-tooltip-2"
-                          type="button"
-                          disabled={!selectedEvent}
-                          onClick={Popup}
-                          className={`tab:w-full px-6 py-2.5 text-white font-medium rounded-md text-sm transition-all ${
-                            selectedEvent
-                              ? "bg-cyan-500 hover:bg-cyan-600 hover:text-black"
-                              : "bg-gray-400 cursor-not-allowed"
-                          }`}
-                        >
-                          Show List
-                        </button>
-                        <ReactTooltip
-                          id="my-tooltip-2"
-                          place="bottom"
-                          variant="info"
-                          content="Please Select Event Name"
-                        />
-                      </div>
-
-                      <div className="w-1/3 flex ml-8 items-center p-2 rounded">
-                        <input
-                          checked={addDocVerify}
-                          onChange={(e) => setAddDocVerify(e.target.checked)}
-                          type="checkbox"
-                          id="documentVerified"
-                          className="accent-cyan-600 w-4 h-4 border-gray-100 hover:cursor-pointer"
-                        />
-                        <label
-                          htmlFor="documentVerified"
-                          style={Styles.label}
-                          className="text-md text-black ml-2 hover:cursor-pointer"
-                        >
-                          Document Verified
-                        </label>
-                      </div>
+                      <div className="flex w-auto   items-center gap-1">
+                      <input
+                        id="amountPaid"
+                        type="checkbox"
+                        checked={amountPaidChecked}
+                        onChange={handleAmountPaidChange}
+                        className="accent-cyan-600 w-4 h-4 border-gray-100 rounded hover:cursor-pointer"
+                        required
+                      />
+                      <label
+                        style={Styles.label}
+                        htmlFor="amountPaid"
+                        className="text-md text-black hover:cursor-pointer"
+                      >
+                        Amount Paid
+                      </label>
+                    </div>
                     </div>
 
-                    <div className="w-1/2 tab:w-full flex items-center justify-around px-2">
-                      <div className="flex w-1/3 items-center gap-1">
-                        <input
-                          id="amountPaid"
-                          type="checkbox"
-                          checked={amountPaidChecked}
-                          onChange={handleAmountPaidChange}
-                          className="accent-cyan-600 w-4 h-4 border-gray-100 rounded hover:cursor-pointer"
-                          required
-                        />
-                        <label
-                          style={Styles.label}
-                          htmlFor="amountPaid"
-                          className="text-md text-black hover:cursor-pointer"
-                        >
-                          Amount Paid
-                        </label>
-                      </div>
+                  
 
+                    <div className="w-1/2   tab:w-full flex items-center  px-2">
                       {amountPaidChecked && (
-                        <div className="w-1/3 flex-col flex items-center mr-24">
+                        <div className="  w-full items-center  justify-end flex">
                           <label
                             style={Styles.label}
                             className="text-md"
                             htmlFor="referenceNumber"
                           >
-                            Number:
+                            Paymennt Ref Number
                           </label>
                           <input
                             value={referenceNumber}
                             onChange={(e) => setReferenceNumber(e.target.value)}
-                            placeholder="Enter Ref Number"
-                            className="p-2 bg-gray-50 border border-gray-100 rounded-lg"
+                            placeholder="Paymennt Ref Number"
+                            className="p-2 w-auto bg-gray-50 border border-gray-100 rounded-lg"
                             type="text"
                           />
                         </div>
                       )}
+                    </div>
+                  </div>
 
-                      <div className="w-1/3 flex justify-end">
+                  <div className="w-full h-auto flex justify-end">
+                    <div className="w-1/2 flex justify-end">
+                      <div className="w-1/2 flex  border">
                         <button
                           data-tooltip-id="my-tooltip-1"
                           type="button"
                           disabled={!isFormValid() || isSubmitting}
                           onClick={handleSubmit}
-                          className={`tab:w-full px-6 py-2.5 text-white font-medium rounded-lg text-sm transition-all ${
+                          className={`tab:w-full w-full px-6  py-3 text-white font-semibold rounded-md  text-sm transition-all ${
                             isFormValid() && !isSubmitting
-                              ? "tab:w-full px-6 flex py-2.5 items-center bg-cyan-500 text-white hover:bg-cyan-600 hover:text-black transition-all duration-300 font-medium rounded-md text-sm"
+                              ? "w-full  py-3 flex  items-center bg-cyan-500  hover:bg-cyan-600 hover:text-black transition-all duration-300 font-medium rounded-md text-sm"
                               : "bg-gray-400 cursor-not-allowed"
                           }`}
                         >
