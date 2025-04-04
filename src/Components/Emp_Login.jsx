@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 // import axios from "axios";
 import { BASE_URL } from "../constants/global-const";
@@ -9,7 +10,7 @@ import AxiosInstance from "./AxiosInstance";
 // import { MdOutlineDelete } from "react-icons/md";
 import { Toaster, toast } from "react-hot-toast";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 
 const userTypeMapping = {
   102: "Manager",
@@ -32,6 +33,13 @@ const Emp_Login = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [errors, setErrors] = useState({});
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [sortField, setSortField] = useState(null);
+  const [sortDirection, setSortDirection] = useState("none");
 
   // Fetch the employee list from the Employee API
   const fetchEmployees = async () => {
@@ -56,6 +64,14 @@ const Emp_Login = () => {
       toast.error("Error fetching user data"); // Show toast on error
     }
   };
+
+
+  const options = [
+    { value: 5, label: "5 per page" },
+    { value: 10, label: "10 per page" },
+    { value: 20, label: "20 per page" },
+    { value: 50, label: "50 per page" },
+  ];
 
   // Handle input changes
   const handleChange = (e) => {
@@ -156,6 +172,57 @@ const Emp_Login = () => {
     setEditIndex(index);
   };
 
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection((prev) =>
+        prev === "asc" ? "desc" : prev === "desc" ? "none" : "asc"
+      );
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const SortingIcon = ({ direction }) => {
+    if (direction === "asc") return <FaSortUp className="ms-1" />;
+    if (direction === "desc") return <FaSortDown className="ms-1" />;
+    return <FaSort className="ms-1" />;
+  };
+
+  const getSortedData = () => {
+    if (sortDirection === "none" || !sortField) return [...userList];
+
+    return [...userList].sort((a, b) => {
+      const aVal = a[sortField] ?? "";
+      const bVal = b[sortField] ?? "";
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const filteredData = getSortedData().filter((user) => {
+    return (
+      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.empName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
+  const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = filteredData.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
+
+  const handleOptionClick = (value) => {
+    setRecordsPerPage(value);
+    setCurrentPage(1);
+    setIsDropdownOpen(false);
+  };
+
+
   // Fetch data when the component mounts
   useEffect(() => {
     fetchEmployees();
@@ -197,29 +264,28 @@ const Emp_Login = () => {
 
                         {/* Form Container */}
                         <div className="w-full p-3 gap-2 border rounded-lg">
-
                           <div className="w-full flex justify-center">
-                          <ReactTooltip
-                          id="my-tooltip-1"
-                          place="bottom"
-                          variant="info"
-                          content="Please Select Employee Name"
-                        />
+                            <ReactTooltip
+                              id="my-tooltip-1"
+                              place="bottom"
+                              variant="info"
+                              content="Please Select Employee Name"
+                            />
 
-<ReactTooltip
-                          id="my-tooltip-2"
-                          place="bottom"
-                          variant="info"
-                          content="Please Enter Username"
-                        />
+                            <ReactTooltip
+                              id="my-tooltip-2"
+                              place="bottom"
+                              variant="info"
+                              content="Please Enter Username"
+                            />
 
-<ReactTooltip
-                          id="my-tooltip-3"
-                          place="bottom"
-                          variant="info"
-                          content="Please Select Role"
-                        />
-                          <div className="w-1/2">
+                            <ReactTooltip
+                              id="my-tooltip-3"
+                              place="bottom"
+                              variant="info"
+                              content="Please Select Role"
+                            />
+                            <div className="w-1/2">
                               <label
                                 style={Styles.label}
                                 className="block text-sm font-semibold text-gray-700"
@@ -227,7 +293,7 @@ const Emp_Login = () => {
                                 Employee
                               </label>
                               <select
-                              data-tooltip-id="my-tooltip-1"
+                                data-tooltip-id="my-tooltip-1"
                                 style={Styles.select}
                                 name="employeeId"
                                 value={formData.employeeId}
@@ -252,7 +318,6 @@ const Emp_Login = () => {
                               )}
                             </div>
                           </div>
-                         
 
                           <div className="flex items-end justify-center gap-3 w-full ">
                             <div className="w-1/2 ">
@@ -263,7 +328,7 @@ const Emp_Login = () => {
                                 User Name
                               </label>
                               <input
-                              data-tooltip-id="my-tooltip-2"
+                                data-tooltip-id="my-tooltip-2"
                                 style={Styles.select}
                                 type="text"
                                 name="username"
@@ -286,40 +351,38 @@ const Emp_Login = () => {
                               )}
                             </div>
                             <div className="w-1/2 ">
-                            <label
-                              style={Styles.label}
-                              className="block text-sm font-semibold text-gray-700"
-                            >
-                              User Type
-                            </label>
-                            <select
-                            data-tooltip-id="my-tooltip-3"
-                              style={Styles.select}
-                              name="role"
-                              value={formData.role}
-                              onChange={handleChange}
-                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-                              required
-                            >
-                              <option value={0}>Select Role</option>
-                              {Object.entries(userTypeMapping).map(
-                                ([key, value]) => (
-                                  <option key={key} value={key}>
-                                    {value}
-                                  </option>
-                                )
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-semibold text-gray-700"
+                              >
+                                User Type
+                              </label>
+                              <select
+                                data-tooltip-id="my-tooltip-3"
+                                style={Styles.select}
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                                required
+                              >
+                                <option value={0}>Select Role</option>
+                                {Object.entries(userTypeMapping).map(
+                                  ([key, value]) => (
+                                    <option key={key} value={key}>
+                                      {value}
+                                    </option>
+                                  )
+                                )}
+                              </select>
+                              {errors.role && (
+                                <p className="text-red-500 text-sm mt-1">
+                                  {errors.role}
+                                </p>
                               )}
-                            </select>
-                            {errors.role && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {errors.role}
-                              </p>
-                            )}
-                          </div>
-                           
+                            </div>
                           </div>
 
-                        
                           <div className="flex gap-3">
                             {["password", "confirmPassword"].map((field) => (
                               <div className="w-1/2" key={field}>
@@ -359,78 +422,224 @@ const Emp_Login = () => {
                             ))}
                           </div>
 
-                        
-                        
-
                           {/* Buttons */}
-                          <div className="w-full flex justify-end mt-3 " >
-                          <div className="flex w-1/2  gap-4 ">
-                            <button
-                              onClick={resetForm}
-                              className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={handleSubmit}
-                              className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
-                            >
-                              {isEdit ? "Update" : "Submit"}
-                            </button>
+                          <div className="w-full flex justify-end mt-3 ">
+                            <div className="flex w-1/2  gap-4 ">
+                              <button
+                                onClick={resetForm}
+                                className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={handleSubmit}
+                                className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                              >
+                                {isEdit ? "Update" : "Submit"}
+                              </button>
+                            </div>
                           </div>
-                          </div>
-                          
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="flex-1 w-full p-1 space-y-6 overflow-auto">
-                {/* User List Table */}
-                <div className="bg-white flex flex-col items-center p-6 w-full rounded-lg shadow-lg">
-                  <div className="w-full h-auto flex">
-                    <h3
-                      style={Styles.tableheading}
-                      className="text-xl font-semibold text-cyan-700 mb-4"
-                    >
+              <div className="w-full">
+                <div className="w-full bg-white rounded-lg">
+                  <div className="w-full h-auto rounded-t-lg p-2 flex  items-center border bg-gray-50 border-b">
+                    <h3 style={Styles.tableheading} className="text-xl font-semibold text-cyan-700">
                       User List
                     </h3>
                   </div>
-
-                  <table className="w-full text-sm text-gray-700">
-                    <thead className="bg-gray-50 text-gray-600">
-                      <tr style={Styles.label}>
-                        <th className="px-4 py-2 text-left">Employee Name</th>
-                        <th className="px-4 py-2 text-left">Username</th>
-                        <th className="px-4 py-2 text-left">User Type</th>
-                        <th className="px-4 py-2">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {userList.map((user, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-4 py-2">{user.empName || "N/A"}</td>
-                          <td className="px-4 py-2">
-                            {user.username || "N/A"}
-                          </td>
-                          <td className="px-4 py-2">
-                            {userTypeMapping[user.usertype] || "N/A"}
-                          </td>
-                          <td className="py-2 text-center">
-                            <div className="flex justify-center gap-2">
-                              <button
-                                onClick={() => handleEdit(index)}
-                                className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                              >
-                                <CiEdit className="size-6" />
-                              </button>
+                  <div className="w-full h-auto border flex justify-between items-center p-2">
+                    <div className="w-1/2 ">
+                      <input
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                      />
+                    </div>
+                    <div className="w-1/2 flex justify-end">
+                      <div className="w-full flex relative justify-end items-center">
+                        <label
+                          htmlFor="pageType-select"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Page Type
+                        </label>
+                        <button
+                          id="pageType-select"
+                          className="w-1/2 rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          aria-haspopup="true"
+                          aria-expanded={isDropdownOpen}
+                          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span>{`${recordsPerPage} per page`}</span>
+                            <svg
+                              className="h-4 w-4 text-gray-500"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                              aria-hidden="true"
+                            >
+                              <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
+                            </svg>
+                          </div>
+                        </button>
+                        {isDropdownOpen && (
+                          <div className="absolute mt-1 top-12 w-1/2 rounded-md bg-white shadow-lg">
+                            <ul className="py-1">
+                              {options.map((option, index) => (
+                                <li
+                                  key={index}
+                                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                  onClick={() =>
+                                    handleOptionClick(option.value)
+                                  }
+                                >
+                                  {option.label}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-gray-700 rounded-b-lg border border-collapse">
+                      <thead className="bg-gray-50 text-gray-600">
+                        <tr>
+                          <th
+                            className="px-4 py-2 text-left cursor-pointer"
+                            onClick={() => handleSort("empName")}
+                          >
+                            <div className="flex items-center justify-center gap-1">
+                            Employee Name
+                            <SortingIcon
+                              direction={
+                                sortField === "empName" ? sortDirection : "none"
+                              }
+                            />
                             </div>
-                          </td>
+                          </th>
+                          <th
+                            className="px-4 py-2 text-left cursor-pointer"
+                            onClick={() => handleSort("username")}
+                          >
+                             <div className="flex items-center justify-center gap-1">
+
+                            Username
+                            <SortingIcon
+                              direction={
+                                sortField === "username"
+                                  ? sortDirection
+                                  : "none"
+                              }
+                            />
+                            </div>
+                          </th>
+                          <th
+                            className="px-4 py-2 text-left cursor-pointer"
+                            onClick={() => handleSort("usertype")}
+                          >
+                             <div className="flex items-center justify-center gap-1">
+                            User Type
+                            <SortingIcon
+                              direction={
+                                sortField === "usertype"
+                                  ? sortDirection
+                                  : "none"
+                              }
+                            />
+                            </div>
+                          </th>
+                          <th className="px-4 py-2">Actions</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {currentRecords.map((user, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            
+                            <td className="px-4 py-2">
+                            <div className="flex items-center justify-center gap-1">
+                              {user.empName || "N/A"}
+                              </div>
+                            </td>
+                            <td className="px-4 py-2">
+                            <div className="flex items-center justify-center gap-1">
+                              {user.username || "N/A"}
+                              </div>
+                            </td>
+                            <td className="px-4 py-2">
+                            <div className="flex items-center justify-center gap-1">
+                              {userTypeMapping[user.usertype] || "N/A"}
+                              </div>
+                            </td>
+                            <td className="py-2 text-center">
+                              <div className="flex justify-center gap-2">
+                                <button
+                                  onClick={() => handleEdit(index)}
+                                  className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                                >
+                                  <CiEdit className="size-6" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="flex justify-end px-2 items-center space-x-2 m-4">
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={currentPage === 1}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === 1
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-cyan-500 text-white hover:bg-cyan-700"
+                      }`}
+                    >
+                      Prev
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-3 py-2 rounded-md ${
+                            currentPage === page
+                              ? "bg-cyan-700 text-white"
+                              : "bg-gray-200 hover:bg-gray-400"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === totalPages
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-cyan-500 text-white hover:bg-cyan-700"
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

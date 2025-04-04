@@ -894,44 +894,41 @@ const Linkraceanddrive = () => {
 
                   <div className="w-full flex p-2 gap-2 tab:flex-col items-center">
                     <div className="w-1/2 flex  items-center gap-14">
-                    <div className="flex items-center">
-                    <input
-                        checked={addDocVerify}
-                        onChange={(e) => setAddDocVerify(e.target.checked)}
-                        type="checkbox"
-                        id="documentVerified"
-                        className="accent-cyan-600 w-4 h-4 border-gray-100 hover:cursor-pointer"
-                      />
-                      <label
-                        htmlFor="documentVerified"
-                        style={Styles.label}
-                        className="text-md text-black ml-2 hover:cursor-pointer"
-                      >
-                        Document Verified
-                      </label>
-                    </div>
-                      
+                      <div className="flex items-center">
+                        <input
+                          checked={addDocVerify}
+                          onChange={(e) => setAddDocVerify(e.target.checked)}
+                          type="checkbox"
+                          id="documentVerified"
+                          className="accent-cyan-600 w-4 h-4 border-gray-100 hover:cursor-pointer"
+                        />
+                        <label
+                          htmlFor="documentVerified"
+                          style={Styles.label}
+                          className="text-md text-black ml-2 hover:cursor-pointer"
+                        >
+                          Document Verified
+                        </label>
+                      </div>
 
                       <div className="flex w-auto   items-center gap-1">
-                      <input
-                        id="amountPaid"
-                        type="checkbox"
-                        checked={amountPaidChecked}
-                        onChange={handleAmountPaidChange}
-                        className="accent-cyan-600 w-4 h-4 border-gray-100 rounded hover:cursor-pointer"
-                        required
-                      />
-                      <label
-                        style={Styles.label}
-                        htmlFor="amountPaid"
-                        className="text-md text-black hover:cursor-pointer"
-                      >
-                        Amount Paid
-                      </label>
+                        <input
+                          id="amountPaid"
+                          type="checkbox"
+                          checked={amountPaidChecked}
+                          onChange={handleAmountPaidChange}
+                          className="accent-cyan-600 w-4 h-4 border-gray-100 rounded hover:cursor-pointer"
+                          required
+                        />
+                        <label
+                          style={Styles.label}
+                          htmlFor="amountPaid"
+                          className="text-md text-black hover:cursor-pointer"
+                        >
+                          Amount Paid
+                        </label>
+                      </div>
                     </div>
-                    </div>
-
-                  
 
                     <div className="w-1/2   tab:w-full flex items-center  px-2">
                       {amountPaidChecked && (
@@ -1274,12 +1271,12 @@ const Linkraceanddrive = () => {
               </div>
             </div>
             {tableData && tableData.length > 0 && (
-              <div className="min-h-auto border">
-                <div className="w-full h-auto rounded-t-lg max-w-auto p-2  bg-gray-50 border-b">
-                  <h3 style={Styles.tableheading}>Event Classes</h3>
+              <div className="min-h-auto ">
+                <div className="w-full h-auto rounded-t-lg max-w-auto p-2 flex justify-center  bg-gray-50 border-b">
+                  <h3 style={Styles.tableheading}>Registrations For Event</h3>
                 </div>
 
-                <div className="w-full h-auto flex justify-between items-center p-2">
+                <div className="w-full h-auto border flex justify-between items-center p-2">
                   <div className="w-1/2">
                     <input
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
