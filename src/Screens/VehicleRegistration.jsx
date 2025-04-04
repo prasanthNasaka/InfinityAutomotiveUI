@@ -237,7 +237,7 @@ const VehicleRegistration = ({ closePopup }) => {
                     type="text"
                     className="w-full p-2 border rounded"
                     value={vehicleMake}
-                    onChange={(e) => setVehicleMake(e.target.value)}
+                    onChange={(e) => setVehicleMake(e.target.value.toUpperCase())}
                     placeholder="Enter vehicle make"
                   />
                 </div>

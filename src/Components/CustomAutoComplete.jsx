@@ -133,7 +133,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from,disable
   const handleInputChange = (e) => {
     if (disabled) return; // Prevent updates when disabled
   
-    const value = e.target.value;
+    const value = e.target.value.toUpperCase();
     setInputValue(value);
     setShowDropdown(true);
     setIsTyping(true);
@@ -179,7 +179,7 @@ const AutoCompleteSearch = ({ searchType, onDataReceived, onSelect, from,disable
         {from === "myComponent" && (
           <button
             onClick={openPopup}
-            className="ml-2 flex px-2 py-3 rounded-md bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+            className="ml-2 flex px-2 py-3  bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
           >
             {searchType === "vehicle" ? <FaCar /> : <FaUser />}
             <GoPlus />

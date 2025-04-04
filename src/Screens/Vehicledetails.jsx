@@ -296,7 +296,7 @@ const Vehicledetails = () => {
                                   className="w-full p-2 border rounded"
                                   value={vehicleMake}
                                   onChange={(e) =>
-                                    setVehicleMake(e.target.value)
+                                    setVehicleMake(e.target.value.toUpperCase())
                                   }
                                   placeholder="Enter vehicle make"
                                 />

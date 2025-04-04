@@ -310,6 +310,48 @@ const EventForm = () => {
     });
   };
 
+  // const handleEdit = (event) => {
+  //   if (event.eventstatus === 6) {
+  //     toast("The event cannot be edited until it is approved.", {
+  //       icon: "⚠️",
+  //       style: {
+  //         border: "1px solid #FFA500",
+  //         padding: "16px",
+  //       },
+  //     });
+  //     resetForm();
+  //   } else {
+  //     setEventId(event.eventid);
+  //     const eventId = event.eventid;
+  //     if (!eventId) {
+  //       console.error("No event ID found for editing:", event);
+  //       return;
+  //     }
+  //     setEditMode(true);
+  //     setEditId(eventId);
+
+  //     setEventData({
+  //       eventType: event.eventtype,
+  //       eventName: event.eventname,
+  //       dateRange: {
+  //         start: new Date(event.startdate),
+  //         end: new Date(event.enddate),
+  //       },
+  //       status: event.isactive,
+  //       location: event.location || "",
+  //       geoLocation: event.gmapLocation || "",
+  //       bannerImage: event.banner ? `${IMAGE_URL}${event.banner}` : null,
+  //       bankDetails: {
+  //         bankName: event.bankname,
+  //         accountHolderName: event.accountname,
+  //         accountNumber: event.accountnum,
+  //         ifscCode: event.ifsccode,
+  //         Qrpath: event.qrpath ? `${IMAGE_URL}${event.qrpath}` : null,
+  //       },
+  //     });
+  //   }
+  // };
+
   const handleEdit = (event) => {
     if (event.eventstatus === 6) {
       toast("The event cannot be edited until it is approved.", {

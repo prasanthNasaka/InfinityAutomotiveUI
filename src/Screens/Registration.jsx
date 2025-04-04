@@ -312,7 +312,7 @@ const Registration = () => {
                             type="text"
                             className="w-full p-3 border border-gray-300 rounded"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => setName(e.target.value.toUpperCase())}
                             placeholder="Enter your name"
                             required
                           />
@@ -539,7 +539,7 @@ const Registration = () => {
                               </label>
                               <input
                                 type="date"
-                                className="h-[40px] w-full p-3 border border-gray-300 rounded-[8px] rounded focus:outline-none"
+                                className="h-[40px] w-full p-3 border border-gray-300 rounded-[8px] focus:outline-none"
                                 value={dlValidTill}
                                 onChange={(e) => setDlValidTill(e.target.value)}
                                 required
@@ -613,7 +613,7 @@ const Registration = () => {
                               </label>
                               <input
                                 type="text"
-                                className="h-[40px] rounded-[8px] w-full p-3 border border-gray-300 rounded focus:outline-none"
+                                className="h-[40px] rounded-[8px] w-full p-3 border border-gray-300 focus:outline-none"
                                 value={fmsciNumb}
                                 onChange={(e) => setFmsciNumb(e.target.value)}
                                 placeholder="Enter your license number"
