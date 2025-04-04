@@ -314,7 +314,9 @@ const Vehicledetails = () => {
                                   type="text"
                                   className="text-black w-full p-2 border rounded"
                                   value={model}
-                                  onChange={(e) => setModel(e.target.value)}
+                                  onChange={(e) =>
+                                    setModel(e.target.value.toUpperCase())
+                                  }
                                   placeholder="Enter model"
                                 />
                               </div>
@@ -330,7 +332,9 @@ const Vehicledetails = () => {
                                   type="text"
                                   className="w-full p-2 border rounded"
                                   value={cc}
-                                  onChange={(e) => setCc(e.target.value)}
+                                  onChange={(e) =>
+                                    setCc(e.target.value.toUpperCase())
+                                  }
                                   placeholder="Enter CC"
                                 />
                               </div>
@@ -349,7 +353,9 @@ const Vehicledetails = () => {
                                   type="text"
                                   className="w-full p-2 border rounded"
                                   value={regNo}
-                                  onChange={(e) => setRegNo(e.target.value)}
+                                  onChange={(e) =>
+                                    setRegNo(e.target.value.toUpperCase())
+                                  }
                                   placeholder="Enter registration number"
                                 />
                               </div>
@@ -365,7 +371,9 @@ const Vehicledetails = () => {
                                   type="text"
                                   className="w-full p-2 border rounded"
                                   value={engineNo}
-                                  onChange={(e) => setEngineNo(e.target.value)}
+                                  onChange={(e) =>
+                                    setEngineNo(e.target.value.toUpperCase())
+                                  }
                                   placeholder="Enter engine number"
                                 />
                               </div>
@@ -381,7 +389,9 @@ const Vehicledetails = () => {
                                   type="text"
                                   className="w-full p-2 border rounded"
                                   value={chasisNo}
-                                  onChange={(e) => setChasisNo(e.target.value)}
+                                  onChange={(e) =>
+                                    setChasisNo(e.target.value.toUpperCase())
+                                  }
                                   placeholder="Enter chassis number"
                                 />
                               </div>
@@ -526,7 +536,9 @@ const Vehicledetails = () => {
                                   type="text"
                                   className="w-full h-[40px] p-3 border border-gray-300 rounded-[8px] focus:outline-none"
                                   value={rcNumb}
-                                  onChange={(e) => setRcNumb(e.target.value)}
+                                  onChange={(e) =>
+                                    setRcNumb(e.target.value.toUpperCase())
+                                  }
                                   placeholder="Enter your RC number"
                                 />
                               </div>
@@ -627,7 +639,9 @@ const Vehicledetails = () => {
                                   className="w-full h-[40px] p-3 border border-gray-300 rounded-[8px] focus:outline-none"
                                   value={insuranceNumb}
                                   onChange={(e) =>
-                                    setInsuranceNumb(e.target.value)
+                                    setInsuranceNumb(
+                                      e.target.value.toUpperCase()
+                                    )
                                   }
                                   placeholder="Enter your Insurance number"
                                 />
