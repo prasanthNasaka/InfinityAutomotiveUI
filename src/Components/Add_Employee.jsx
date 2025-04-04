@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import MainSideBar from "./MainSideBar";
 import Newheader from "./Newheader";
@@ -8,7 +9,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 
 const EmployeeTypes = {
   OTHERS: 0,
@@ -34,8 +35,33 @@ const Add_Employee = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [sortField, setSortField] = useState(null);
+  const [sortDirection, setSortDirection] = useState("none");
 
-  const filteredData = employeeList.filter((emp) => {
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection((prev) =>
+        prev === "asc" ? "desc" : prev === "desc" ? "none" : "asc"
+      );
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortedData = () => {
+    if (sortDirection === "none" || !sortField) return [...employeeList];
+
+    return [...employeeList].sort((a, b) => {
+      const aVal = a[sortField] ?? "";
+      const bVal = b[sortField] ?? "";
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const filteredData = getSortedData().filter((emp) => {
     return (
       emp.empName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       emp.phone.includes(searchQuery) ||
@@ -53,6 +79,7 @@ const Add_Employee = () => {
   );
 
   const options = [
+    { value: 5, label: "5 per page" },
     { value: 10, label: "10 per page" },
     { value: 20, label: "20 per page" },
     { value: 50, label: "50 per page" },
@@ -62,6 +89,12 @@ const Add_Employee = () => {
     setRecordsPerPage(value);
     setCurrentPage(1);
     setIsDropdownOpen(false);
+  };
+
+  const SortingIcon = ({ direction }) => {
+    if (direction === "asc") return <FaSortUp className="ms-1" />;
+    if (direction === "desc") return <FaSortDown className="ms-1" />;
+    return <FaSort className="ms-1" />;
   };
 
   const handleChange = (e) => {
@@ -288,7 +321,7 @@ const Add_Employee = () => {
                             Type
                           </label>
                           <select
-                          data-tooltip-id="my-tooltip-1"
+                            data-tooltip-id="my-tooltip-1"
                             style={Styles.select}
                             name="role"
                             value={formData.role}
@@ -348,32 +381,31 @@ const Add_Employee = () => {
                         </div>
                       </div>
                     </div>
-                   <div className="w-full flex justify-end">
-                   <div className="flex w-1/2 justify-end  gap-4 mt-4">
-                      <button
-                        onClick={resetForm}
-                        className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={
-                          formData.empId
-                            ? handleUpdateEmployee
-                            : handleAddEmployee
-                        }
-                        className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
-                        disabled={loading}
-                      >
-                        {loading
-                          ? "Processing..."
-                          : formData.empId
-                          ? "Update"
-                          : "Submit"}
-                      </button>
+                    <div className="w-full flex justify-end">
+                      <div className="flex w-1/2 justify-end  gap-4 mt-4">
+                        <button
+                          onClick={resetForm}
+                          className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={
+                            formData.empId
+                              ? handleUpdateEmployee
+                              : handleAddEmployee
+                          }
+                          className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                          disabled={loading}
+                        >
+                          {loading
+                            ? "Processing..."
+                            : formData.empId
+                            ? "Update"
+                            : "Submit"}
+                        </button>
+                      </div>
                     </div>
-                   </div>
-                   
                   </div>
                 </div>
               </div>
@@ -452,11 +484,61 @@ const Add_Employee = () => {
                       <table className="w-full text-sm text-gray-700 border-collapse">
                         <thead className="bg-gray-50 text-gray-600">
                           <tr style={Styles.label}>
-                            <th className="py-3 px-4 text-left">Name</th>
-                            <th className="py-3 px-4 text-left">Phone</th>
-                            <th className="py-3 px-4 text-left">Email</th>
+                            <th
+                              onClick={() => handleSort("empName")}
+                              className="px-6 py-3 cursor-pointer"
+                            >
+                              <div className="flex items-center justify-center gap-1">
+                                Name
+                                <SortingIcon
+                                  direction={
+                                    sortField === "empName"
+                                      ? sortDirection
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                            </th>
+                            <th
+                              onClick={() => handleSort("empName")}
+                              className="px-6 py-3 cursor-pointer"
+                            ><div className="flex items-center justify-center gap-1">
+                              Phone
+                              <SortingIcon
+                                  direction={
+                                    sortField === "empName"
+                                      ? sortDirection
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                              </th>
+                            <th
+                              onClick={() => handleSort("empName")}
+                              className="px-6 py-3 cursor-pointer"
+                            >
+                              <div className="flex items-center justify-center gap-1">
+                              Email
+                              <SortingIcon
+                                  direction={
+                                    sortField === "empName"
+                                      ? sortDirection
+                                      : "none"
+                                  }
+                                />
+                              </div>
+                              </th>
                             <th className="py-3 px-4 text-left">
+                            <div className="flex items-center justify-center gap-1">
                               Employee Type
+                              <SortingIcon
+                                  direction={
+                                    sortField === "empName"
+                                      ? sortDirection
+                                      : "none"
+                                  }
+                                />
+                              </div>
                             </th>
                             <th className="py-3 px-4 text-left">Actions</th>
                           </tr>
@@ -467,10 +549,23 @@ const Add_Employee = () => {
                               key={emp.empId}
                               className="border-t hover:bg-gray-50"
                             >
-                              <td className="py-3 px-4">{emp.empName}</td>
-                              <td className="py-3 px-4">{emp.phone}</td>
-                              <td className="py-3 px-4">{emp.email}</td>
+                              <td className="py-3 px-4">
+                              <div className="flex items-center justify-center gap-1">
+                                {emp.empName}
+                                </div>
+                                </td>
+                              <td className="py-3 px-4">
+                              <div className="flex items-center justify-center gap-1">
+                                {emp.phone}
+                                </div>
+                                </td>
+                              <td className="py-3 px-4">
+                              <div className="flex items-center justify-center gap-1">
+                                {emp.email}
+                                </div>
+                                </td>
                               <td className="py-3 px-4 text-center">
+                              <div className="flex items-center justify-center gap-1">
                                 {emp.employeeType === EmployeeTypes.EMPLOYEE
                                   ? "Employee"
                                   : emp.employeeType === EmployeeTypes.ORGANISER
@@ -479,6 +574,7 @@ const Add_Employee = () => {
                                     EmployeeTypes.SCRUTINEER
                                   ? "Scrutineer"
                                   : "Others"}
+                                  </div>
                               </td>
                               <td className="py-3 px-4">
                                 <button

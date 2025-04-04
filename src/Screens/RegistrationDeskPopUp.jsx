@@ -9,6 +9,7 @@ import AutoCompleteSearch from "../Components/CustomAutoComplete";
 import Styles from "../constants/Styles";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+import AxiosInstance from "../Components/AxiosInstance";
 
 const RegistrationDeskPopUp = () => {
   const [amountPaidChecked, setAmountPaidChecked] = useState(false);
@@ -194,8 +195,6 @@ const RegistrationDeskPopUp = () => {
     }
   };
 
- 
-
   const isFormValid = () => {
     return (
       selectedEvent &&
@@ -224,7 +223,7 @@ const RegistrationDeskPopUp = () => {
       };
       console.log("payload", payload);
 
-      const response = await axios.post(
+      const response = await AxiosInstance.post(
         `${BASE_URL}/api/Registration`,
         payload,
         {
@@ -258,33 +257,41 @@ const RegistrationDeskPopUp = () => {
   };
 
   const fetchUpdatedData = async () => {
-    fetch(`${BASE_URL}/api/EventRegistration/ActiveEvents`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setEvents(data);
-        } else {
-          console.error("Expected an array of events, but received:", data);
-          setEvents([]);
-        }
-      })
-      .catch((error) => console.error("Error fetching events:", error));
+    try {
+      const response = await AxiosInstance.get(
+        `${BASE_URL}/api/EventRegistration/ActiveEvents`
+      );
+      if (Array.isArray(response.data)) {
+        setEvents(response.data);
+      } else {
+        console.error(
+          "Expected an array of events, but received:",
+          response.data
+        );
+        setEvents([]);
+        setTableData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setEvents([]);
+    }
   };
 
   useEffect(() => {
-
+    // Fetch updated data on mount
     fetchUpdatedData();
+
     if (eventData?.eventid) {
       setEventId(eventData.eventid);
       setSelectedEvent(eventData.eventname);
       console.log("eventData", eventData);
 
-
-      fetch(`${BASE_URL}/api/eventcategories?event_id=${eventData.eventid}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && Array.isArray(data)) {
-            setCategories(data);
+      AxiosInstance.get(`${BASE_URL}/api/eventcategories`, {
+        params: { event_id: eventData.eventid },
+      })
+        .then((response) => {
+          if (response.data && Array.isArray(response.data)) {
+            setCategories(response.data);
           } else {
             setCategories([]);
           }
@@ -299,9 +306,38 @@ const RegistrationDeskPopUp = () => {
   return (
     <section className="w-full h-screen flex flex-col">
       <div className="flex h-[calc(100vh-6rem)] overflow-hidden">
-        <div className=" h-full"></div>
-
+       
         <div className="flex-1 p-3 overflow-y-auto">
+          <div className="w-full h-auto flex justify-center">
+            <div className="w-2/5 h-auto flex border rounded-lg bg-gray-100 mb-2">
+              <div className="w-3/4 flex flex-col  justify-center p-2">
+              <span style={Styles.heading}>Bank Details:</span>
+              <div className="flex flex-col gap-1">
+              {events.length > 0 && (
+                  <>
+                    <span>Bank Name: {events[0].bankname}</span>
+                    <span>IFSC Code: {events[0].ifsccode}</span>
+                    <span>Account Name: {events[0].accountname}</span>
+                    <span>Account Number: {events[0].accountnum}</span>
+                  </>
+                )}
+              </div>
+                
+              </div>
+              <div className="w-1/4 p-2">
+                {/* Corrected access to qrpath */}
+                {events.length > 0 &&
+                  events[0].qrpath && ( // Ensure to access the first event's qrpath
+                    <img
+                      className="w-full h-44"
+                      src={`${IMAGE_URL}${events[0].qrpath}`} // Corrected to events[0].qrpath
+                      alt="QR Code"
+                    />
+                  )}
+              </div>
+            </div>
+          </div>
+
           <div className="max-w-7xl mx-auto">
             <div className="bg-white rounded-lg  border mb-6">
               <div className="p-2 flex">
@@ -344,10 +380,10 @@ const RegistrationDeskPopUp = () => {
                         <option value="">Choose Class</option>
                         {categories.map((category) => (
                           <option
-                            key={category.evtCatId}
-                            value={category.evtCatId}
+                            key={category.evtClass}
+                            value={category.evtClass}
                           >
-                            {category.evtCategory}
+                            {category.evtClass}
                           </option>
                         ))}
                       </select>
