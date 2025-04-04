@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 
-
 import MainSideBar from "../Components/MainSideBar";
 import Newheader from "../Components/Newheader";
 import { useEffect, useState } from "react";
@@ -289,7 +288,7 @@ const Classes = () => {
                             onChange={handleEventChange}
                             className="w-full h-10 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
                           >
-                            <option value="">Choose Event</option>
+                            <option value={0}>Choose Event</option>
                             {events.map((event) => (
                               <option key={event.eventid} value={event.eventid}>
                                 {event.eventname}

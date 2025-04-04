@@ -312,7 +312,9 @@ const Registration = () => {
                             type="text"
                             className="w-full p-3 border border-gray-300 rounded"
                             value={name}
-                            onChange={(e) => setName(e.target.value.toUpperCase())}
+                            onChange={(e) =>
+                              setName(e.target.value.toUpperCase())
+                            }
                             placeholder="Enter your name"
                             required
                           />
@@ -464,7 +466,10 @@ const Registration = () => {
                       <div className="bg-gray-100 p-4 rounded-lg border  mt-6 w-full lg:w-1/2">
                         <div className="flex gap-3 flex-col items-center ">
                           <div className="w-full">
-                            <label style={Styles.tableheading} className="block text-sm font-bold text-gray-700 mb-2">
+                            <label
+                              style={Styles.tableheading}
+                              className="block text-sm font-bold text-gray-700 mb-2"
+                            >
                               Upload License
                             </label>
                             <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-100">
@@ -520,21 +525,29 @@ const Registration = () => {
 
                           <div className="w-full gap-3 flex">
                             <div className="w-1/2">
-                              <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700 mb-1"
+                              >
                                 Driving License Number
                               </label>
                               <input
                                 type="text"
                                 className="h-[40px] w-full p-3 border border-gray-300 rounded-[8px] focus:outline-none"
                                 value={dlNumb}
-                                onChange={(e) => setDlNumb(e.target.value)}
+                                onChange={(e) =>
+                                  setDlNumb(e.target.value.toUpperCase())
+                                }
                                 placeholder="Enter your license number"
                                 required
                               />
                             </div>
 
                             <div className="w-1/2">
-                              <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700 mb-1"
+                              >
                                 Till Date
                               </label>
                               <input
@@ -552,7 +565,10 @@ const Registration = () => {
                       <div className="bg-gray-100 p-4 rounded-lg border mt-6 w-full lg:w-1/2">
                         <div className="flex gap-3 flex-col items-center ">
                           <div className="w-full">
-                            <label style={Styles.tableheading} className="block text-sm font-bold text-gray-700 mb-2">
+                            <label
+                              style={Styles.tableheading}
+                              className="block text-sm font-bold text-gray-700 mb-2"
+                            >
                               Upload FMSCI License
                             </label>
                             <div className="flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-100">
@@ -608,25 +624,32 @@ const Registration = () => {
 
                           <div className="w-full gap-3 flex">
                             <div className="w-1/2">
-                              <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700 mb-1"
+                              >
                                 FMSCI License Number
                               </label>
                               <input
                                 type="text"
                                 className="h-[40px] rounded-[8px] w-full p-3 border border-gray-300 focus:outline-none"
                                 value={fmsciNumb}
-                                onChange={(e) => setFmsciNumb(e.target.value)}
+                                onChange={(e) =>
+                                  setFmsciNumb(e.target.value.toUpperCase())
+                                }
                                 placeholder="Enter your license number"
                                 required
                               />
                             </div>
 
                             <div className="w-1/2">
-                              <label style={Styles.label} className="block text-sm font-bold text-gray-700 mb-1">
+                              <label
+                                style={Styles.label}
+                                className="block text-sm font-bold text-gray-700 mb-1"
+                              >
                                 Till Date
                               </label>
                               <input
-                              
                                 type="date"
                                 className="h-[40px] rounded-[8px] w-full p-3 border border-gray-300  focus:outline-none"
                                 value={fmsciValidTill}
@@ -643,55 +666,52 @@ const Registration = () => {
 
                     <div className="flex w-full  items-center">
                       <div className="w-1/2 flex items-center">
-                      <input
-                        id="link-checkbox"
-                        type="checkbox"
-                        className="w-4 h-4  bg-gray-100 border-gray-300 rounded-sm accent-cyan-600"
-                        checked={isAgreed}
-                        onChange={(e) => setIsAgreed(e.target.checked)}
-                        required
-                      />
-                      <label
-                        htmlFor="link-checkbox"
-                        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                      >
-                        I agree with the{" "}
-                        <Link
-                          to="/terms"
-                          className="text-cyan-600 dark:text-blue-500 hover:underline"
+                        <input
+                          id="link-checkbox"
+                          type="checkbox"
+                          className="w-4 h-4  bg-gray-100 border-gray-300 rounded-sm accent-cyan-600"
+                          checked={isAgreed}
+                          onChange={(e) => setIsAgreed(e.target.checked)}
+                          required
+                        />
+                        <label
+                          htmlFor="link-checkbox"
+                          className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                         >
-                          Terms and conditions
-                        </Link>
-                        .
-                      </label>
+                          I agree with the{" "}
+                          <Link
+                            to="/terms"
+                            className="text-cyan-600 dark:text-blue-500 hover:underline"
+                          >
+                            Terms and conditions
+                          </Link>
+                          .
+                        </label>
                       </div>
 
                       <div className="w-1/2 ">
-                      <div className="flex justify-end  gap-4 mt-4">
-                      <button
-                        onClick={handleCancel}
-                        className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
-                      >
-                        Cancel
-                      </button>
+                        <div className="flex justify-end  gap-4 mt-4">
+                          <button
+                            onClick={handleCancel}
+                            className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                          >
+                            Cancel
+                          </button>
 
-                      <button
-                        onClick={handleSave}
-                        className={`w-1/2 py-3 font-semibold rounded-md transition-all duration-300 ${
-                          isAgreed
-                            ? "bg-cyan-500 text-white hover:text-black hover:bg-cyan-600"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        }`}
-                        disabled={!isAgreed}
-                      >
-                        {isEditing ? "Update" : "Save"}
-                      </button>
-                    </div>
+                          <button
+                            onClick={handleSave}
+                            className={`w-1/2 py-3 font-semibold rounded-md transition-all duration-300 ${
+                              isAgreed
+                                ? "bg-cyan-500 text-white hover:text-black hover:bg-cyan-600"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            }`}
+                            disabled={!isAgreed}
+                          >
+                            {isEditing ? "Update" : "Save"}
+                          </button>
+                        </div>
                       </div>
-                      
                     </div>
-
-                   
                   </div>
                 </div>
               </div>

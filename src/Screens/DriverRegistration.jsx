@@ -90,11 +90,15 @@ const DriverRegistration = ({ closePopup }) => {
     console.log("Data being sent:", formData);
 
     try {
-      const response = await AxiosInstance.post(`${BASE_URL}/api/drivers`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await AxiosInstance.post(
+        `${BASE_URL}/api/drivers`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       toast.success("Driver registered successfully:", response.data);
     } catch (error) {
       console.error("Error registering driver:", error);
@@ -369,7 +373,9 @@ const DriverRegistration = ({ closePopup }) => {
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                         value={dlNumb}
-                        onChange={(e) => setDlNumb(e.target.value)}
+                        onChange={(e) =>
+                          setDlNumb(e.target.value.toUpperCase())
+                        }
                         placeholder="Enter your license number"
                         required
                       />
@@ -455,7 +461,9 @@ const DriverRegistration = ({ closePopup }) => {
                         type="text"
                         className="w-full p-3 border border-gray-300 rounded focus:outline-none"
                         value={fmsciNumb}
-                        onChange={(e) => setFmsciNumb(e.target.value)}
+                        onChange={(e) =>
+                          setFmsciNumb(e.target.value.toUpperCase())
+                        }
                         placeholder="Enter your license number"
                         required
                       />
