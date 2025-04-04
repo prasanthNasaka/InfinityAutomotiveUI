@@ -14,6 +14,7 @@ const Report = () => {
   const [committee, setCommittee] = useState([]);
 
   const { eventId } = useParams();
+  const parsedEventId = eventId ? parseInt(eventId, 10) : null;
 
   const fetchEventOrgCommittee = async () => {
     try {
@@ -38,20 +39,18 @@ const Report = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      payload: [
-        {
-          name,
-          role,
-          eventid: parseInt(eventId, 10),
-        },
-      ],
-    };
+    const payload = [
+      {
+        name: name.trim(),
+        role: role.trim(),
+        eventid: parsedEventId,
+      },
+    ];
 
     try {
       const response = await AxiosInstance.post(
         `${BASE_URL}/api/EventOrgcommitee`,
-        payload, 
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
@@ -61,7 +60,9 @@ const Report = () => {
 
       toast.success("Added Successfully");
       console.log("Success:", response.data);
+
       fetchEventOrgCommittee();
+
       setName("");
       setRole("");
     } catch (error) {
@@ -69,11 +70,10 @@ const Report = () => {
         "Error:",
         error.response ? error.response.data : error.message
       );
-      toast.error("Failed to add member.");
+      toast.error(error.response?.data?.title || "Failed to add member.");
     }
   };
 
-  // Handle delete
   const handleDelete = async (id) => {
     try {
       await AxiosInstance.delete(
@@ -90,7 +90,7 @@ const Report = () => {
     }
   };
 
-  // Fetch data when eventId changes
+
   useEffect(() => {
     if (eventId) {
       fetchEventOrgCommittee();
@@ -109,7 +109,6 @@ const Report = () => {
         </div>
 
         <div className="flex w-full p-8 h-auto flex-col">
-          {/* Form */}
           <form
             className="w-full mx-auto p-8 rounded-md shadow-lg h-fit"
             onSubmit={handleSubmit}
@@ -148,7 +147,6 @@ const Report = () => {
             </div>
           </form>
 
-          {/* Table */}
           <div className="flex w-full p-8 h-fit">
             <table className="w-full border-collapse border border-gray-300">
               <thead>
