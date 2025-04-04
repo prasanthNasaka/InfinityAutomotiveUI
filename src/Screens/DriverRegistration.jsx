@@ -230,7 +230,7 @@ const DriverRegistration = ({ closePopup }) => {
                     type="text"
                     className="w-full p-3 border border-gray-300 rounded"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => setName(e.target.value.toUpperCase())}
                     placeholder="Enter your name"
                     required
                   />
