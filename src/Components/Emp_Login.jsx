@@ -512,8 +512,8 @@ const Emp_Login = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-gray-700 rounded-b-lg border border-collapse">
+                  <div className=" border rounded-b-lg overflow-hidden bg-white shadow-md">
+                    <table className="w-full text-sm text-gray-700  border-collapse">
                       <thead className="bg-gray-50 text-gray-600">
                         <tr>
                           <th
