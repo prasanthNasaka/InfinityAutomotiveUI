@@ -411,7 +411,7 @@ const Add_Employee = () => {
               </div>
               <div className="w-full">
                 <div className="w-full bg-white rounded-lg">
-                  <div className="w-full h-auto rounded-t-lg p-2 flex justify-center items-center border bg-gray-50 border-b">
+                  <div className="w-full h-auto rounded-t-lg p-2 flex  items-center border bg-gray-50 border-b">
                     <h3
                       style={Styles.tableheading}
                       className="text-xl font-semibold text-cyan-700"
@@ -480,7 +480,7 @@ const Add_Employee = () => {
                     </div>
                   </div>
                   {employeeList.length > 0 ? (
-                    <div className="overflow-x-auto">
+                    <div className=" border rounded-b-lg overflow-hidden bg-white shadow-md">
                       <table className="w-full text-sm text-gray-700 border-collapse">
                         <thead className="bg-gray-50 text-gray-600">
                           <tr style={Styles.label}>
@@ -500,13 +500,13 @@ const Add_Employee = () => {
                               </div>
                             </th>
                             <th
-                              onClick={() => handleSort("empName")}
+                              onClick={() => handleSort("phone")}
                               className="px-6 py-3 cursor-pointer"
                             ><div className="flex items-center justify-center gap-1">
                               Phone
                               <SortingIcon
                                   direction={
-                                    sortField === "empName"
+                                    sortField === "phone"
                                       ? sortDirection
                                       : "none"
                                   }
@@ -514,26 +514,28 @@ const Add_Employee = () => {
                               </div>
                               </th>
                             <th
-                              onClick={() => handleSort("empName")}
+                              onClick={() => handleSort("email")}
                               className="px-6 py-3 cursor-pointer"
                             >
                               <div className="flex items-center justify-center gap-1">
                               Email
                               <SortingIcon
                                   direction={
-                                    sortField === "empName"
+                                    sortField === "email"
                                       ? sortDirection
                                       : "none"
                                   }
                                 />
                               </div>
                               </th>
-                            <th className="py-3 px-4 text-left">
+                            <th
+                             onClick={() => handleSort("employeeType")}
+                             className="py-3 px-4 text-left">
                             <div className="flex items-center justify-center gap-1">
                               Employee Type
                               <SortingIcon
                                   direction={
-                                    sortField === "empName"
+                                    sortField === "employeeType"
                                       ? sortDirection
                                       : "none"
                                   }

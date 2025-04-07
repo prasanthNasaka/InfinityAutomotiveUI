@@ -10,6 +10,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Styles from "../constants/Styles";
 import AxiosInstance from "../Components/AxiosInstance";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 
 const Classes = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -27,31 +28,71 @@ const Classes = () => {
 
   const [editCategory, setEditCategory] = useState(null);
   const [templates, setTemplates] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(""); // For global search
-  const [currentPage, setCurrentPage] = useState(1); // For pagination
-  const [recordsPerPage, setRecordsPerPage] = useState(10); // For page type (records per page)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // For dropdown visibility
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "none",
+  });
 
   const filteredData = eventCategories.filter((category) => {
     return (
       category.evtClass.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.wheelertype.toString().includes(searchQuery.toLowerCase()) ||
+      category.evtCategory.toString().includes(searchQuery.toLowerCase()) ||
       category.noOfVeh.toString().includes(searchQuery.toLowerCase()) ||
       category.nooflaps.toString().includes(searchQuery.toLowerCase()) ||
       category.entryprice.toString().includes(searchQuery.toLowerCase())
     );
   });
 
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortConfig.direction === "none") return 0; // No sorting
+
+    const key = sortConfig.key;
+    // Compare values based on their type
+    if (typeof a[key] === 'string' && typeof b[key] === 'string') {
+      return sortConfig.direction === "asc"
+        ? a[key].localeCompare(b[key])
+        : b[key].localeCompare(a[key]);
+    } else {
+      return sortConfig.direction === "asc"
+        ? a[key] - b[key]
+        : b[key] - a[key];
+    }
+  });
+
+  // eslint-disable-next-line react/prop-types
+  const SortingIcon = ({ direction }) => {
+    if (direction === "none") {
+      return <FaSort className="w-4 h-4 ms-1" />;
+    } else if (direction === "asc") {
+      return <FaSortUp className="w-4 h-4 ms-1" />;
+    } else if (direction === "desc") {
+      return <FaSortDown className="w-4 h-4 ms-1" />;
+    }
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      if (sortConfig.direction === "asc") direction = "desc";
+      else if (sortConfig.direction === "desc") direction = "none";
+    }
+    setSortConfig({ key, direction });
+  };
+
+
+
   // Calculate total pages
-  const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+ 
+  const totalPages = Math.ceil(sortedData.length / recordsPerPage);
 
   // Get current records based on pagination
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredData.slice(
-    indexOfFirstRecord,
-    indexOfLastRecord
-  );
+  const currentRecords = sortedData.slice(indexOfFirstRecord, indexOfLastRecord); 
 
   const options = [
     { value: 5, label: "5 per page" },
@@ -62,13 +103,13 @@ const Classes = () => {
 
   const handleOptionClick = (value) => {
     setRecordsPerPage(value);
-    setCurrentPage(1); // Reset to the first page when changing records per page
-    setIsDropdownOpen(false); // Close the dropdown
+    setCurrentPage(1);
+    setIsDropdownOpen(false);
   };
 
   const getPageNumbers = () => {
     let pages = [];
-    const maxVisiblePages = 2; // Number of pages to show around the current page
+    const maxVisiblePages = 2;
 
     if (totalPages <= 5) {
       pages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -100,6 +141,12 @@ const Classes = () => {
     if (page === "...") return; // Ignore ellipses clicks
     setCurrentPage(page);
   };
+
+  
+
+  
+
+ 
 
   // Fetch Event Data
   const handleGetData = async () => {
@@ -465,78 +512,221 @@ const Classes = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="w-full p-4 bg-white mt-6 rounded-lg">
-                      <h3 style={Styles.tableheading}>Event Classes</h3>
-                      <div className="overflow-auto max-h-auto">
+                    <div className="w-full">
+                      <div className="w-full bg-white ">
+                        <div className="w-full h-auto rounded-t-lg p-2 flex  items-center border bg-gray-50 border-b">
+                          <h3 style={Styles.tableheading}>Event Classes</h3>
+                        </div>
+                        <div className="w-full h-auto border flex justify-between items-center p-2">
+                          <div className="w-1/2 ">
+                            <input
+                              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                              type="text"
+                              placeholder="Search..."
+                              value={searchQuery}
+                              onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setCurrentPage(1);
+                              }}
+                            />
+                          </div>
+                          <div className="w-1/2 flex justify-end">
+                            <div className="w-full flex relative justify-end items-center">
+                              <label
+                                htmlFor="pageType-select"
+                                className="block text-sm font-medium text-gray-700 mb-1"
+                              >
+                                Page Type
+                              </label>
+                              <button
+                                id="pageType-select"
+                                className="w-1/2 rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                aria-haspopup="true"
+                                aria-expanded={isDropdownOpen}
+                                onClick={() =>
+                                  setIsDropdownOpen(!isDropdownOpen)
+                                }
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span>{`${recordsPerPage} per page`}</span>
+                                  <svg
+                                    className="h-4 w-4 text-gray-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 16 16"
+                                    aria-hidden="true"
+                                  >
+                                    <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
+                                  </svg>
+                                </div>
+                              </button>
+                              {isDropdownOpen && (
+                                <div className="absolute mt-1 top-12 w-1/2 rounded-md bg-white shadow-lg">
+                                  <ul className="py-1">
+                                    {options.map((option, index) => (
+                                      <li
+                                        key={index}
+                                        className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        onClick={() =>
+                                          handleOptionClick(option.value)
+                                        }
+                                      >
+                                        {option.label}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
                         {selectedEvent && currentRecords.length === 0 ? (
                           <div className="text-center text-gray-500 py-4">
                             Oops, No classes available for the selected event.
                             Please add a new class.
                           </div>
                         ) : (
-                          <table className="w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
-                              <tr>
-                                <th className="py-2 px-4 border-b">
-                                  Class Name
-                                </th>
-                                <th className="py-2 px-4 border-b">Type</th>
-                                <th className="py-2 px-4 border-b">
-                                  Participants
-                                </th>
-                                <th className="py-2 px-4 border-b">Laps</th>
-                                <th className="py-2 px-4 border-b">Price</th>
-                                <th className="py-2 px-4 border-b">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {currentRecords.map((category) => (
-                                <tr key={category.evtCatId}>
-                                  <td className="py-2 px-4 border-b text-center">
-                                    {category.evtClass}
-                                  </td>
-                                  <td className="py-2 px-4 border-b text-center">
-                                    {category.evtCategory === 51
-                                      ? "TwoWheeler"
-                                      : category.evtCategory === 52
-                                      ? "FourWheeler"
-                                      : category.evtCategory === 53
-                                      ? "Karting"
-                                      : category.evtCategory === 54
-                                      ? "GrassRoots"
-                                      : "ESPORTS"}
-                                  </td>
-                                  <td className="py-2 px-4 border-b text-center">
-                                    {category.noOfVeh}
-                                  </td>
-                                  <td className="py-2 px-4 border-b text-center">
-                                    {category.nooflaps}
-                                  </td>
-                                  <td className="py-2 px-4 border-b text-center">
-                                    {category.entryprice}
-                                  </td>
-                                  <td className="py-2 px-4 border-b text-center">
-                                    <button
-                                      onClick={() =>
-                                        handleEditCategory(category)
-                                      }
-                                      className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                                    >
-                                      <CiEdit className="size-6" />
-                                    </button>
-                                    <button
-                                      onClick={() =>
-                                        handleDeleteCategory(category.evtCatId)
-                                      }
-                                      className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
-                                    >
-                                      <MdOutlineDelete className="size-6" />
-                                    </button>
-                                  </td>
+                          <div className=" border rounded-b-lg overflow-hidden bg-white shadow-md">
+                            <table className="w-full text-sm text-left text-gray-500  ">
+                              <thead className="text-xs text-gray-700 uppercase bg-gray-50  text-center">
+                                <tr style={Styles.label}>
+                                  <th
+                                    onClick={() => handleSort("evtClass")}
+                                    className="px-6 py-3 cursor-pointer"
+                                  >
+                                    <div className="flex items-center justify-center gap-1">
+                                    Class Name
+                                    <SortingIcon
+                                  direction={
+                                    sortConfig.key === "evtClass"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                />
+                                    
+
+                                    </div>
+                                  </th>
+                                  <th
+                                    onClick={() => handleSort("evtCategory")}
+                                    className="px-6 py-3 cursor-pointer"
+                                  >
+                                    <div className="flex items-center justify-center gap-1">
+                                    Type
+
+                                    <SortingIcon
+                                  direction={
+                                    sortConfig.key === "evtCategory"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                  />
+                                    </div>
+                                  </th>
+                                  <th
+                                    onClick={() => handleSort("noOfVeh")}
+                                    className="px-6 py-3 cursor-pointer"
+                                  >
+                                    <div className="flex items-center justify-center gap-1">
+                                    Participants
+                                    <SortingIcon
+                                  direction={
+                                    sortConfig.key === "noOfVeh"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                  />
+                                    </div>
+                                  </th>
+                                  <th
+                                    onClick={() => handleSort("nooflaps")}
+                                    className="px-6 py-3 cursor-pointer"
+                                  >
+                                    <div className="flex items-center justify-center gap-1">
+                                   
+                                    Laps
+
+                                    <SortingIcon
+                                  direction={
+                                    sortConfig.key === "nooflaps"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                  />
+                                    </div>
+                                  </th>
+                                  <th
+                                    onClick={() => handleSort("entryprice")}
+                                    className="px-6 py-3 cursor-pointer"
+                                  >
+                                    <div className="flex items-center justify-center gap-1">
+                                    Price
+
+                                    <SortingIcon
+                                  direction={
+                                    sortConfig.key === "entryprice"
+                                      ? sortConfig.direction
+                                      : "none"
+                                  }
+                                  />
+                                    </div>
+                                  </th>
+                                  <th className="py-2 px-4 border-b">
+                                    Actions
+                                  </th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody>
+                                {currentRecords.map((category) => (
+                                  <tr key={category.evtCatId}>
+                                    <td className="py-2 px-4 border-b text-center">
+                                      {category.evtClass}
+                                    </td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                      {category.evtCategory === 51
+                                        ? "TwoWheeler"
+                                        : category.evtCategory === 52
+                                        ? "FourWheeler"
+                                        : category.evtCategory === 53
+                                        ? "Karting"
+                                        : category.evtCategory === 54
+                                        ? "GrassRoots"
+                                        : "ESPORTS"}
+                                    </td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                      {category.noOfVeh}
+                                    </td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                      {category.nooflaps}
+                                    </td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                      {category.entryprice}
+                                    </td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                      <button
+                                        onClick={() =>
+                                          handleEditCategory(category)
+                                        }
+                                        className="p-2 mr-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                                      >
+                                        <CiEdit className="size-6" />
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteCategory(
+                                            category.evtCatId
+                                          )
+                                        }
+                                        className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                                      >
+                                        <MdOutlineDelete className="size-6" />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
                         )}
                       </div>
                     </div>

@@ -1067,16 +1067,18 @@ const EventForm = () => {
                 </section>
 
                 {submittedEvents.length > 0 && (
-                  <section className="p-6">
-                    <div className="w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+                  <section className="w-full">
+                     <div className="w-full bg-white ">
+                     <div className="w-full h-auto rounded-t-lg p-2 flex  items-center border bg-gray-50 border-b">
                       <h2
                         style={Styles.tableheading}
-                        className="text-xl font-bold p-4 bg-gray-50 border-b"
+                        className="text-xl font-bold  bg-gray-50 "
                       >
                         Submitted Events
                       </h2>
-
-                      <div className="w-full h-20 flex justify-between items-center px-5 gap-5">
+                      </div>
+                    
+                      <div className="w-full h-auto border flex justify-between items-center p-2">
                         {/* Search Input */}
                         <input
                           className="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
@@ -1143,7 +1145,7 @@ const EventForm = () => {
                         </div>
                       </div>
 
-                      <div className="overflow-auto max-h-auto">
+                      <div className=" border rounded-b-lg overflow-hidden bg-white shadow-md">
                         <table ref={tableRef} className="w-full">
                           <thead className="text-xs text-gray-700 uppercase bg-gray-50 top-0 text-center">
                             <tr>
@@ -1288,7 +1290,9 @@ const EventForm = () => {
                         </table>
                       </div>
 
-                      <div className="flex justify-end px-2 items-center space-x-2 m-4">
+                      
+                    </div>
+                    <div className="flex justify-end px-2 items-center space-x-2 m-4">
                         <button
                           onClick={() =>
                             setCurrentPage((prev) => Math.max(prev - 1, 1))
@@ -1337,7 +1341,7 @@ const EventForm = () => {
                           Next
                         </button>
                       </div>
-                    </div>
+                      
                   </section>
                 )}
               </div>

@@ -1272,7 +1272,7 @@ const Linkraceanddrive = () => {
             </div>
             {tableData && tableData.length > 0 && (
               <div className="min-h-auto ">
-                <div className="w-full h-auto rounded-t-lg max-w-auto p-2 flex justify-center  bg-gray-50 border-b">
+                <div className="w-full h-auto rounded-t-lg border max-w-auto p-2 flex   bg-gray-50 border-b">
                   <h3 style={Styles.tableheading}>Registrations For Event</h3>
                 </div>
 
@@ -1344,10 +1344,10 @@ const Linkraceanddrive = () => {
                     No data found for your search query.
                   </div>
                 ) : (
-                  <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+                  <div className="border rounded-b-lg overflow-hidden bg-white shadow-md">
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm text-left text-gray-500">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 text-center">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50  text-center">
                           <tr style={Styles.label}>
                             <th className="px-6 py-3 whitespace-nowrap">
                               SL.No
@@ -1389,13 +1389,13 @@ const Linkraceanddrive = () => {
 
                             <th
                               className="px-6 py-3 whitespace-nowrap cursor-pointer"
-                              onClick={() => handleSort("evtCategory")}
+                              onClick={() => handleSort("evtClass")}
                             >
                               <div className="flex items-center justify-center">
                                 Class
                                 <SortingIcon
                                   direction={
-                                    sortConfig.key === "evtCategory"
+                                    sortConfig.key === "evtClass"
                                       ? sortConfig.direction
                                       : "none"
                                   }
