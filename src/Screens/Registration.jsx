@@ -32,6 +32,9 @@ const Registration = () => {
   const [selecteddetails, setSelectedDetails] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
+  const [teams, setTeams] = useState([]);
+  const [teamMemberOf, setTeamMemberOf] = useState("");
+  const [isAddingTeam, setIsAddingTeam] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -76,7 +79,7 @@ const Registration = () => {
     formData.append("dlValidTill", dlValidTill);
     formData.append("dob", dob);
     formData.append("bloodGroup", bloodGroup);
-    formData.append("teamMemberOf", 1);
+    formData.append("teamMemberOf", teamMemberOf || 28);
     if (file) formData.append("driverPhoto", file);
     if (upload) formData.append("fmsciLicPhoto", upload);
     if (image) formData.append("dlPhoto", image);
@@ -145,6 +148,7 @@ const Registration = () => {
     setError("");
     setDlNumb("");
     setFmsciNumb("");
+    setTeamMemberOf("");
   };
 
   const handleCancel = () => {
@@ -161,6 +165,7 @@ const Registration = () => {
     setError("");
     setDlNumb("");
     setFmsciNumb("");
+    setTeamMemberOf("");
   };
   const handleDriverDataReceived = (data) => {
     setDriverData(data);
@@ -253,6 +258,21 @@ const Registration = () => {
     }
   }, [selecteddetails]);
 
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const response = await AxiosInstance.get(`${BASE_URL}/api/Teams`);
+        console.log(response);
+
+        setTeams(response.data);
+      } catch (error) {
+        toast.error("Error loading teams:", error);
+      }
+    };
+
+    fetchTeams();
+  }, []);
+
   return (
     <section className="w-full h-screen flex flex-col">
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -300,24 +320,75 @@ const Registration = () => {
 
                     <div className="flex gap-3 h-auto items-center ">
                       <div className="w-3/4 p-2 flex  flex-col gap-2 ">
-                        <div className="">
-                          <label
-                            style={Styles.label}
-                            className="block text-sm font-bold text-gray-700 mb-1"
-                          >
-                            Name
-                          </label>
-                          <input
-                            style={Styles.input}
-                            type="text"
-                            className="w-full p-3 border border-gray-300 rounded"
-                            value={name}
-                            onChange={(e) =>
-                              setName(e.target.value.toUpperCase())
-                            }
-                            placeholder="Enter your name"
-                            required
-                          />
+                        <div className="flex gap-2">
+                          <div className="w-1/2">
+                            <label
+                              style={Styles.label}
+                              className="block text-sm font-bold text-gray-700 mb-1"
+                            >
+                              Name
+                            </label>
+                            <input
+                              style={Styles.input}
+                              type="text"
+                              className="w-full p-3 border border-gray-300 rounded"
+                              value={name}
+                              onChange={(e) =>
+                                setName(e.target.value.toUpperCase())
+                              }
+                              placeholder="Enter your name"
+                              required
+                            />
+                          </div>
+                          <div className="w-1/2">
+                            <label className="block text-sm font-bold text-gray-700 mb-1">
+                              Team
+                            </label>
+                            <div className="relative flex items-center gap-2">
+                              {isAddingTeam ? (
+                                <input
+                                  type="text"
+                                  className="w-full p-3 border border-gray-300 rounded"
+                                  placeholder="Enter new team name"
+                                  value={teamMemberOf}
+                                  onChange={(e) =>
+                                    setTeamMemberOf(e.target.value)
+                                  }
+                                  required
+                                />
+                              ) : (
+                                <select
+                                  className="w-full p-3 border border-gray-300 rounded max-h-48 overflow-y-auto"
+                                  value={teamMemberOf}
+                                  onChange={(e) =>
+                                    setTeamMemberOf(e.target.value)
+                                  }
+                                  required
+                                >
+                                  <option value="">Select a team</option>
+                                  {teams
+                                    .filter((team) => team.status)
+                                    .map((team) => (
+                                      <option
+                                        key={team.teamId}
+                                        value={team.teamId}
+                                      >
+                                        {team.teamName}
+                                      </option>
+                                    ))}
+                                </select>
+                              )}
+
+                              {/* <button
+                                type="button"
+                                onClick={() => setIsAddingTeam(!isAddingTeam)}
+                                className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                title={isAddingTeam ? "Cancel" : "Add new team"}
+                              >
+                                {isAddingTeam ? "✕" : "+"}
+                              </button> */}
+                            </div>
+                          </div>
                         </div>
 
                         <div className="flex w-full gap-2">
