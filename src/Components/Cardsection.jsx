@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useAnimation } from "framer-motion";
 import Card from "../Components/Card";
-import { BsCircleFill } from "react-icons/bs";
+import { BsArrowLeft, BsCircleFill } from "react-icons/bs";
 import { BsArrowRight } from "react-icons/bs";
 
 const Cardsection = () => {
@@ -11,6 +11,15 @@ const Cardsection = () => {
   const [completedEvents, setCompletedEvents] = useState([]);
 
   const controls = useAnimation();
+  const carouselRef = useRef();
+
+  const scrollLeft = () => {
+    carouselRef.current.scrollBy({ left: -400, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    carouselRef.current.scrollBy({ left: 400, behavior: "smooth" });
+  };
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -78,37 +87,62 @@ const Cardsection = () => {
 
       <div className="w-full h-screen flex flex-row gap-4 px-4">
         <div className="w-3/4 h-full flex flex-col overflow-x-auto">
-
           {/* live */}
 
-          <div className="w-full h-1/2 flex flex-col">
-            <div className="w-full h-auto flex items-center gap-2">
-              <span className="text-3xl font-mono p-2 ">Live</span>
+          <div className="w-full h-1/2 flex flex-col ">
+            <div className="min-w-[320px] h-auto flex items-center gap-2 ">
+              <span className="text-3xl font-mono p-2">Live</span>
               <BsCircleFill className="text-red-500 text-xl animate-pulse" />
             </div>
-            <div className="w-full h-full overflow-x-auto flex flex-row gap-2 p-2 flex-grow">
+           
+            <div className="w-full  h-full overflow-hidden flex flex-col p-2 flex-grow">
+             
               {liveEvents.map((event) => (
-                <Card key={event.eventid} event={event} type="live" />
+                <div key={event.eventid} className="w-full">
+                  <Card event={event} type="live" />
+                </div>
               ))}
             </div>
           </div>
-           {/* upcoming */}
-          <div className="w-full h-1/2 flex flex-col">
-            <div className="w-full h-auto flex items-center gap-2">
-              <span className="text-3xl font-mono p- ">Upcoming</span>
+
+          {/* upcoming */}
+          <div className="w-full flex flex-col relative">
+            {/* Title */}
+            <div className="w-full flex items-center gap-2 mb-2">
+              <span className="text-3xl font-mono">Upcoming</span>
               <BsArrowRight className="text-yellow-500 text-3xl animate-bounce" />
             </div>
-            <div className="w-full h-full overflow-x-auto flex flex-row gap-2 p-2 flex-grow">
+
+            {/* Scroll Buttons */}
+            <button
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-cyan-500  shadow-md z-10 p-2 rounded-full hover:bg-cyan-600"
+            >
+              <BsArrowLeft size={20} />
+            </button>
+
+            <button
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-cyan-500 shadow-md z-10 p-2 rounded-full hover:bg-cyan-600"
+            >
+              <BsArrowRight size={20} />
+            </button>
+
+            {/* Carousel */}
+            <motion.div
+              ref={carouselRef}
+              className="w-full overflow-x-auto flex gap-4 p-2 scrollbar-hide"
+            >
               {upcomingEvents.map((event) => (
                 <Card key={event.eventid} event={event} type="upcoming" />
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* completed card */}
 
-        <div className="w-1/4 h-full flex flex-col  overflow-y-scroll">
+        <div className="w-1/4 h-auto flex flex-col  overflow-y-scroll">
           <div className="w-full h-auto flex items-center gap-2 sticky top-0">
             <span className="text-3xl font-mono p-2">Completed</span>
             <span className="text-3xl font-mono animate-pulse">🎯</span>

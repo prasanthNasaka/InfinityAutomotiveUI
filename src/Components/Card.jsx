@@ -37,7 +37,7 @@ const Card = ({ event, type }) => {
   return (
     <>
       <div
-        className="min-w-max h-full rounded-lg overflow-hidden  shadow-lg cursor-pointer bg-white"
+        className="min-w-max h-full rounded-lg overflow-hidden  shadow-lg cursor-pointer bg-white border"
         onClick={handleClick}
       >
         <div>
@@ -45,7 +45,7 @@ const Card = ({ event, type }) => {
             <img
               src={`${IMAGE_URL}${event.banner}`}
               alt={event.eventname}
-              className="w-96 h-48 rounded-lg  object-fill"
+              className="w-full h-48 rounded-lg  object-fill"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =
@@ -95,10 +95,15 @@ const Card = ({ event, type }) => {
           )}
           {type === "upcoming" && (
             <p className="text-gray-600 flex items-center">
-              <p className="text-gray-600 items-center flex text-wrap">
-                <Calendar className="mr-2" size={20} />
-                Start Date: {formatDate(event.startdate)} - End Date:{" "}
-                {formatDate(event.enddate)}
+              <p className="text-gray-600 items-center flex justify-center  text-wrap flex-col">
+                <span className="flex items-center justify-between">
+                  <Calendar className="mr-2" size={20} />
+                  Start Date: {formatDate(event.startdate)}
+                </span>
+                <span className="flex items-center justify-start">
+                  <Calendar className="mr-3" size={20} />
+                  End Date: {formatDate(event.enddate)}
+                </span>
               </p>
             </p>
           )}
@@ -120,7 +125,7 @@ const Card = ({ event, type }) => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center">
+        <div className="z-50 fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg max-w-2xl w-full">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-2xl font-bold mb-4 text-center">

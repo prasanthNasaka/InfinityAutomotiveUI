@@ -11,12 +11,12 @@ const Landingheader = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY || window.pageYOffset;
-      const newOpacity = Math.max(25, 100 - scrollY / 2);
+      const newOpacity = Math.min(100, 25 + scrollY / 2); // Reversed opacity logic
       setOpacity(newOpacity);
     };
-
+  
     window.addEventListener("scroll", handleScroll);
-
+  
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };

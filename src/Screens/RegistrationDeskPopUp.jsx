@@ -41,6 +41,7 @@ const RegistrationDeskPopUp = () => {
   });
   const location = useLocation();
   const eventData = location.state;
+
   const filteredData = tableData.filter((event) =>
     Object.values(event).some((value) =>
       String(value).toLowerCase().includes(searchQuery.toLowerCase())
@@ -115,57 +116,6 @@ const RegistrationDeskPopUp = () => {
     return pages;
   };
 
-  // const handleEventChange = (event) => {
-  //   const selectedEventId = event.target.value;
-  //   setEventId(selectedEventId);
-  //   setSelectedEvent(selectedEventId);
-  //   setSelectedCategory("");
-  //   setTableData([]);
-
-  //   if (selectedEventId) {
-  //     fetch(`${BASE_URL}/api/eventcategories?event_id=${selectedEventId}`)
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         if (data && Array.isArray(data)) {
-  //           setCategories(data);
-  //         } else {
-  //           setCategories([]);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching event categories:", error);
-  //         setCategories([]);
-  //       });
-
-  //     fetch(`${BASE_URL}/api/Registration/event/${selectedEventId}`)
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         if (data && Array.isArray(data)) {
-  //           const updatedData = data.map((item) => ({
-  //             ...item,
-  //             driverPhotoUrl: item.driverPhoto
-  //               ? `${IMAGE_URL}${item.driverPhoto}`
-  //               : null,
-  //             hasPhoto: !!item.driverPhoto,
-  //           }));
-
-  //           console.log("Updated Data:", updatedData);
-  //           setTableData(updatedData);
-  //         } else {
-  //           setTableData([]);
-  //         }
-  //       })
-  //       .catch((error) => console.error("Error fetching table data:", error));
-  //   } else {
-  //     setCategories([]);
-  //     setTableData([]);
-  //   }
-  // };
-
-  // const handleCategoryChange = (e) => {
-  //   setSelectedCategory(e.target.value);
-  // };
-
   const handleDataReceived = (type, data) => {
     if (type === "driver") {
       setDriverData(data);
@@ -179,7 +129,6 @@ const RegistrationDeskPopUp = () => {
       const FilteredDrvData = tableData.filter(
         (d) => d.driverId === item.driverId
       );
-      console.log("Filtered Table Data:", FilteredDrvData);
 
       setDrvTableData(FilteredDrvData);
       setSelectedDriver(item);
@@ -221,7 +170,6 @@ const RegistrationDeskPopUp = () => {
         scrutinyStatus: 15, //15 pending 16 approved 17 rejected 18 N/A
         documentStatus: 97, //97 pending 98 verified (parseInt(addDocVerify) ||)
       };
-      console.log("payload", payload);
 
       const response = await AxiosInstance.post(
         `${BASE_URL}/api/Registration`,
@@ -235,9 +183,8 @@ const RegistrationDeskPopUp = () => {
 
       if (response.status === 201) {
         toast.success("Successfully added");
-        console.log("response", response);
 
-        await fetchUpdatedData(response);
+        // await fetchUpdatedData(response);
       }
 
       setSelectedCategory("");
@@ -256,35 +203,34 @@ const RegistrationDeskPopUp = () => {
     }
   };
 
-  const fetchUpdatedData = async () => {
-    try {
-      const response = await AxiosInstance.get(
-        `${BASE_URL}/api/EventRegistration/ActiveEvents`
-      );
-      if (Array.isArray(response.data)) {
-        setEvents(response.data);
-      } else {
-        console.error(
-          "Expected an array of events, but received:",
-          response.data
-        );
-        setEvents([]);
-        setTableData([]);
-      }
-    } catch (error) {
-      console.error("Error fetching events:", error);
-      setEvents([]);
-    }
-  };
+  // const fetchUpdatedData = async () => {
+  //   try {
+  //     const response = await AxiosInstance.get(
+  //       `${BASE_URL}/api/EventRegistration/ActiveEvents`
+  //     );
+  //     if (Array.isArray(response.data)) {
+  //       setEvents(response.data);
+  //     } else {
+  //       console.error(
+  //         "Expected an array of events, but received:",
+  //         response.data
+  //       );
+  //       setEvents([]);
+  //       setTableData([]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching events:", error);
+  //     setEvents([]);
+  //   }
+  // };
 
   useEffect(() => {
     // Fetch updated data on mount
-    fetchUpdatedData();
+    // fetchUpdatedData();
 
     if (eventData?.eventid) {
       setEventId(eventData.eventid);
       setSelectedEvent(eventData.eventname);
-      console.log("eventData", eventData);
 
       AxiosInstance.get(`${BASE_URL}/api/eventcategories`, {
         params: { event_id: eventData.eventid },
@@ -306,34 +252,58 @@ const RegistrationDeskPopUp = () => {
   return (
     <section className="w-full h-screen flex flex-col">
       <div className="flex h-[calc(100vh-6rem)] overflow-hidden">
-       
-        <div className="flex-1 p-3 overflow-y-auto">
-          <div className="w-full h-auto flex justify-center">
-            <div className="w-2/5 h-auto flex border rounded-lg bg-gray-100 mb-2">
-              <div className="w-3/4 flex flex-col  justify-center p-2">
-              <span style={Styles.heading}>Bank Details:</span>
-              <div className="flex flex-col gap-1">
-              {events.length > 0 && (
-                  <>
-                    <span>Bank Name: {events[0].bankname}</span>
-                    <span>IFSC Code: {events[0].ifsccode}</span>
-                    <span>Account Name: {events[0].accountname}</span>
-                    <span>Account Number: {events[0].accountnum}</span>
-                  </>
+        <div className="flex-1 p-3 overflow-y-auto ">
+          <div className="w-full h-auto flex justify-center items-center p-2">
+            <span  style={Styles.heading}>{eventData.companyName}</span>
+          </div>
+          <div className="max-w-7xl gap-3 mx-auto h-auto flex justify-between">
+            {/* Event Details Card */}
+            <div className="w-1/2 h-auto flex border justify-between rounded-lg bg-black mb-2">
+              <div className="min-w-min flex flex-col justify-center p-2">
+                <span className="text-white text-xl font-poppins font-bold">Event Details:</span>
+                <div className="flex flex-col gap-1 text-white">
+                  <span className="font-bold text-xl text-cyan-500"> {eventData.eventname}</span>
+                  <span>
+                    Start Date:{" "}
+                    {new Date(eventData.startdate).toLocaleDateString()}
+                  </span>
+                  <span>
+                    End Date: {new Date(eventData.enddate).toLocaleDateString()}
+                  </span>
+                  <span>Location: {eventData.location}</span>
+                  
+                </div>
+              </div>
+              <div className="w-auto p-2">
+                {eventData.banner && (
+                  <img
+                    className="w-full h-44 rounded-lg border-2 border-cyan-500"
+                    src={`${IMAGE_URL}${eventData.banner}`}
+                    alt="Event Banner"
+                  />
                 )}
               </div>
-                
+            </div>
+
+            {/* Bank Details Card */}
+            <div className="w-1/2 h-auto flex border rounded-lg bg-black mb-2">
+              <div className="w-3/4 flex flex-col justify-center p-2">
+                <span className="text-white text-xl font-poppins font-bold">Bank Details:</span>
+                <div className="flex flex-col gap-1 text-white">
+                  <span>Bank Name: {eventData.bankname}</span>
+                  <span>IFSC Code: {eventData.ifsccode}</span>
+                  <span>Account Name: {eventData.accountname}</span>
+                  <span>Account Number: {eventData.accountnum}</span>
+                </div>
               </div>
               <div className="w-1/4 p-2">
-                {/* Corrected access to qrpath */}
-                {events.length > 0 &&
-                  events[0].qrpath && ( // Ensure to access the first event's qrpath
-                    <img
-                      className="w-full h-44"
-                      src={`${IMAGE_URL}${events[0].qrpath}`} // Corrected to events[0].qrpath
-                      alt="QR Code"
-                    />
-                  )}
+                {eventData.qrpath && (
+                  <img
+                    className="w-full h-44 rounded-lg border-2 border-cyan-500"
+                    src={`${IMAGE_URL}${eventData.qrpath}`}
+                    alt="QR Code"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -354,20 +324,21 @@ const RegistrationDeskPopUp = () => {
                   <div className="w-full flex p-2 gap-2 tab:flex-col">
                     {/* Event Name (Displayed as Text) */}
                     <div className="w-1/2 tab:w-full">
-                      <label className="text-sm font-medium text-gray-900">
+                      <label  style={Styles.label} className="text-sm font-medium text-gray-900">
                         Selected Event Name
                       </label>
-                      <div className="w-full h-10 flex items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
+                      <div  style={Styles.select} className="w-full h-10 flex items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
                         {selectedEvent || "No Event Selected"}
                       </div>
                     </div>
 
                     {/* Event Class Selection */}
                     <div className="w-1/2 tab:w-full">
-                      <label className="text-sm font-medium text-gray-900">
+                      <label style={Styles.label} className="text-sm font-medium text-gray-900">
                         Event Class
                       </label>
                       <select
+                       style={Styles.select}
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
                         disabled={!eventId || categories.length === 0}
