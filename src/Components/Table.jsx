@@ -6,6 +6,7 @@ import { BASE_URL } from "../constants/global-const";
 import AxiosInstance from "./AxiosInstance";
 import Styles from "../constants/Styles";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import Loader from "./Loader";
 
 const Table = () => {
   const { eventId } = useParams();
@@ -123,10 +124,15 @@ const Table = () => {
     return pages;
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="flex justify-center items-center w-full h-screen"><Loader /></div>;
 
   return (
     <section className="w-full h-screen p-2">
+
+      <div className="w-1/2 h-auto p-2">
+      
+      </div>
+
       <Toaster position="bottom-center" reverseOrder={false} />
  
       <div className="border rounded-lg overflow-hidden bg-white shadow-md">
