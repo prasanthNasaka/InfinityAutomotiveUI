@@ -3,15 +3,15 @@ import { Calendar, Flag, MapPin, Timer } from "lucide-react";
 import { useState } from "react";
 import { IMAGE_URL } from "../constants/global-const";
 import { TfiCup } from "react-icons/tfi";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 const Card = ({ event, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleDetailsClick = (eventId) => {
     const url = `/table/${eventId}`;
-    window.open(url, "_blank"); 
+    window.open(url, "_blank");
   };
 
   const handleRegisterClick = (eventData) => {
@@ -37,7 +37,7 @@ const Card = ({ event, type }) => {
   return (
     <>
       <div
-        className="min-w-max h-full rounded-lg overflow-hidden shadow-lg cursor-pointer bg-white"
+        className="min-w-max h-full rounded-lg overflow-hidden  shadow-lg cursor-pointer bg-white"
         onClick={handleClick}
       >
         <div>
@@ -45,7 +45,7 @@ const Card = ({ event, type }) => {
             <img
               src={`${IMAGE_URL}${event.banner}`}
               alt={event.eventname}
-              className="w-96 h-48 object-fill"
+              className="w-96 h-48 rounded-lg  object-fill"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =
@@ -58,7 +58,7 @@ const Card = ({ event, type }) => {
             <img
               src={`${IMAGE_URL}${event.banner}`}
               alt={event.eventname}
-              className="w-96 h-48 object-cover border"
+              className="w-96 h-48 rounded-lg object-cover border"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =
@@ -71,7 +71,7 @@ const Card = ({ event, type }) => {
             <img
               src={`${IMAGE_URL}${event.banner}`}
               alt={event.eventname}
-              className="w-96 h-48 object-cover"
+              className="w-96 h-48 rounded-lg object-cover"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =
@@ -95,8 +95,6 @@ const Card = ({ event, type }) => {
           )}
           {type === "upcoming" && (
             <p className="text-gray-600 flex items-center">
-              <Calendar className="mr-2" size={16} />
-              {formatDate(event.startdate)}
               <p className="text-gray-600 items-center flex text-wrap">
                 <Calendar className="mr-2" size={20} />
                 Start Date: {formatDate(event.startdate)} - End Date:{" "}
@@ -153,7 +151,7 @@ const Card = ({ event, type }) => {
               <img
                 src={`${IMAGE_URL}${event.banner}`}
                 alt={event.eventname}
-                className="w-full h-48 object-fill"
+                className="w-full h-48 rounded-lg object-fill"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src =
