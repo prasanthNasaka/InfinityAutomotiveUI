@@ -4,7 +4,6 @@ import { useState } from "react";
 import Styles from "../constants/Styles";
 import { RiLogoutCircleRFill } from "react-icons/ri";
 import { TbPasswordUser } from "react-icons/tb";
-import { ImProfile } from "react-icons/im";
 
 
 // import Styles from "../constants/Styles";
@@ -22,12 +21,12 @@ const Rightbar = ({ isOpen }) => {
 
   return (
     <div
-      className={`fixed top-20 right-0 h-[calc(100vh-1rem)]  w-auto bg-black text-white transition-all transform ease-in-out duration-700 ${
+      className={`z-50 fixed top-20 right-0 h-[calc(100vh-1rem)]  w-auto bg-black text-white transition-all transform ease-in-out duration-700 ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
       <div className="p-3">
-        <nav>
+        <nav className="relative">
           <ul className="space-y-4 mt-4 ">
             <li className="flex items-center hover:bg-cyan-500 cursor-pointer  justify-between gap-2 p-2 bg-gray-800 rounded-lg">
               <img
@@ -61,16 +60,7 @@ const Rightbar = ({ isOpen }) => {
                 Change Password
               </button>
             </li>
-            <li>
-              <button
-                style={Styles.side}
-                className="p-2 w-full justify-start text-lg text-white cursor-pointer hover:bg-cyan-500 flex items-center gap-3 hover:rounded-lg"
-              >
-                <ImProfile />
-
-                Profile
-              </button>
-            </li>
+           
           </ul>
         </nav>
       </div>

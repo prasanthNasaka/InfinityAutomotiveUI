@@ -1,7 +1,7 @@
 import  { useRef } from "react";
 
 // eslint-disable-next-line react/prop-types
-const SwipeToggle = ({ isActive, onToggle }) => {
+const Toggle = ({ isActive, onToggle }) => {
   const touchStartRef = useRef(0);
   const touchEndRef = useRef(0);
 
@@ -50,4 +50,4 @@ const SwipeToggle = ({ isActive, onToggle }) => {
   );
 };
 
-export default SwipeToggle;
+export default Toggle;
