@@ -6,6 +6,7 @@ import Rightbar from "./Rightbar";
 import { useEffect, useState } from "react";
 import { IMAGE_URL } from "../constants/global-const";
 
+
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState("");
