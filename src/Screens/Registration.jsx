@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import MainSideBar from "../Components/MainSideBar";
@@ -69,26 +70,38 @@ const Registration = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("driverName", name);
-    formData.append("phone", phone);
-    formData.append("email", email);
-    formData.append("fmsciNumb", fmsciNumb);
-    formData.append("fmsciValidTill", fmsciValidTill);
-    formData.append("dlNumb", dlNumb);
-    formData.append("dlValidTill", dlValidTill);
-    formData.append("dob", dob);
-    formData.append("bloodGroup", bloodGroup);
-    formData.append("teamMemberOf", teamMemberOf || 28);
-    if (file) formData.append("driverPhoto", file);
-    if (upload) formData.append("fmsciLicPhoto", upload);
-    if (image) formData.append("dlPhoto", image);
-
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
     try {
+      let finalTeamId = teamMemberOf || 28;
+
+      if (isAddingTeam && teamMemberOf.trim()) {
+        const response = await AxiosInstance.post(`${BASE_URL}/api/Teams`, {
+          teamName: teamMemberOf.trim(),
+          status: true,
+        });
+
+        finalTeamId = response.data.teamId;
+        toast.success("New team created successfully!");
+      }
+
+      const formData = new FormData();
+      formData.append("driverName", name);
+      formData.append("phone", phone);
+      formData.append("email", email);
+      formData.append("fmsciNumb", fmsciNumb);
+      formData.append("fmsciValidTill", fmsciValidTill);
+      formData.append("dlNumb", dlNumb);
+      formData.append("dlValidTill", dlValidTill);
+      formData.append("dob", dob);
+      formData.append("bloodGroup", bloodGroup);
+      formData.append("teamMemberOf", finalTeamId);
+      if (file) formData.append("driverPhoto", file);
+      if (upload) formData.append("fmsciLicPhoto", upload);
+      if (image) formData.append("dlPhoto", image);
+
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
       let response;
 
       if (isEditing) {
@@ -105,7 +118,7 @@ const Registration = () => {
             },
           }
         );
-        toast.success("Driver updated successfully:", response.data);
+        toast.success("Driver updated successfully");
       } else {
         if (!name || !phone || !email) {
           throw new Error("Driver name, phone, and email are required.");
@@ -120,7 +133,7 @@ const Registration = () => {
             },
           }
         );
-        toast.success("Driver registered successfully:", response.data);
+        toast.success("Driver registered successfully");
       }
     } catch (error) {
       if (error.response && error.response.data) {
@@ -128,10 +141,10 @@ const Registration = () => {
         if (error.response.data.errors) {
           toast.error("Validation errors occurred. Check console for details.");
         } else {
-          toast.error("Server error occurred. Please try again.");
+          console.error("Server error occurred. Please try again.");
         }
       } else {
-        toast.error("An unexpected error occurred: " + error.message);
+        console.error("An unexpected error occurred: " + error.message);
       }
     }
 
@@ -149,6 +162,7 @@ const Registration = () => {
     setDlNumb("");
     setFmsciNumb("");
     setTeamMemberOf("");
+    setIsAddingTeam(false);
   };
 
   const handleCancel = () => {
@@ -379,14 +393,14 @@ const Registration = () => {
                                 </select>
                               )}
 
-                              {/* <button
+                              <button
                                 type="button"
                                 onClick={() => setIsAddingTeam(!isAddingTeam)}
                                 className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                                 title={isAddingTeam ? "Cancel" : "Add new team"}
                               >
                                 {isAddingTeam ? "✕" : "+"}
-                              </button> */}
+                              </button>
                             </div>
                           </div>
                         </div>
