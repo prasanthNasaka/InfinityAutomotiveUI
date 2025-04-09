@@ -1,32 +1,28 @@
 /* eslint-disable no-unused-vars */
 
-import { AiOutlineClose } from "react-icons/ai";
 import { FaBars, FaFlagCheckered, FaTimes } from "react-icons/fa";
-// import { Ellipsis } from "lucide-react";
 import Styles from "../constants/Styles";
 import Rightbar from "./Rightbar";
-import { useState } from "react";
-import { IoIosNotifications } from "react-icons/io";
-
-
+import { useEffect, useState } from "react";
+import { IMAGE_URL } from "../constants/global-const";
 
 const Header = () => {
- 
-  // const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [logo, setLogo] = useState("");
 
-  
-
-  // const toggleMenu = () => {
-  //   setIsMenuOpen(!isMenuOpen);
-  // };
-
-  
-  
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  useEffect(() => {
+    const storedName = localStorage.getItem("username");
+    const storedLogo = localStorage.getItem("companylogo");
+    if (storedName) setUserName(storedName);
+    if (storedLogo) {
+      setLogo(`${IMAGE_URL}${storedLogo}`);
+    }
+  }, []);
 
   return (
     <section className="w-full h-20 flex justify-between items-center text-center bg-white shadow-lg">
@@ -51,103 +47,22 @@ const Header = () => {
 
       <div className="h-full w-1/4 flex justify-center items-center">
         <div className="w-full h-full  flex justify-evenly items-center  p-1">
-          <div className="w-1/2 h-full flex justify-end items-center gap-2">
-            <span style={Styles.description}>Furracho Lamborghini</span>
+          <div className="w-1/2 h-full flex justify-end items-center gap-3">
+            <span style={Styles.description}>{userName}</span>
             <img
-              className="w-12 rounded-full  h-12 border-2 border-cyan-500"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5TaivUIIdSQht0uxky5eiVJIuUZorszOO0A&s"
-              alt=""
+              className="w-12 h-12 rounded-full border-2 border-cyan-500 object-cover"
+              src={logo || "https://via.placeholder.com/48x48.png?text=Logo"}
+              alt="Company Logo"
             />
           </div>
-
-          <IoIosNotifications className="size-6 hover:text-cyan-500 cursor-pointer" />
 
           <div className="tab:w-full  tab:h-full flex tab:justify-end tab:items-center">
             <button className="hover:text-cyan-500" onClick={toggleSidebar}>
-            {isSidebarOpen ? <FaTimes  /> : <FaBars />}
-              </button>
-
-
-            {/* <Ellipsis
-              className="size-8 border cursor-pointer text-black hover:text-cyan-500   "
-              onClick={toggleMenu}
-            /> */}
+              {isSidebarOpen ? <FaTimes /> : <FaBars />}
+            </button>
           </div>
         </div>
       </div>
-
-      {/* {isMenuOpen && (
-        <div
-          className={`absolute top-14 right-0 w-28 tab:w-1/3  bg-white shadow-lg p-4 rounded-lg 
-    flex flex-col items-center gap-6 transition-all duration-700 ease-in-out transform lappy:hidden
-    ${isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}`}
-        >
-         
-          <div className="w-full flex justify-end">
-            <AiOutlineClose
-              className="text-black cursor-pointer text-2xl"
-              onClick={toggleMenu}
-            />
-          </div>
-
-        
-          <div className="flex flex-col items-center">
-            <ul className="font-serif text-black text-lg cursor-pointer">
-              <li className="w-full hover:text-cyan-600 text-center py-2">
-                <a>Profile</a>
-              </li>
-            </ul>
-          </div>
-
-        
-         
-        </div>
-      )} */}
-
-      {/* {isMenuOpen && (
-        <div
-          className={`absolute top-0 tab:block right-0 h-fit w-20 tab:right-0 tab:w-1/3 tab:rounded-xl bg-white shadow-lg flex-col items-center gap-6 p-3 
-          transition-all duration-1000 ease-in-out transform lappy:hidden ${
-            isMenuOpen
-              ? "translate-x-0 opacity-100 flex"
-              : "translate-x-full opacity-0 hidden"
-          }`}
-        >
-          <div className="flex justify-end">
-            <AiOutlineClose
-              className="text-black cursor-pointer self-end"
-              onClick={toggleMenu}
-            />
-          </div>
-          <div className="flex justify-center items-center">
-            <ul
-              id="underline_select"
-              className="font-serif tab:flex tab:flex-col tab:gap-4 tab:w-fit lappy:block py-2.5 px-4  text-black bg-transparent flex justify-start text-xl cursor-pointer"
-            >
-              <li className="w-full h-auto hover:text-cyan-600 flex justify-start">
-                <a>Login</a>
-              </li>
-              <li className="w-full h-auto hover:text-cyan-600 flex justify-start">
-                <a>Register</a>
-              </li>
-              <li className="w-full h-auto hover:text-cyan-600 flex justify-start">
-                <a>Scrutiny</a>
-              </li>
-              <li className="w-full h-auto hover:text-cyan-600 flex justify-start">
-                <a>Profile</a>
-              </li>
-            </ul>
-          </div>
-          <button
-            onClick={logOutHandler}
-            type="button"
-            className="w-fit text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-5 py-2.5"
-          >
-            Logout
-          </button>
-        </div>
-      )} */}
-      
     </section>
   );
 };

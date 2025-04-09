@@ -38,10 +38,11 @@ const Login = () => {
       if (response.status === 200) {
         toast.success("Login successful! Redirecting...");
 
-        const { jwtToken, roleID } = response.data.data;
+        const { jwtToken, roleID, companylogo } = response.data.data;
 
         localStorage.setItem("authToken", jwtToken);
         localStorage.setItem("userRole", roleID);
+        localStorage.setItem("companylogo", companylogo);
 
         const roleRoutes = {
           100: "/addcompany",
