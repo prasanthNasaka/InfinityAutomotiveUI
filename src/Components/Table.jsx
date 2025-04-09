@@ -7,10 +7,12 @@ import AxiosInstance from "./AxiosInstance";
 import Styles from "../constants/Styles";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Loader from "./Loader";
+import ResultsCard from "./ResultsCard";
 
 const Table = () => {
   const { eventId } = useParams();
   const [data, setData] = useState([]);
+  const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(5);
@@ -28,23 +30,40 @@ const Table = () => {
     { value: 20, label: "20 per page" },
   ];
 
+  const getEvents = async () => {
+    try {
+      const response = await AxiosInstance.get(
+        `${BASE_URL}/api/EventRegistration/${eventId}`
+      );
+      setEventData(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await AxiosInstance.get(
+        `${BASE_URL}/api/LandingPage/ById`,
+        {
+          params: { EventId: eventId },
+        }
+      );
+      console.log("eventId", eventId);
+
+      setData(response.data);
+    } catch {
+      toast.error("Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await AxiosInstance.get(
-          `${BASE_URL}/api/LandingPage/ById`,
-          {
-            params: { EventId: eventId },
-          }
-        );
-        setData(response.data);
-      } catch {
-        toast.error("Failed to fetch data");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
+     if (eventId) {
+    getEvents();
+  }
   }, [eventId]);
 
   useEffect(() => {
@@ -124,17 +143,17 @@ const Table = () => {
     return pages;
   };
 
-  if (loading) return <div className="flex justify-center items-center w-full h-screen"><Loader /></div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <Loader />
+      </div>
+    );
 
   return (
     <section className="w-full h-screen p-2">
-
-      <div className="w-1/2 h-auto p-2">
-      
-      </div>
-
       <Toaster position="bottom-center" reverseOrder={false} />
- 
+      <ResultsCard props={eventData} />
       <div className="border rounded-lg overflow-hidden bg-white shadow-md">
         <div className="w-full bg-gray-50 p-2 flex justify-center h-auto">
           <span style={Styles.tableheading}>Completed Details</span>
@@ -381,7 +400,6 @@ const Table = () => {
           </div>
         )}
       </div>
-     
     </section>
   );
 };

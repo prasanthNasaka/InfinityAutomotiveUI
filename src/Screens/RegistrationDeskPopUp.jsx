@@ -254,7 +254,7 @@ const RegistrationDeskPopUp = () => {
       <div className="flex h-[calc(100vh-6rem)] overflow-hidden">
         <div className="flex-1 p-3 overflow-y-auto ">
           <div className="w-full h-auto flex justify-center items-center p-2">
-            <span  style={Styles.heading}>{eventData.companyName}</span>
+            <span  className="text-4xl font-poppins font-bold text-cyan-500">{eventData.companyName}</span>
           </div>
           <div className="max-w-7xl gap-3 mx-auto h-auto flex justify-between">
             {/* Event Details Card */}
