@@ -10,6 +10,7 @@ import Styles from "../constants/Styles";
 import AxiosInstance from "./AxiosInstance";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import PhoneInput from "react-phone-input-2";
 
 const EmployeeTypes = {
   OTHERS: 0,
@@ -119,11 +120,6 @@ const Add_Employee = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (formData.email && !emailRegex.test(formData.email)) {
       formErrors.email = "Invalid email format";
-    }
-
-    const phoneRegex = /^[0-9]{10}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      formErrors.phone = "Phone number must be 10 digits";
     }
 
     setErrors(formErrors);
@@ -278,38 +274,95 @@ const Add_Employee = () => {
                   </div>
                   <div className="w-full h-full border-1 p-4  border mb-4 rounded-lg">
                     <div className="w-full h-auto flex gap-2 ">
-                      <div className="flex flex-col gap-2 w-1/2  ">
-                        {["empName", "phone", "email"].map((field) => (
-                          <div key={field} className="w-full">
-                            <label
-                              style={Styles.label}
-                              className="block text-sm font-semibold text-gray-700 mb-1"
-                            >
-                              {field.charAt(0).toUpperCase() + field.slice(1)}
-                            </label>
-                            <input
-                              style={Styles.input}
-                              type={field === "email" ? "email" : "text"}
-                              name={field}
-                              value={formData[field]}
-                              onChange={handleChange}
-                              maxLength={field === "phone" ? 10 : undefined}
-                              className={`w- p-3 border-2 rounded-md ${
-                                errors[field]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } focus:outline-none `}
-                              placeholder={`Enter ${
-                                field.charAt(0).toUpperCase() + field.slice(1)
-                              }`}
-                            />
-                            {errors[field] && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {errors[field]}
-                              </p>
-                            )}
-                          </div>
-                        ))}
+                      <div className="flex flex-col gap-2 w-1/2">
+                        {/* Employee Name */}
+                        <div className="w-full">
+                          <label
+                            style={Styles.label}
+                            className="block text-sm font-semibold text-gray-700 mb-1"
+                          >
+                            EmpName
+                          </label>
+                          <input
+                            style={Styles.input}
+                            type="text"
+                            name="empName"
+                            value={formData.empName}
+                            onChange={handleChange}
+                            className={`w-full p-3 border-2 rounded-md ${
+                              errors.empName
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } focus:outline-none`}
+                            placeholder="Enter EmpName"
+                          />
+                          {errors.empName && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.empName}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Phone */}
+                        <div className="w-full">
+                          <label
+                            style={Styles.label}
+                            className="block text-sm font-semibold text-gray-700 mb-1"
+                          >
+                            Phone
+                          </label>
+                          <PhoneInput
+                            country="in"
+                            value={formData.phone}
+                            onChange={(phone) =>
+                              handleChange({
+                                target: { name: "phone", value: phone },
+                              })
+                            }
+                            placeholder="        Enter Phone"
+                            inputStyle={{
+                              width: "100%",
+                              padding: "16px",
+                              borderRadius: "0.375rem",
+                              border: errors.phone
+                                ? "2px solid #EF4444"
+                                : "2px solid #D1D5DB", // red or gray
+                              outline: "none",
+                            }}
+                            inputProps={{
+                              name: "phone",
+                              required: true,
+                            }}
+                          />
+                        </div>
+
+                        {/* Email */}
+                        <div className="w-full">
+                          <label
+                            style={Styles.label}
+                            className="block text-sm font-semibold text-gray-700 mb-1"
+                          >
+                            Email
+                          </label>
+                          <input
+                            style={Styles.input}
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={`w-full p-3 border-2 rounded-md ${
+                              errors.email
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } focus:outline-none`}
+                            placeholder="Enter Email"
+                          />
+                          {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.email}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
                       <div className="w-1/2 flex flex-col gap-2">
@@ -502,9 +555,10 @@ const Add_Employee = () => {
                             <th
                               onClick={() => handleSort("phone")}
                               className="px-6 py-3 cursor-pointer"
-                            ><div className="flex items-center justify-center gap-1">
-                              Phone
-                              <SortingIcon
+                            >
+                              <div className="flex items-center justify-center gap-1">
+                                Phone
+                                <SortingIcon
                                   direction={
                                     sortField === "phone"
                                       ? sortDirection
@@ -512,14 +566,14 @@ const Add_Employee = () => {
                                   }
                                 />
                               </div>
-                              </th>
+                            </th>
                             <th
                               onClick={() => handleSort("email")}
                               className="px-6 py-3 cursor-pointer"
                             >
                               <div className="flex items-center justify-center gap-1">
-                              Email
-                              <SortingIcon
+                                Email
+                                <SortingIcon
                                   direction={
                                     sortField === "email"
                                       ? sortDirection
@@ -527,13 +581,14 @@ const Add_Employee = () => {
                                   }
                                 />
                               </div>
-                              </th>
+                            </th>
                             <th
-                             onClick={() => handleSort("employeeType")}
-                             className="py-3 px-4 text-left">
-                            <div className="flex items-center justify-center gap-1">
-                              Employee Type
-                              <SortingIcon
+                              onClick={() => handleSort("employeeType")}
+                              className="py-3 px-4 text-left"
+                            >
+                              <div className="flex items-center justify-center gap-1">
+                                Employee Type
+                                <SortingIcon
                                   direction={
                                     sortField === "employeeType"
                                       ? sortDirection
@@ -552,31 +607,32 @@ const Add_Employee = () => {
                               className="border-t hover:bg-gray-50"
                             >
                               <td className="py-3 px-4">
-                              <div className="flex items-center justify-center gap-1">
-                                {emp.empName}
+                                <div className="flex items-center justify-center gap-1">
+                                  {emp.empName}
                                 </div>
-                                </td>
+                              </td>
                               <td className="py-3 px-4">
-                              <div className="flex items-center justify-center gap-1">
-                                {emp.phone}
+                                <div className="flex items-center justify-center gap-1">
+                                  {emp.phone}
                                 </div>
-                                </td>
+                              </td>
                               <td className="py-3 px-4">
-                              <div className="flex items-center justify-center gap-1">
-                                {emp.email}
+                                <div className="flex items-center justify-center gap-1">
+                                  {emp.email}
                                 </div>
-                                </td>
+                              </td>
                               <td className="py-3 px-4 text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                {emp.employeeType === EmployeeTypes.EMPLOYEE
-                                  ? "Employee"
-                                  : emp.employeeType === EmployeeTypes.ORGANISER
-                                  ? "Organiser"
-                                  : emp.employeeType ===
-                                    EmployeeTypes.SCRUTINEER
-                                  ? "Scrutineer"
-                                  : "Others"}
-                                  </div>
+                                <div className="flex items-center justify-center gap-1">
+                                  {emp.employeeType === EmployeeTypes.EMPLOYEE
+                                    ? "Employee"
+                                    : emp.employeeType ===
+                                      EmployeeTypes.ORGANISER
+                                    ? "Organiser"
+                                    : emp.employeeType ===
+                                      EmployeeTypes.SCRUTINEER
+                                    ? "Scrutineer"
+                                    : "Others"}
+                                </div>
                               </td>
                               <td className="py-3 px-4">
                                 <button

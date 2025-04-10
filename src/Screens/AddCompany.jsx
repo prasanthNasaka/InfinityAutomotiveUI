@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import axios from "axios";
-import { BASE_URL } from "../constants/global-const";
+import { BASE_URL, IMAGE_URL } from "../constants/global-const";
 import Loader from "../Components/Loader";
 import toast, { Toaster } from "react-hot-toast";
 import { CiEdit } from "react-icons/ci";
@@ -11,6 +11,7 @@ import { MdOutlineDelete } from "react-icons/md";
 import AxiosInstance from "../Components/AxiosInstance";
 import Styles from "../constants/Styles";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import PhoneInput from "react-phone-input-2";
 
 const AddCompany = () => {
   const [formData, setFormData] = useState({
@@ -134,12 +135,13 @@ const AddCompany = () => {
     return pages;
   };
 
-
   const handleEdit = (company) => {
+    const logoUrl = company.comlogo ? `${IMAGE_URL}/${company.comlogo}` : "";
+
     setFormData({
       name: company.companyName || "",
       abbr: company.abbr || "",
-
+      logo: logoUrl, // save the full URL
       address: {
         street: company.street || "",
         city: company.city || "",
@@ -149,7 +151,6 @@ const AddCompany = () => {
         website: company.website || "",
       },
       companyId: company.companyId || null,
-
       contact: {
         phone: "",
         email: "",
@@ -160,37 +161,38 @@ const AddCompany = () => {
         password: "",
       },
     });
+
+    setImage(logoUrl);
     setIsEditing(true);
   };
 
   const updateCompany = async () => {
     try {
-      const formPayload = new FormData();
-      formPayload.append("CompanyName", formData.name);
-      formPayload.append("Abbr", formData.abbr);
-      formPayload.append("Street", formData.address.street);
-      formPayload.append("City", formData.address.city);
-      formPayload.append("State", formData.address.state);
-      formPayload.append("Zip", formData.address.zip);
-      formPayload.append("Country", formData.address.country);
-      formPayload.append("Website", formData.address.website);
-
-      if (image) {
-        formPayload.append("Companylogo", image);
-      }
+      const payload = {
+        companyName: formData.name,
+        street: formData.address.street,
+        city: formData.address.city,
+        state: formData.address.state,
+        zip: formData.address.zip,
+        country: formData.address.country,
+        website: formData.address.website,
+        abbr: formData.abbr,
+        companylogo: formData.logo || "",
+      };
 
       const response = await AxiosInstance.put(
         `/api/companies/${formData.companyId}`,
-        formPayload,
+        payload,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
 
       toast.success("Update successful");
       fetchCompanies();
+      setImage(null);
     } catch (error) {
       console.error("Update failed:", error);
       toast.error("Error updating company");
@@ -359,7 +361,6 @@ const AddCompany = () => {
     };
   }, [isDropdownOpen]);
 
-
   return (
     <section className="w-full h-screen flex flex-col">
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -436,9 +437,9 @@ const AddCompany = () => {
 
                   <div className="w-1/2 h-auto gap-8 flex flex-col p-1">
                     <div className="w-full h-auto ">
-                      {/* <h3 className="text-lg font-semibold mb-2">
+                      <h3 className="text-lg font-semibold mb-2">
                         Login Details
-                      </h3> */}
+                      </h3>
                       <div className="grid grid-cols-1 gap-8">
                         <div>
                           <label style={Styles.label} htmlFor="Username">
@@ -559,16 +560,26 @@ const AddCompany = () => {
                         >
                           Phone
                         </label>
-                        <input
-                          style={Styles.input}
-                          type="tel"
-                          name="contact.phone"
+                        <PhoneInput
+                          country="in"
                           value={formData.contact.phone}
-                          onChange={handleChange}
-                          className="w-full p-2 border rounded"
-                          placeholder="Enter Phone"
-                          maxLength={10}
-                          required
+                          onChange={(phone) =>
+                            handleChange({
+                              target: { name: "contact.phone", value: phone },
+                            })
+                          }
+                          placeholder="          Enter Phone"
+                          inputStyle={{
+                            ...Styles.input,
+                            width: "100%",
+                            padding: "8px",
+                            borderRadius: "0.375rem",
+                            border: "1px solid #D1D5DB",
+                          }}
+                          inputProps={{
+                            name: "contact.phone",
+                            required: true,
+                          }}
                         />
                       </div>
                       <div>
@@ -713,6 +724,7 @@ const AddCompany = () => {
                             setFormData({
                               name: "",
                               abbr: "",
+                              logo: "",
                               address: {
                                 street: "",
                                 city: "",
@@ -997,55 +1009,54 @@ const AddCompany = () => {
                     </tbody>
                   </table>
                 </div>
-               
               </div>
               <div className="flex justify-end px-2 items-center space-x-2 m-4">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    className={`px-3 py-2 rounded-md ${
-                      currentPage === 1
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-cyan-500 text-white hover:bg-cyan-700"
-                    }`}
-                  >
-                    Prev
-                  </button>
-                  {getPageNumbers().map((page, index) =>
-                    page === "..." ? (
-                      <span key={index} className="px-3 py-2">
-                        ...
-                      </span>
-                    ) : (
-                      <button
-                        key={index}
-                        onClick={() => handlePageChange(page)}
-                        className={`px-3 py-2 rounded-md ${
-                          currentPage === page
-                            ? "bg-cyan-700 text-white"
-                            : "bg-gray-200 hover:bg-gray-400"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-2 rounded-md ${
-                      currentPage === totalPages
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-cyan-500 text-white hover:bg-cyan-700"
-                    }`}
-                  >
-                    Next
-                  </button>
-                </div>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className={`px-3 py-2 rounded-md ${
+                    currentPage === 1
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-cyan-500 text-white hover:bg-cyan-700"
+                  }`}
+                >
+                  Prev
+                </button>
+                {getPageNumbers().map((page, index) =>
+                  page === "..." ? (
+                    <span key={index} className="px-3 py-2">
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={index}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === page
+                          ? "bg-cyan-700 text-white"
+                          : "bg-gray-200 hover:bg-gray-400"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-2 rounded-md ${
+                    currentPage === totalPages
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-cyan-500 text-white hover:bg-cyan-700"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
         </div>
