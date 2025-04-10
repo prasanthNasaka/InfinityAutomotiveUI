@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Newheader from "../Components/Newheader";
 import MainSideBar from "../Components/MainSideBar";
 import axios from "axios";
@@ -9,6 +9,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 import AxiosInstance from "../Components/AxiosInstance";
+import Styles from "../constants/Styles";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 
 const AddCompany = () => {
   const [formData, setFormData] = useState({
@@ -35,6 +37,103 @@ const AddCompany = () => {
   const [companies, setCompanies] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [image, setImage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "none",
+  });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const options = [
+    { value: 5, label: "5 per page" },
+    { value: 10, label: "10 per page" },
+    { value: 15, label: "15 per page" },
+    { value: 20, label: "20 per page" },
+  ];
+
+  const handleOptionClick = (value) => {
+    setRecordsPerPage(value);
+    setCurrentPage(1);
+    setIsDropdownOpen(false);
+  };
+
+  const filteredData = companies.filter((company) =>
+    Object.values(company).some((value) =>
+      String(value).toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (sortConfig.direction === "none") return 0;
+
+    const key = sortConfig.key;
+    if (a[key] < b[key]) return sortConfig.direction === "asc" ? -1 : 1;
+    if (a[key] > b[key]) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // eslint-disable-next-line react/prop-types
+  const SortingIcon = ({ direction }) => {
+    if (direction === "none") {
+      return <FaSort className="w-4 h-4 ms-1" />;
+    } else if (direction === "asc") {
+      return <FaSortUp className="w-4 h-4 ms-1" />;
+    } else if (direction === "desc") {
+      return <FaSortDown className="w-4 h-4 ms-1" />;
+    }
+  };
+
+  const totalPages = Math.ceil(sortedData.length / recordsPerPage);
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const endIndex = startIndex + recordsPerPage;
+  const currentData = sortedData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key) {
+      if (sortConfig.direction === "asc") direction = "desc";
+      else if (sortConfig.direction === "desc") direction = "none";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getPageNumbers = () => {
+    let pages = [];
+    const maxVisiblePages = 2;
+
+    if (totalPages <= 5) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      pages = [1];
+
+      let start = Math.max(2, currentPage - maxVisiblePages);
+      let end = Math.min(totalPages - 1, currentPage + maxVisiblePages);
+
+      if (start > 2) {
+        pages.push("...");
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (end < totalPages - 1) {
+        pages.push("...");
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
 
   const handleEdit = (company) => {
     setFormData({
@@ -244,6 +343,23 @@ const AddCompany = () => {
     fetchCompanies();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+
   return (
     <section className="w-full h-screen flex flex-col">
       <Toaster position="bottom-center" reverseOrder={false} />
@@ -256,408 +372,681 @@ const AddCompany = () => {
         <div className=" h-full">
           <MainSideBar />
         </div>
-        <div className="flex w-full p-8 h-auto flex-col gap-4 overflow-auto">
-          <form
-            className="w-full mx-auto p-3 rounded-md shadow h-fit "
-            onSubmit={handleSubmit}
-          >
-            <h2 className="text-3xl font-bold mb-6 text-center">
-              Company Details
-            </h2>
-
-            <div className="flex flex-wrap md:flex-nowrap gap-6">
-              <div className="w-full md:w-1/2">
-                <label className="block text-sm font-bold mb-1">
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded"
-                  placeholder="Enter company name"
-                  required
-                />
-
-                <div className="mt-4">
-                  <label className="text-sm font-bold mb-1 flex">
-                    Abbreviation
-                  </label>
-                  <input
-                    type="text"
-                    name="abbr"
-                    value={formData.abbr}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    placeholder="Enter Abbreviation"
-                    maxLength={3}
-                    required
-                  />
-                </div>
-
-                {validationErrors.CompanyName && (
-                  <p className="text-red-500 text-sm">
-                    {validationErrors.CompanyName[0]}
-                  </p>
-                )}
-              </div>
-
-              <div className="w-full md:w-1/2 flex flex-col  pb-2">
-                <label className="block text-sm font-bold mb-1">
-                  Upload Company Logo
-                </label>
-                <div className="flex items-center justify-center w-full h-52 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                  <input
-                    type="file"
-                    accept="image/*,application/pdf"
-                    className="hidden"
-                    id="company-logo-upload"
-                    onChange={handleImageChange}
-                  />
-                  <label
-                    htmlFor="company-logo-upload"
-                    className="flex flex-col items-center justify-center w-full h-full"
-                  >
-                    {image ? (
-                      <img
-                        src={
-                          image instanceof File
-                            ? URL.createObjectURL(image)
-                            : image
-                        }
-                        alt="Company Logo Preview"
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <>
-                        <svg
-                          className="w-6 h-6 text-gray-500"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 20 16"
-                        >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                          />
-                        </svg>
-                        <p className="text-gray-500 text-sm">Click to upload</p>
-                      </>
-                    )}
-                  </label>
-                </div>
-              </div>
+        <div className="flex-1 p-2  overflow-y-auto">
+          <div className=" max-w-10xl mx-auto">
+            <div className="p-2 ml-2 flex ">
+              <h2
+                style={Styles.hedaing}
+                className="text-3xl font-bold  text-center"
+              >
+                Company Details
+              </h2>
             </div>
-            <div className="flex flex-col space-y-4">
-              {/* First Row: Address & Contact Information */}
-              <div className="flex gap-4">
-                <div className="w-1/2 p-4 border rounded-md shadow">
-                  <h3 className="text-lg font-semibold mb-2">Address</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        Street
-                      </label>
-                      <input
-                        type="text"
-                        name="address.street"
-                        value={formData.address.street}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Enter street"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        City
-                      </label>
-                      <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Enter city"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        State
-                      </label>
-                      <input
-                        type="text"
-                        name="address.state"
-                        value={formData.address.state}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Enter state"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        Zip
-                      </label>
-                      <input
-                        type="text"
-                        name="address.zip"
-                        value={formData.address.zip}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Enter zip"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        Country
-                      </label>
-                      <input
-                        type="text"
-                        name="address.country"
-                        value={formData.address.country}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Enter country"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        Website
-                      </label>
-                      <input
-                        type="text"
-                        name="address.website"
-                        value={formData.address.website}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Enter website"
-                        required
-                      />
-                    </div>
-                  </div>
-                  {isEditing && (
-                    <div className="flex justify-end mt-4">
-                      <button
-                        type="button"
-                        className="px-6 py-3 bg-cyan-600 text-white rounded"
-                        onClick={() => {
-                          setFormData({
-                            name: "",
-                            abbr: "",
-                            address: {
-                              street: "",
-                              city: "",
-                              state: "",
-                              zip: "",
-                              country: "",
-                              website: "",
-                            },
-                            contact: {
-                              phone: "",
-                              email: "",
-                              contactPerson: "",
-                            },
-                            login: { username: "", password: "" },
-                          });
-                          const companyId = formData.companyId;
-                          updateCompany(companyId);
-                          setIsEditing(false);
-                        }}
+            <form
+              className="bg-white mb-6 border rounded-lg p-2"
+              onSubmit={handleSubmit}
+            >
+              <div className="flex   gap-4">
+                <div className="w-3/4 h-auto p-2 gap-4 flex items-center ">
+                  <div className="w-1/2 h-auto gap-8 flex flex-col p-1">
+                    <div className="w-full h-auto">
+                      <label
+                        style={Styles.label}
+                        className="block text-sm font-bold mb-1"
                       >
-                        Update
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="w-1/2 p-4 border rounded-md shadow">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Contact Information
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        Contact Person
+                        Company Name
                       </label>
                       <input
+                        style={Styles.input}
                         type="text"
-                        name="contact.contactPerson"
-                        value={formData.contact.contactPerson}
+                        name="name"
+                        value={formData.name}
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
-                        placeholder="Enter Contact Person"
+                        placeholder="Enter company name"
                         required
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        Phone
+
+                    <div className="w-full ">
+                      <label
+                        style={Styles.label}
+                        className="text-sm font-bold mb-1 flex"
+                      >
+                        Abbreviation
                       </label>
                       <input
-                        type="tel"
-                        name="contact.phone"
-                        value={formData.contact.phone}
+                        style={Styles.input}
+                        type="text"
+                        name="abbr"
+                        value={formData.abbr}
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
-                        placeholder="Enter Phone"
-                        maxLength={10}
+                        placeholder="Enter Abbreviation"
+                        maxLength={3}
                         required
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-bold capitalize mb-1">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        name="contact.email"
-                        value={formData.contact.email}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Enter Email"
-                        required
-                      />
-                    </div>
+                    {validationErrors.CompanyName && (
+                      <p className="text-red-500 text-sm">
+                        {validationErrors.CompanyName[0]}
+                      </p>
+                    )}
                   </div>
-                </div>
-              </div>
 
-              <div className="w-1/2 p-4 border rounded-md shadow">
-                <h3 className="text-lg font-semibold mb-2">Login Details</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <input
-                      type="text"
-                      name="login.username"
-                      value={formData.login.username}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="Enter username"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="password"
-                      name="login.password"
-                      value={formData.login.password}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded"
-                      placeholder="Enter password"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end mt-6 gap-5">
-                <button
-                  type="button"
-                  className="px-6 py-3 bg-gray-300 text-black rounded"
-                  onClick={() =>
-                    setFormData({
-                      name: "",
-                      abbr: "",
-                      address: {
-                        street: "",
-                        city: "",
-                        state: "",
-                        zip: "",
-                        country: "",
-                        website: "",
-                      },
-                      contact: { phone: "", email: "", contactPerson: "" },
-                      login: { username: "", password: "" },
-                    })
-                  }
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-3 bg-cyan-600 text-white rounded"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          </form>
-          <div className="w-full p-4">
-            <h3 className="text-2xl font-bold mb-4">Company List</h3>
-            <table className="w-full border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border p-2">Company Name</th>
-                  <th className="border p-2">State</th>
-                  <th className="border p-2">Street</th>
-                  <th className="border p-2">Website</th>
-                  <th className="border p-2">City</th>
-                  <th className="border p-2">Country</th>
-                  <th className="border p-2">Status</th>
-                  <th className="border p-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {companies.length > 0 ? (
-                  companies.map((company) => (
-                    <tr key={company.companyId}>
-                      <td className="border p-2 text-center">
-                        {company.companyName}
-                      </td>
-                      <td className="border p-2 text-center">
-                        {company.state}
-                      </td>
-                      <td className="border p-2 text-center">
-                        {company.street}
-                      </td>
-                      <td className="border p-2 text-center">
-                        {company.website}
-                      </td>
-                      <td className="border p-2 text-center">{company.city}</td>
-                      <td className="border p-2 text-center">
-                        {company.country}
-                      </td>
-                      <td className="border p-2 text-center">
-                        {company.status || "Active"}
-                      </td>
-                      <td className="border p-2 text-center">
-                        <div className="flex gap-2 justify-center">
-                          <button
-                            type="button"
-                            className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
-                            onClick={() => handleEdit(company)}
-                          >
-                            <CiEdit className="w-6 h-6" />
-                          </button>
-                          <button
-                            type="button"
-                            className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
-                            onClick={() => handleDelete(company.companyId)}
-                          >
-                            <MdOutlineDelete className="w-6 h-6" />
-                          </button>
+                  <div className="w-1/2 h-auto gap-8 flex flex-col p-1">
+                    <div className="w-full h-auto ">
+                      {/* <h3 className="text-lg font-semibold mb-2">
+                        Login Details
+                      </h3> */}
+                      <div className="grid grid-cols-1 gap-8">
+                        <div>
+                          <label style={Styles.label} htmlFor="Username">
+                            UserName
+                          </label>
+                          <input
+                            style={Styles.input}
+                            type="text"
+                            name="login.username"
+                            value={formData.login.username}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            placeholder="Enter username"
+                            required
+                          />
                         </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="text-center p-2">
-                      No companies to display
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                        <div>
+                          <label style={Styles.label} htmlFor="Password">
+                            Password
+                          </label>
+                          <input
+                            style={Styles.input}
+                            type="password"
+                            name="login.password"
+                            value={formData.login.password}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            placeholder="Enter password"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-1/4  flex flex-col  p-1">
+                  <label className="block text-sm font-bold mb-1">
+                    Upload Company Logo
+                  </label>
+                  <div className="flex items-center justify-center w-full h-52 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      className="hidden"
+                      id="company-logo-upload"
+                      onChange={handleImageChange}
+                    />
+                    <label
+                      htmlFor="company-logo-upload"
+                      className="flex flex-col items-center justify-center w-full h-full"
+                    >
+                      {image ? (
+                        <img
+                          src={
+                            image instanceof File
+                              ? URL.createObjectURL(image)
+                              : image
+                          }
+                          alt="Company Logo Preview"
+                          className="w-full h-full object-fill"
+                        />
+                      ) : (
+                        <>
+                          <svg
+                            className="w-6 h-6 text-gray-500"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 20 16"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                            />
+                          </svg>
+                          <p className="text-gray-500 text-sm">
+                            Click to upload
+                          </p>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col space-y-4">
+                {/* First Row: Address & Contact Information */}
+                <div className="flex ">
+                  <div className="w-1/2 p-4  rounded-md ">
+                    <h3 className="text-lg font-semibold mb-2">
+                      Contact Information
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          Contact Person
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="contact.contactPerson"
+                          value={formData.contact.contactPerson}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter Contact Person"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          Phone
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="tel"
+                          name="contact.phone"
+                          value={formData.contact.phone}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter Phone"
+                          maxLength={10}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          Email
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="email"
+                          name="contact.email"
+                          value={formData.contact.email}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter Email"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-1/2 p-4  rounded-md ">
+                    <h3 className="text-lg font-semibold mb-2">Address</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          Street
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="address.street"
+                          value={formData.address.street}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter street"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          City
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="address.city"
+                          value={formData.address.city}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter city"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          State
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="address.state"
+                          value={formData.address.state}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter state"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          Zip
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="address.zip"
+                          value={formData.address.zip}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter zip"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          Country
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="address.country"
+                          value={formData.address.country}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter country"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={Styles.label}
+                          className="block text-sm font-bold capitalize mb-1"
+                        >
+                          Website
+                        </label>
+                        <input
+                          style={Styles.input}
+                          type="text"
+                          name="address.website"
+                          value={formData.address.website}
+                          onChange={handleChange}
+                          className="w-full p-2 border rounded"
+                          placeholder="Enter website"
+                          required
+                        />
+                      </div>
+                    </div>
+                    {isEditing && (
+                      <div className="flex justify-end mt-4">
+                        <button
+                          type="button"
+                          className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                          onClick={() => {
+                            setFormData({
+                              name: "",
+                              abbr: "",
+                              address: {
+                                street: "",
+                                city: "",
+                                state: "",
+                                zip: "",
+                                country: "",
+                                website: "",
+                              },
+                              contact: {
+                                phone: "",
+                                email: "",
+                                contactPerson: "",
+                              },
+                              login: { username: "", password: "" },
+                            });
+                            const companyId = formData.companyId;
+                            updateCompany(companyId);
+                            setIsEditing(false);
+                          }}
+                        >
+                          Update
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="w-full flex justify-end">
+                  <div className="flex w-1/2 justify-end  gap-4 ">
+                    <button
+                      type="button"
+                      className="w-1/2 py-3 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 transition duration-300"
+                      onClick={() =>
+                        setFormData({
+                          name: "",
+                          abbr: "",
+                          address: {
+                            street: "",
+                            city: "",
+                            state: "",
+                            zip: "",
+                            country: "",
+                            website: "",
+                          },
+                          contact: { phone: "", email: "", contactPerson: "" },
+                          login: { username: "", password: "" },
+                        })
+                      }
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div className="min-h-auto">
+              <div className="w-full h-auto rounded-t-lg border max-w-auto p-2 flex bg-gray-50 border-b">
+                <h3 className="text-2xl font-bold" style={Styles.tableheading}>
+                  Company List
+                </h3>
+              </div>
+              <div className="w-full h-auto border flex justify-between items-center p-2">
+                <div className="w-1/2">
+                  <input
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+
+                <div className="w-1/2 flex justify-end">
+                  <div className="w-full flex relative justify-end items-center">
+                    <label
+                      style={Styles.label}
+                      htmlFor="pageType-select"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Page Type
+                    </label>
+                    <div className="w-1/2 relative" ref={dropdownRef}>
+                      <button
+                        id="pageType-select"
+                        className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        aria-haspopup="true"
+                        aria-expanded={isDropdownOpen}
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>{`${recordsPerPage} per page`}</span>
+                          <svg
+                            className="h-4 w-4 text-gray-500"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                            aria-hidden="true"
+                          >
+                            <path d="M8.67903 10.7962C8.45271 11.0679 8.04729 11.0679 7.82097 10.7962L4.63962 6.97649C4.3213 6.59428 4.5824 6 5.06866 6L11.4313 6C11.9176 6 12.1787 6.59428 11.8604 6.97649L8.67903 10.7962Z" />
+                          </svg>
+                        </div>
+                      </button>
+
+                      {isDropdownOpen && (
+                        <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                          <ul className="py-1">
+                            {options.map((option, index) => (
+                              <li
+                                key={index}
+                                className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => handleOptionClick(option.value)}
+                              >
+                                {option.label}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="border rounded-b-lg overflow-hidden bg-white shadow-md">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 text-center">
+                      <tr style={Styles.label}>
+                        <th
+                          className="p-2 cursor-pointer"
+                          onClick={() => handleSort("companyName")}
+                        >
+                          <div className="flex items-center justify-center">
+                            Company Name
+                            <SortingIcon
+                              direction={
+                                sortConfig.key === "companyName"
+                                  ? sortConfig.direction
+                                  : "none"
+                              }
+                            />
+                          </div>
+                        </th>
+                        <th
+                          className="p-2 cursor-pointer"
+                          onClick={() => handleSort("state")}
+                        >
+                          <div className="flex items-center justify-center">
+                            State
+                            <SortingIcon
+                              direction={
+                                sortConfig.key === "state"
+                                  ? sortConfig.direction
+                                  : "none"
+                              }
+                            />
+                          </div>
+                        </th>
+                        <th
+                          className="p-2 cursor-pointer"
+                          onClick={() => handleSort("street")}
+                        >
+                          <div className="flex items-center justify-center">
+                            Street
+                            <SortingIcon
+                              direction={
+                                sortConfig.key === "street"
+                                  ? sortConfig.direction
+                                  : "none"
+                              }
+                            />
+                          </div>
+                        </th>
+                        <th
+                          className="p-2 cursor-pointer"
+                          onClick={() => handleSort("website")}
+                        >
+                          <div className="flex items-center justify-center">
+                            Website
+                            <SortingIcon
+                              direction={
+                                sortConfig.key === "website"
+                                  ? sortConfig.direction
+                                  : "none"
+                              }
+                            />
+                          </div>
+                        </th>
+                        <th
+                          className="p-2 cursor-pointer"
+                          onClick={() => handleSort("city")}
+                        >
+                          <div className="flex items-center justify-center">
+                            City
+                            <SortingIcon
+                              direction={
+                                sortConfig.key === "city"
+                                  ? sortConfig.direction
+                                  : "none"
+                              }
+                            />
+                          </div>
+                        </th>
+                        <th
+                          className="p-2 cursor-pointer"
+                          onClick={() => handleSort("country")}
+                        >
+                          <div className="flex items-center justify-center">
+                            Country
+                            <SortingIcon
+                              direction={
+                                sortConfig.key === "country"
+                                  ? sortConfig.direction
+                                  : "none"
+                              }
+                            />
+                          </div>
+                        </th>
+                        <th className="p-2">Status</th>
+                        <th className="p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 text-center capitalize">
+                      {currentData.length > 0 ? (
+                        currentData.map((company) => (
+                          <tr
+                            key={company.companyId}
+                            className="hover:bg-gray-50"
+                          >
+                            <td className="p-2 text-center">
+                              {company.companyName}
+                            </td>
+                            <td className="p-2 text-center">{company.state}</td>
+                            <td className="p-2 text-center">
+                              {company.street}
+                            </td>
+                            <td className="p-2 text-center">
+                              {company.website}
+                            </td>
+                            <td className="p-2 text-center">{company.city}</td>
+                            <td className="p-2 text-center">
+                              {company.country}
+                            </td>
+                            <td className="p-2 text-center">
+                              {company.status || "Active"}
+                            </td>
+                            <td className="p-2 text-center">
+                              <div className="flex gap-2 justify-center">
+                                <button
+                                  type="button"
+                                  className="p-2 bg-gray-50 border hover:bg-green-300 text-black rounded-lg transition-colors"
+                                  onClick={() => handleEdit(company)}
+                                >
+                                  <CiEdit className="w-6 h-6" />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="p-2 bg-gray-50 border hover:bg-red-300 text-black rounded-lg transition-colors"
+                                  onClick={() =>
+                                    handleDelete(company.companyId)
+                                  }
+                                >
+                                  <MdOutlineDelete className="w-6 h-6" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="8" className="text-center p-2">
+                            No companies to display
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+               
+              </div>
+              <div className="flex justify-end px-2 items-center space-x-2 m-4">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                    className={`px-3 py-2 rounded-md ${
+                      currentPage === 1
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-cyan-500 text-white hover:bg-cyan-700"
+                    }`}
+                  >
+                    Prev
+                  </button>
+                  {getPageNumbers().map((page, index) =>
+                    page === "..." ? (
+                      <span key={index} className="px-3 py-2">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={index}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-2 rounded-md ${
+                          currentPage === page
+                            ? "bg-cyan-700 text-white"
+                            : "bg-gray-200 hover:bg-gray-400"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-2 rounded-md ${
+                      currentPage === totalPages
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-cyan-500 text-white hover:bg-cyan-700"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+            </div>
           </div>
         </div>
       </div>
