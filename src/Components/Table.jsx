@@ -20,8 +20,11 @@ const Table = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [sortField, setSortField] = useState(null);
   const [sortDirection, setSortDirection] = useState("none");
-
   const dropdownRef = useRef(null);
+
+  // Get the type from URL query parameters
+  const searchParams = new URLSearchParams(window.location.search);
+  const eventType = searchParams.get("type");
 
   const options = [
     { value: 5, label: "5 per page" },
@@ -59,12 +62,12 @@ const Table = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-     if (eventId) {
-    getEvents();
-  }
-  }, [eventId]);
+  // useEffect(() => {
+  //   fetchData();
+  //    if (eventId) {
+  //   getEvents();
+  // }
+  // }, [eventId]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -143,6 +146,14 @@ const Table = () => {
     return pages;
   };
 
+  useEffect(() => {
+    fetchData();
+    // Only fetch event data if it's a live event
+    if (eventId && eventType === "live") {
+      getEvents();
+    }
+  }, [eventId, eventType]);
+
   if (loading)
     return (
       <div className="flex justify-center items-center w-full h-screen">
@@ -153,10 +164,14 @@ const Table = () => {
   return (
     <section className="w-full h-screen p-2">
       <Toaster position="bottom-center" reverseOrder={false} />
-      <ResultsCard props={eventData} />
+      {/* Only show ResultsCard for live events */}
+      {eventType === "live" && <ResultsCard props={eventData} />}
       <div className="border rounded-lg overflow-hidden bg-white shadow-md">
+        {/* // Inside the Table component, replace the heading section with this: */}
         <div className="w-full bg-gray-50 p-2 flex justify-center h-auto">
-          <span style={Styles.tableheading}>Completed Details</span>
+          <span style={Styles.tableheading}>
+            {eventType === "live" ? "Live Details" : "Completed Details"}
+          </span>
         </div>
 
         <div className="w-full h-auto border flex justify-between items-center p-2">

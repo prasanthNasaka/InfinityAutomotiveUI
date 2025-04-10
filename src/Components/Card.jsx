@@ -9,8 +9,8 @@ const Card = ({ event, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleDetailsClick = (eventId) => {
-    const url = `/table/${eventId}`;
+  const handleDetailsClick = (eventId, eventType) => {
+    const url = `/table/${eventId}?type=${eventType}`;
     window.open(url, "_blank");
   };
 
@@ -234,7 +234,7 @@ const Card = ({ event, type }) => {
                 </button>
               ) : (
                 <button
-                  onClick={() => handleDetailsClick(event.eventid)} // Use event.eventid here for live/completed events
+                  onClick={() => handleDetailsClick(event.eventid, type)} // Pass the type here
                   className="w-1/2 bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
                 >
                   Details
