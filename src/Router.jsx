@@ -24,6 +24,7 @@ import ScrutinyTemplate from "./Screens/ScrutinyTemplate";
 import Status from "./Screens/Status";
 import Report from "./Screens/Report";
 import RegistrationDeskPopUp from "./Screens/RegistrationDeskPopUp";
+import ChangePassword from "./Components/ChangePassword";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem("authToken");
@@ -39,6 +40,8 @@ const Router = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgotpassword" element={<Forgotpassword />} />
         <Route path="/registrationdesk" element={<RegistrationDeskPopUp />} />
+        <Route path="/ChangePassword" element={<ChangePassword />} />
+
         <Route
           path="/dashboard"
           element={
