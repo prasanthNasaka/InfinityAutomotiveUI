@@ -1,95 +1,181 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
 const AboutUs = () => {
-  const [scrollDirection, setScrollDirection] = useState("down");
-  const controlsText = useAnimation();
-  const controlsLeft = useAnimation();
-  const controlsRight = useAnimation();
-
-  const { ref, inView } = useInView({
+  const controls = useAnimation();
+  const imageControls = useAnimation();
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [ref, inView] = useInView({
     triggerOnce: false,
-    threshold: 0.3,
+    threshold: 0.2,
   });
 
   useEffect(() => {
-    if (inView) {
-      controlsText.start("visible");
-      controlsLeft.start("visible");
-      controlsRight.start("visible");
-    } else {
-      controlsText.start(scrollDirection === "down" ? "hiddenText" : "exitText");
-      controlsLeft.start(scrollDirection === "down" ? "hiddenLeft" : "exitLeft");
-      controlsRight.start(scrollDirection === "down" ? "hiddenRight" : "exitRight");
-    }
-  }, [inView, scrollDirection, controlsText, controlsLeft, controlsRight]);
-
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
+    let scrollTimeout;
 
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setScrollDirection(currentScrollY > lastScrollY ? "down" : "up");
-      lastScrollY = currentScrollY;
+      // Clear any existing timeout
+      clearTimeout(scrollTimeout);
+
+      // Set scrolling to true
+      setIsScrolling(true);
+
+      // Set a timeout to set scrolling to false after scrolling stops
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 300); // Adjust this timeout as needed
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(scrollTimeout);
+    };
   }, []);
 
-  // Animation Variants
-  const textVariants = {
-    hiddenText: { x: "-100vw", opacity: 0 },
-    visible: { x: 0, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } },
-    exitText: { x: "-100vw", opacity: 0, transition: { duration: 0.8, ease: "easeIn" } },
+  useEffect(() => {
+    if (inView) {
+      imageControls.start({
+        opacity: 1,
+        x: "0%",
+        transition: {
+          duration: 1.2,
+          ease: "easeInOut",
+        },
+      });
+    } else {
+      imageControls.start({
+        opacity: 0,
+        x: "50%",
+        transition: {
+          duration: 1.2,
+          ease: "easeInOut",
+        },
+      });
+    }
+  }, [inView, imageControls]);
+
+  useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    } else {
+      controls.start("hidden");
+    }
+  }, [controls, isScrolling, inView]);
+
+  const container = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        when: "beforeChildren",
+      },
+    },
   };
 
-  const cardVariants = {
-    hiddenLeft: { x: -200, opacity: 0 },
-    hiddenRight: { x: 200, opacity: 0 },
-    visible: { x: 0, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } },
-    exitLeft: { x: -200, opacity: 0, transition: { duration: 0.8, ease: "easeIn" } },
-    exitRight: { x: 200, opacity: 0, transition: { duration: 0.8, ease: "easeIn" } },
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        ease: "easeOut",
+        duration: 0.6,
+      },
+    },
+  };
+
+  const imageAnim = {
+    hidden: { scale: 1.1, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
+    },
   };
 
   return (
-    <div ref={ref} className="overflow-hidden w-full h-screen flex flex-col items-center ">
-      {/* Heading */}
-      <motion.h2
-        variants={textVariants}
-        initial="hiddenText"
-        animate={controlsText}
-        className="text-5xl font-bold italic h-20 flex items-center justify-center"
+    <div
+      ref={ref}
+      className="w-full min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-white "
+    >
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate={controls}
+        className="w-full max-w-6xl mx-auto flex flex-col  items-center"
       >
-        About Us
-      </motion.h2>
+        <div className="w-full overflow-hidden">
+          <motion.img
+            className="w-1/2 transition-all duration-1000"
+            src="https://media.formula1.com/image/upload/f_auto,c_limit,w_1440,q_auto/f_auto,c_fill,q_auto,w_1320,g_faces,ar_16:9/content/dam/fom-website/manual/Misc/2023manual/Pre-season/February/AMR/6_AM23_CAR_2392%20TC"
+            alt=""
+            initial={{ opacity: 0, x: "50%" }}
+            animate={imageControls}
+          />
+        </div>
 
-      {/* Cards Container (Takes Remaining Height) */}
-      <div className="w-full p-2 flex-1 flex flex-col md:flex-row justify-center items-center gap-10">
-        {/* Left Card (Text) */}
-        <motion.div
-          variants={cardVariants}
-          initial="hiddenLeft"
-          animate={controlsLeft}
-          className="w-1/2 h-4/6 flex-col bg-gray-800 text-white p-6 rounded-lg shadow-lg flex items-center justify-center text-center"
-        >
-            <h2 className="text-3xl">Amon Racing</h2>
-          <p className="text-lg flex text-wrap">Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui, alias Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit in dignissimos ab quo accusamus nemo et eum provident? A nulla tempore delectus aperiam dolorem rem id quasi praesentium natus officia libero laudantium alias blanditiis saepe aut quidem repudiandae excepturi quaerat dignissimos dolore fuga, error, debitis placeat voluptatibus. Aliquid, earum quia.
+        {/* Text Content - Left Side */}
+        <div className="flex items-center">
+          <motion.div
+            variants={item}
+            className="flex flex-col items-start justify-center space-y-6"
+          >
+            <motion.h2
+              variants={item}
+              className="text-4xl md:text-5xl font-bold text-gray-900"
+            >
+              About Us
+            </motion.h2>
 
-          </p>
-        </motion.div>
+            <motion.h3
+              variants={item}
+              className="text-2xl font-semibold text-cyan-500"
+            >
+              Amon Racing
+            </motion.h3>
 
-        {/* Right Card (Image) */}
-        <motion.div
-          variants={cardVariants}
-          initial="hiddenRight"
-          animate={controlsRight}
-          className="w-1/2 h-4/6 bg-gray-300 p-6 rounded-lg shadow-lg flex items-center justify-center"
-        >
-          <img src="https://cdni.autocarindia.com/ExtraImages/20201109055922_Pista-Motor-Raceway-layout.jpg" alt="About Us" className="w-full h-full" />
-        </motion.div>
-      </div>
+            <motion.p
+              variants={item}
+              className="text-lg text-gray-600 leading-relaxed"
+            >
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui,
+              alias Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Impedit in dignissimos ab quo accusamus nemo et eum provident? A
+              nulla tempore delectus aperiam dolorem rem id quasi praesentium
+              natus officia libero laudantium alias blanditiis saepe aut quidem
+              repudiandae excepturi quaerat dignissimos dolore fuga, error,
+              debitis placeat voluptatibus. Aliquid, earum quia.
+            </motion.p>
+
+            <motion.button
+              variants={item}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+               className="w-1/2 py-3 bg-cyan-500 text-white font-semibold rounded-md hover:bg-cyan-600 hover:text-black transition-all duration-300"
+            >
+              Learn More
+            </motion.button>
+          </motion.div>
+
+          {/* Image - Right Side */}
+          <motion.div
+            variants={imageAnim}
+            className="w-full h-full rounded-xl overflow-hidden shadow-xl"
+          >
+            <img
+              src="https://cdni.autocarindia.com/ExtraImages/20201109055922_Pista-Motor-Raceway-layout.jpg"
+              alt="Race Track"
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 };

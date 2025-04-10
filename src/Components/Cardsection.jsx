@@ -73,7 +73,7 @@ const Cardsection = () => {
   }, []);
 
   return (
-    <div className=" w-full min-h-screen border ">
+    <div className=" w-full min-h-screen  ">
       {/* Header Section */}
       <div className="w-full h-auto p-2 flex justify-center items-center overflow-hidden">
         <motion.span
@@ -128,7 +128,7 @@ const Cardsection = () => {
               <BsArrowRight size={20} />
             </button>
 
-            {/* Carousel */}
+          
             <motion.div
               ref={carouselRef}
               className="w-full overflow-x-auto flex gap-4 p-2 scrollbar-hide"
@@ -140,16 +140,16 @@ const Cardsection = () => {
           </div>
         </div>
 
-        {/* completed card */}
+        
 
-        <div className="w-1/4 h-auto flex flex-col  overflow-y-scroll">
-          <div className="w-full h-auto flex items-center gap-2 sticky top-0">
+        <div className="w-1/4 h-fit flex flex-col ">
+          <div className="w-fit h-fit flex items-center gap-2 sticky top-0">
             <span className="text-3xl font-mono p-2">Completed</span>
             <span className="text-3xl font-mono animate-pulse">🎯</span>
           </div>
 
-          {/* Added `flex-1 min-h-0` to ensure it takes available space and scrolls properly */}
-          <div className="w-full flex-1 h-fit  flex flex-col gap-2 p-2">
+         
+          <div className="w-fit flex-1 h-fit  flex flex-col gap-2 p-2">
             {completedEvents.map((event) => (
               <Card key={event.eventid} event={event} type="completed" />
             ))}
