@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import AxiosInstance from "../Components/AxiosInstance";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Styles from "../constants/Styles";
+import PhoneInput from "react-phone-input-2";
 
 const Registration = () => {
   const [name, setName] = useState("");
@@ -52,11 +53,6 @@ const Registration = () => {
       !email.trim()
     ) {
       toast.error("All fields are mandatory.");
-      return;
-    }
-
-    if (!/^\d{10}$/.test(phone)) {
-      toast.error("Phone number must be exactly 10 digits.");
       return;
     }
 
@@ -449,24 +445,31 @@ const Registration = () => {
                           </div>
                         </div>
                         <div className="flex w-full gap-2 items-center">
-                          <div className=" w-1/2 ">
+                          <div className="w-1/2">
                             <label
                               style={Styles.label}
                               className="block text-sm font-bold text-gray-700 "
                             >
                               Phone Number
                             </label>
-                            <input
-                              style={Styles.input}
-                              type="tel"
-                              className="w-full p-3 border border-gray-300 rounded"
+                            <PhoneInput
+                              country={"in"}
                               value={phone}
-                              onChange={(e) => setPhone(e.target.value)}
-                              placeholder="Enter your phone number"
-                              required
-                              maxLength={10}
+                              onChange={(phone) => setPhone(phone)}
+                              placeholder="        Enter your  phone number"
+                              className="  border-gray-300 rounded"
+                              inputStyle={{
+                                width: "100%",
+                                padding: "16px",
+                                borderRadius: "0.375rem",
+                                border: "1px solid #D1D5DB",
+                              }}
+                              inputProps={{
+                                required: true,
+                              }}
                             />
                           </div>
+
                           <div className=" w-1/2 ">
                             <label
                               style={Styles.label}
