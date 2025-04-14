@@ -80,17 +80,18 @@ const ResultsCard = () => {
             </div>
           </div>
 
-          <div className="flex items-center flex-col gap-4 w-full p-2 border bg-cyan-400  rounded-lg">
+          <div className="flex items-center  gap-4 w-full p-2 border   rounded-lg">
+          <div className="flex  text-md font-medium gap-1 justify-center items-center  h-fit w-full">
+              <span className="font-bold text-cyan-500 text-xl">{eventData.vechMakeModel}</span>
+            </div>
             <div className="w-full h-20  ">
               <img
                 src={`${IMAGE_URL}${eventData.vechPhoto}`}
                 alt="vehicle"
-                className="w-full h-full object-fill rounded-lg border"
+                className="w-full h-full object-fill rounded-lg  "
               />
             </div>
-            <div className="flex  text-md font-medium gap-1 justify-center items-center h-fit w-full">
-              <span>{eventData.vechMakeModel}</span>
-            </div>
+           
           </div>
         </div>
       </div>
