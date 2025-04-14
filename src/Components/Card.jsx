@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import { Calendar, Flag, MapPin, Timer } from "lucide-react";
+import { Calendar, MapPin, Timer } from "lucide-react";
 import { useState } from "react";
 import { IMAGE_URL } from "../constants/global-const";
-import { TfiCup } from "react-icons/tfi";
+import { FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { RxOpenInNewWindow } from "react-icons/rx";
 
 const Card = ({ event, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +38,7 @@ const Card = ({ event, type }) => {
   return (
     <>
       <div
-        className="min-w-max h-full rounded-lg overflow-hidden  shadow-lg cursor-pointer bg-white border"
+        className="min-w-max h-full rounded-lg overflow-hidden  shadow-lg cursor-pointer bg-white"
         onClick={handleClick}
       >
         <div>
@@ -67,7 +68,7 @@ const Card = ({ event, type }) => {
             />
           )}
 
-          {type === "completed" && (
+          {/* {type === "completed" && (
             <img
               src={`${IMAGE_URL}${event.banner}`}
               alt={event.eventname}
@@ -78,46 +79,57 @@ const Card = ({ event, type }) => {
                   "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/433.png";
               }}
             />
-          )}
+          )} */}
         </div>
 
-        <div className="p-4">
-          <h3 className="text-xl font-bold">{event.eventname}</h3>
-          <p className="text-gray-600 flex items-center">
-            <MapPin className="mr-2 " size={20} />
-            {event.location}
-          </p>
-          {type === "live" && (
-            <p className="text-gray-600 flex items-center">
-              <Timer className="mr-2 " size={20} />
-              Lap {event.currentLap} of {event.totalLaps}
-            </p>
-          )}
+        <div className="p-2 flex flex-col items-start justify-start gap-2">
+          <div>
+            <h3 className="text-xl font-bold">{event.eventname}</h3>
+            <span className="text-gray-600 flex items-center gap-1">
+              <MapPin className="text-green-600" size={20} />
+              {event.location}
+            </span>
+
+            {type === "live" && (
+              <span className="text-gray-600 flex items-center gap-1">
+                <Timer className="text-yellow-600" size={20} />
+                Lap {event.currentLap} of {event.totalLaps}
+              </span>
+            )}
+          </div>
+
           {type === "upcoming" && (
-            <p className="text-gray-600 flex items-center">
-              <p className="text-gray-600 items-center flex justify-center  text-wrap flex-col">
-                <span className="flex items-center justify-between">
-                  <Calendar className="mr-2" size={20} />
-                  Start Date: {formatDate(event.startdate)}
-                </span>
-                <span className="flex items-center justify-start">
-                  <Calendar className="mr-3" size={20} />
-                  End Date: {formatDate(event.enddate)}
-                </span>
-              </p>
-            </p>
+            <div className="text-gray-600 flex border flex-col gap-1">
+              <div className="flex items-center gap-1">
+                <Calendar size={20} />
+                <span>Start Date: {formatDate(event.startdate)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Calendar size={20} />
+                <span>End Date: {formatDate(event.enddate)}</span>
+              </div>
+            </div>
           )}
 
           {type === "completed" && (
-            <div className="flex justify-between items-center">
+            <div className="flex w-80 justify-between items-center gap-4">
               <div>
-                <p className="text-gray-600 flex items-center">
-                  <Flag className="mr-2" size={16} />
-                  Completed on {formatDate(event.startdate)}
-                </p>
+                <span className="text-gray-600 flex items-center gap-1">
+                  <FaCheckCircle className="text-green-600 text-xl" />
+                  {formatDate(event.startdate)}
+                </span>
               </div>
-              <div className="text-4xl text-yellow-600">
-                <TfiCup />
+              <div className="w-1/2 h-full">
+                <img
+                  src={`${IMAGE_URL}${event.banner}`}
+                  alt={event.eventname}
+                  className="w-full h-14 rounded-lg object-fill"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/433.png";
+                  }}
+                />
               </div>
             </div>
           )}
@@ -126,7 +138,7 @@ const Card = ({ event, type }) => {
 
       {isModalOpen && (
         <div className="z-50 fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg max-w-2xl w-full">
+          <div className="bg-white p-4 rounded-lg flex-flex-col  w-1/3">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-2xl font-bold mb-4 text-center">
                 {event.eventname}
@@ -151,80 +163,92 @@ const Card = ({ event, type }) => {
                 </svg>
               </button>
             </div>
+            <div className="p-1">
+              {type === "live" && (
+                <img
+                  src={`${IMAGE_URL}${event.banner}`}
+                  alt={event.eventname}
+                  className="w-full h-48 rounded-lg object-fill"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/469.png";
+                  }}
+                />
+              )}
 
-            {type === "live" && (
-              <img
-                src={`${IMAGE_URL}${event.banner}`}
-                alt={event.eventname}
-                className="w-full h-48 rounded-lg object-fill"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/469.png";
-                }}
-              />
-            )}
+              {type === "upcoming" && (
+                <img
+                  src={`${IMAGE_URL}${event.banner}`}
+                  alt={event.eventname}
+                  className="w-full rounded-lg h-48 object-fill"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/466.png";
+                  }}
+                />
+              )}
 
-            {type === "upcoming" && (
-              <img
-                src={`${IMAGE_URL}${event.banner}`}
-                alt={event.eventname}
-                className="w-full rounded-lg h-48 object-fill"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/466.png";
-                }}
-              />
-            )}
+              {type === "completed" && (
+                <img
+                  src={`${IMAGE_URL}${event.banner}`}
+                  alt={event.eventname}
+                  className="w-full h-48 rounded-lg object-fill"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/433.png";
+                  }}
+                />
+              )}
+            </div>
 
-            {type === "completed" && (
-              <img
-                src={`${IMAGE_URL}${event.banner}`}
-                alt={event.eventname}
-                className="w-full h-48 rounded-lg object-fill"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://chronopulse-pulse.s3.ap-south-1.amazonaws.com/MapFiles/Events/433.png";
-                }}
-              />
-            )}
+            <div className="flex flex-col w-full justify-start p-1 gap-2">
+              <div className="flex items-center gap-2 font-poppins flex-wrap">
+                {/* Location Icon + Text */}
+                <MapPin className="text-green-600 min-w-[20px]" size={20} />
+                <span className="text-base text-gray-700">
+                  {event.location}
+                </span>
 
-            <p className="text-gray-600 mb-2">
-              <MapPin
-                className="inline mr-2 border-4 border-red-800"
-                size={16}
-              />{" "}
-              {event.location}
-            </p>
+                {/* "View In Map" Link */}
+                <a
+                  target="_blank"
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    event.gmapLocation
+                  )}`}
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-sm text-cyan-500 hover:text-cyan-600 hover:underline transition duration-150"
+                >
+                  View In Map
+                  <RxOpenInNewWindow className="text-lg" size={18} />
+                </a>
+              </div>
 
-            {type === "live" && (
-              <p className="text-gray-600 mb-2">
-                <Timer className="inline mr-2" size={16} /> Lap{" "}
-                {event.currentLap} of {event.totalLaps}
-              </p>
-            )}
+              {type === "live" && (
+                <span className=" flex gap">
+                  <Timer className=" text-yellow-600" size={20} /> Lap{" "}
+                  {event.currentLap} of {event.totalLaps}
+                </span>
+              )}
 
-            {type === "upcoming" && (
-              <p className="text-gray-600 mb-2">
-                <Calendar className="inline mr-2" size={16} />{" "}
-                {new Date(event.startdate).toLocaleString()}
-              </p>
-            )}
+              {type === "upcoming" && (
+                <span className="text-gray-600 flex items-center">
+                  <Calendar className=" " size={20} />{" "}
+                  {new Date(event.startdate).toLocaleString()}
+                </span>
+              )}
 
-            {type === "completed" && (
-              <div className="mt-4">{/* Results can be displayed here */}</div>
-            )}
+              {type === "completed" && (
+                <span className="text-gray-600 flex items-center">
+                  <Calendar className=" " size={20} />
+                  {new Date(event.startdate).toLocaleString()}
+                </span>
+              )}
+            </div>
 
-            <div className="w-full mt-5 flex justify-between gap-5">
-              <button
-                onClick={closeModal}
-                className="w-1/2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-              >
-                Close
-              </button>
-
+            <div className="w-full  flex justify-between gap-5">
               {type === "upcoming" ? (
                 <button
                   onClick={() => handleRegisterClick(event)}
@@ -240,6 +264,12 @@ const Card = ({ event, type }) => {
                   Details
                 </button>
               )}
+              <button
+                onClick={closeModal}
+                className="w-1/2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
